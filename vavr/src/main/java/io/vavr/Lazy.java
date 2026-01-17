@@ -146,6 +146,16 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
+    /**
+     * Filters this lazy value by applying the given predicate to the evaluated value.
+     * <p>
+     * If the predicate matches the evaluated value, it returns {@code Some} containing the value.
+     * Otherwise, it returns {@code None}.
+     *
+     * @param predicate the predicate to test the value
+     * @return {@code Some(value)} if the predicate is satisfied, {@code None} otherwise
+     * @throws NullPointerException if {@code predicate} is {@code null}
+     */
     public Option<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final T v = get();

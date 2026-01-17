@@ -79,10 +79,24 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns the empty TreeSet with natural ordering.
+     *
+     * @param <T> Component type
+     * @return The empty TreeSet with natural ordering.
+     */
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {
         return empty(Comparators.naturalComparator());
     }
 
+    /**
+     * Returns the empty TreeSet with the given comparator.
+     *
+     * @param comparator The comparator used to sort the elements
+     * @param <T>        Component type
+     * @return The empty TreeSet.
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     */
     public static <T> TreeSet<T> empty(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.empty(comparator));
@@ -104,21 +118,54 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return (TreeSet<T>) treeSet;
     }
 
+    /**
+     * Returns a singleton {@code TreeSet}, i.e. a {@code TreeSet} of one element with natural ordering.
+     *
+     * @param value An element.
+     * @param <T>   The component type
+     * @return A new TreeSet instance containing the given element
+     */
     public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
         return of(Comparators.naturalComparator(), value);
     }
 
+    /**
+     * Returns a singleton {@code TreeSet}, i.e. a {@code TreeSet} of one element with the given comparator.
+     *
+     * @param comparator The comparator used to sort the elements
+     * @param value      An element.
+     * @param <T>        The component type
+     * @return A new TreeSet instance containing the given element
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     */
     public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
+    /**
+     * Creates a TreeSet of the given elements with natural ordering.
+     *
+     * @param <T>    Component type of the TreeSet.
+     * @param values Zero or more elements.
+     * @return A set containing the given elements.
+     * @throws NullPointerException if {@code values} is null
+     */
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T extends Comparable<? super T>> TreeSet<T> of(T @NonNull ... values) {
         return TreeSet.<T> of(Comparators.naturalComparator(), values);
     }
 
+    /**
+     * Creates a TreeSet of the given elements with the given comparator.
+     *
+     * @param comparator The comparator used to sort the elements
+     * @param <T>        Component type of the TreeSet.
+     * @param values     Zero or more elements.
+     * @return A set containing the given elements.
+     * @throws NullPointerException if {@code comparator} or {@code values} is null
+     */
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... values) {
@@ -191,10 +238,27 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return fill(Comparators.naturalComparator(), n, s);
     }
 
+    /**
+     * Creates a TreeSet of the given elements with natural ordering.
+     *
+     * @param <T>    Component type of the TreeSet.
+     * @param values An Iterable of elements.
+     * @return A set containing the given elements.
+     * @throws NullPointerException if {@code values} is null
+     */
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(@NonNull Iterable<? extends T> values) {
         return ofAll(Comparators.naturalComparator(), values);
     }
 
+    /**
+     * Creates a TreeSet of the given elements with the given comparator.
+     *
+     * @param comparator The comparator used to sort the elements
+     * @param <T>        Component type of the TreeSet.
+     * @param values     An Iterable of elements.
+     * @return A set containing the given elements.
+     * @throws NullPointerException if {@code comparator} or {@code values} is null
+     */
     @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, @NonNull Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -206,11 +270,28 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         }
     }
 
+    /**
+     * Creates a TreeSet from a Java Stream with natural ordering.
+     *
+     * @param <T>        Component type of the TreeSet.
+     * @param javaStream A Java Stream
+     * @return A TreeSet containing the elements of the given stream
+     * @throws NullPointerException if {@code javaStream} is null
+     */
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }
 
+    /**
+     * Creates a TreeSet from a Java Stream with the given comparator.
+     *
+     * @param comparator The comparator used to sort the elements
+     * @param <T>        Component type of the TreeSet.
+     * @param javaStream A Java Stream
+     * @return A TreeSet containing the elements of the given stream
+     * @throws NullPointerException if {@code javaStream} is null
+     */
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.util.stream.@NonNull Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));

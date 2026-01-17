@@ -29,6 +29,11 @@ public interface Task<T> {
      */
     void run(Complete<T> complete) throws Throwable;
 
+    /**
+     * A marker interface for synchronous tasks that are executed immediately.
+     *
+     * @param <T> result type
+     */
     @FunctionalInterface
     interface SyncTask<T> extends Task<T> {
     }

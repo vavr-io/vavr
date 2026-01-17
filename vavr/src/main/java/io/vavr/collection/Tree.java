@@ -41,6 +41,9 @@ import static io.vavr.collection.Tree.Order.PRE_ORDER;
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -1093,6 +1096,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         private Empty() {
         }
 
+        /**
+         * Returns the singleton instance of the empty tree.
+         *
+         * @param <T> The component type
+         * @return The empty tree instance
+         */
         @SuppressWarnings("unchecked")
         public static <T> Empty<T> instance() {
             return (Empty<T>) INSTANCE;

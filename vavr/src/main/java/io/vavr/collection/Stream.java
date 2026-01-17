@@ -688,10 +688,32 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a Stream of char values starting from {@code from}, extending to {@code toInclusive}, with {@code step}.
+     *
+     * @param from        the first char
+     * @param toInclusive the last char (inclusive)
+     * @param step        the step
+     * @return a range of char values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static Stream<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a Stream of double values starting from {@code from}, extending to {@code toInclusive}, with {@code step}.
+     *
+     * @param from        the first double
+     * @param toInclusive the last double (inclusive)
+     * @param step        the step
+     * @return a range of double values as specified or {@code Nil} if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     static Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
