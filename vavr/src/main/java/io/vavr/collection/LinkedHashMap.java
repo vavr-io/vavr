@@ -110,6 +110,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns the empty LinkedHashMap.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return The empty LinkedHashMap.
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> empty() {
         return (LinkedHashMap<K, V>) EMPTY;

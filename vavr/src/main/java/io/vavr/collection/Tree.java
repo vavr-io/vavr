@@ -41,6 +41,9 @@ import static io.vavr.collection.Tree.Order.PRE_ORDER;
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**

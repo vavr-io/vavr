@@ -39,6 +39,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface IndexedSeq<T> extends Seq<T> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**

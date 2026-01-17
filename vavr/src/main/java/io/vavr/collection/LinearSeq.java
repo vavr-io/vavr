@@ -37,6 +37,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface LinearSeq<T> extends Seq<T> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**

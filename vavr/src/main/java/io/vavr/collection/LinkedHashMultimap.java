@@ -41,22 +41,58 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Returns a builder for LinkedHashMultimap instances where values are stored in a sequence.
+     * Values for each key will be stored in a Vavr List, allowing duplicates and preserving insertion order.
+     *
+     * @param <V> The value type
+     * @return A new Builder for creating LinkedHashMultimap instances with sequence-based value storage
+     */
     public static <V> Builder<V> withSeq() {
         return new Builder<>(ContainerType.SEQ, List::empty);
     }
 
+    /**
+     * Returns a builder for LinkedHashMultimap instances where values are stored in a set.
+     * Values for each key will be stored in a Vavr HashSet, eliminating duplicates.
+     *
+     * @param <V> The value type
+     * @return A new Builder for creating LinkedHashMultimap instances with set-based value storage
+     */
     public static <V> Builder<V> withSet() {
         return new Builder<>(ContainerType.SET, HashSet::empty);
     }
 
+    /**
+     * Returns a builder for LinkedHashMultimap instances where values are stored in a sorted set.
+     * Values for each key will be stored in a Vavr TreeSet, eliminating duplicates and maintaining natural ordering.
+     *
+     * @param <V> The value type, must be Comparable
+     * @return A new Builder for creating LinkedHashMultimap instances with sorted set-based value storage
+     */
     public static <V extends Comparable<?>> Builder<V> withSortedSet() {
         return new Builder<>(ContainerType.SORTED_SET, TreeSet::empty);
     }
 
+    /**
+     * Returns a builder for LinkedHashMultimap instances where values are stored in a sorted set with a custom comparator.
+     * Values for each key will be stored in a Vavr TreeSet, eliminating duplicates and maintaining order defined by the comparator.
+     *
+     * @param comparator The comparator to define the ordering of values
+     * @param <V>        The value type
+     * @return A new Builder for creating LinkedHashMultimap instances with sorted set-based value storage using the given comparator
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     */
     public static <V> Builder<V> withSortedSet(@NonNull Comparator<? super V> comparator) {
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
+    /**
+     * Builder class for creating LinkedHashMultimap instances.
+     * Provides methods to construct LinkedHashMultimaps with different container types for values.
+     *
+     * @param <V> The value type
+     */
     public static class Builder<V> {
 
         private final ContainerType containerType;

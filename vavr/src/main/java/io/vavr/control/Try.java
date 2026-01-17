@@ -59,6 +59,9 @@ import static io.vavr.control.TryModule.sneakyThrow;
  */
 public interface Try<T> extends Value<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
