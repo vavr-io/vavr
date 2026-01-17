@@ -64,7 +64,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SuppressWarnings("deprecation")
 @ExtendWith(FutureTest.TraceUnitExtension.class)
 public class FutureTest extends AbstractValueTest {
 
@@ -372,110 +371,11 @@ public class FutureTest extends AbstractValueTest {
         return value;
     }
 
-    // -- static ofSupplier()
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndSupplier() {
-        final Future<Integer> future = Future.ofSupplier(TRIVIAL_EXECUTOR, () -> 1);
-        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
-        assertCompleted(future, 1);
-    }
-
-    @Test
-    public void shouldThrowNPEWhenExecutorIsNullUsingSupplier() {
-        assertThrows(NullPointerException.class, () -> Future.ofSupplier(null, () -> 1));
-    }
-
-    @Test
-    public void shouldThrowNPEWhenSupplierIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.ofSupplier(TRIVIAL_EXECUTOR, null));
-    }
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndSupplier() {
-        final Future<Integer> future = Future.ofSupplier(() -> 1);
-        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
-        future.await();
-        assertThat(future.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldThrowNPEUsingDefaultExecutorWhenSupplierIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.ofSupplier(null));
-    }
-
-    // -- static ofCallable()
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndCallable() {
-        final Future<Integer> future = Future.ofCallable(TRIVIAL_EXECUTOR, () -> 1);
-        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
-        assertCompleted(future, 1);
-    }
-
-    @Test
-    public void shouldThrowNPEWhenExecutorIsNullUsingCallable() {
-        assertThrows(NullPointerException.class, () -> Future.ofCallable(null, () -> 1));
-    }
-
-    @Test
-    public void shouldThrowNPEWhenCallableIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.ofCallable(TRIVIAL_EXECUTOR, null));
-    }
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndCallable() {
-        final Future<Integer> future = Future.ofCallable(() -> 1);
-        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
-        future.await();
-        assertThat(future.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldThrowNPEUsingDefaultExecutorWhenCallableIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.ofCallable(null));
-    }
-
-    // -- static runRunnable()
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndRunnable() {
-        final int[] sideEffect = new int[]{0};
-        final Future<Void> future = Future.runRunnable(TRIVIAL_EXECUTOR, () -> sideEffect[0] = 42);
-        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
-        future.await();
-        assertThat(sideEffect[0]).isEqualTo(42);
-    }
-
-    @Test
-    public void shouldThrowNPEWhenExecutorIsNullUsingRunnable() {
-        assertThrows(NullPointerException.class, () -> Future.runRunnable(null, () -> {}));
-    }
-
-    @Test
-    public void shouldThrowNPEWhenRunnableIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.runRunnable(TRIVIAL_EXECUTOR, null));
-    }
-
-    @Test
-    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndRunnable() {
-        final int[] sideEffect = new int[]{0};
-        final Future<Void> future = Future.runRunnable(() -> sideEffect[0] = 42);
-        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
-        future.await();
-        assertThat(sideEffect[0]).isEqualTo(42);
-    }
-
-    @Test
-    public void shouldThrowNPEUsingDefaultExecutorWhenRunnableIsNull() {
-        assertThrows(NullPointerException.class, () -> Future.runRunnable(null));
-    }
-
     // -- static reduce()
 
     @Test
     public void shouldFailReduceEmptySequence() {
-        assertThrows(NoSuchElementException.class, () -> Future.<Integer>reduce(List.empty(), Integer::sum));
+        assertThrows(NoSuchElementException.class, () -> Future.reduce(List.empty(), Integer::sum));
     }
 
     @Test
@@ -755,19 +655,6 @@ public class FutureTest extends AbstractValueTest {
         }
 
         @Test
-        public void shouldCancelFutureThatNeverCompletes() {
-            @SuppressWarnings("deprecation") final Future<?> future = Future.run(complete -> {
-                // we break our promise, the Future is never completed
-            });
-
-            assertThat(future.isCompleted()).isFalse();
-            assertThat(future.isCancelled()).isFalse();
-
-            assertThat(future.cancel()).isTrue();
-            assertThat(future.isCompleted()).isTrue();
-        }
-
-        @Test
         void shouldNotRunCancelledFuture() {
             ExecutorService es = Executors.newSingleThreadExecutor();
 
@@ -949,7 +836,7 @@ public class FutureTest extends AbstractValueTest {
         final AtomicReference<Task.Complete<Boolean>> computation = new AtomicReference<>(null);
 
         // this computation never ends
-        @SuppressWarnings("deprecation") final Future<Boolean> future = Future.run(computation::set);
+        Future<Boolean> future = FutureImpl.sync(Executors.newCachedThreadPool(), computation::set);
 
         // now we have time to register an onComplete handler
         future.onComplete(result -> result.forEach(ok::set));
