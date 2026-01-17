@@ -1748,7 +1748,7 @@ def generateMainClasses(): Unit = {
          * Please note that values like Option, Try, Future, etc. are also iterable.
          * <p>
          * Given a suitable function
-         * f: {@code (v1, v2, ..., vN) -> ...} and 1 <= N <= 8 iterables, the result is a Stream of the
+         * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a Stream of the
          * mapped cross product elements.
          *
          * <pre>{@code 
