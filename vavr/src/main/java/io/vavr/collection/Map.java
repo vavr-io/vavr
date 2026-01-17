@@ -99,7 +99,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return a new {@link PartialFunction}
      * @throws NoSuchElementException when a non-existing key is applied to the partial function
      */
-    default PartialFunction<K, V> asPartialFunction() throws IndexOutOfBoundsException {
+    default PartialFunction<K, V> asPartialFunction() throws NoSuchElementException {
         return new PartialFunction<K, V>() {
             private static final long serialVersionUID = 1L;
             @Override

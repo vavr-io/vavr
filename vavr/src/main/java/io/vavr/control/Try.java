@@ -547,10 +547,10 @@ public interface Try<T> extends Value<T>, Serializable {
      * Returns the value of this {@code Try} if it is a {@link Success}, or throws the underlying exception if it is a {@link Failure}.
      * <p>
      * <strong>Important:</strong> If this {@code Try} is a {@link Failure}, the exception thrown is exactly the
-     * {@link #getCause()} of this {@code Failure}.
+     * {@link #getCause()} of this {@code Failure}. The underlying cause is thrown sneakily (without being declared
+     * in the method signature).
      *
      * @return the value contained in this {@code Success}
-     * throws Throwable the underlying cause sneakily if this is a {@link Failure}
      */
     @Override
     T get();
@@ -1406,8 +1406,9 @@ public interface Try<T> extends Value<T>, Serializable {
          * Constructs a Failure.
          *
          * @param cause A cause of type Throwable, may not be null.
-         * @throws NullPointerException if {@code cause} is null
-         * throws Throwable             sneakily, if the given {@code cause} is fatal, i.e. non-recoverable
+         * @throws NullPointerException if {@code cause} is null. Additionally, if the given {@code cause}
+         *                              is fatal (i.e. non-recoverable), it is thrown sneakily without being
+         *                              declared in the method signature.
          */
         private Failure(Throwable cause) {
             Objects.requireNonNull(cause, "cause is null");
