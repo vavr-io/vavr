@@ -15,11 +15,9 @@ import io.vavr.control.Try;
  * }</pre>
  *
  * @param <T> result type
- * @deprecated Experimental API
  */
-@Deprecated
 @FunctionalInterface
-public interface Task<T> {
+interface Task<T> {
 
     /**
      * Runs the task. Non-fatal errors are catched by a {@link Future}.
