@@ -23,6 +23,7 @@ import io.vavr.collection.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Defines general-purpose predicates which are particularly useful when working with {@link API.Match}.
@@ -219,7 +220,7 @@ public final class Predicates {
      * @param <T> the type of object being tested
      * @return a predicate that evaluates to {@code true} if the tested object is not {@code null}
      */
-    public static <T> Predicate<T> isNotNull() {
+    public static <T> Predicate<@Nullable T> isNotNull() {
         return Objects::nonNull;
     }
 
@@ -236,7 +237,7 @@ public final class Predicates {
      * @param <T> the type of object being tested
      * @return a predicate that evaluates to {@code true} if the tested object is {@code null}
      */
-    public static <T> Predicate<T> isNull() {
+    public static <T> Predicate<@Nullable T> isNull() {
         return Objects::isNull;
     }
 

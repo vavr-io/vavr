@@ -334,7 +334,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A value of type {@code T} or {@code null}.
      */
-    default T getOrNull() {
+    default @Nullable T getOrNull() {
         return isEmpty() ? null : get();
     }
 
