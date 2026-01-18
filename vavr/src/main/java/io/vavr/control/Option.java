@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A replacement for {@link java.util.Optional}.
@@ -60,7 +61,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   the value type
      * @return {@code Some(value)} if the value is non-null, otherwise {@code None}
      */
-    static <T> Option<T> of(T value) {
+    static <T> Option<T> of(@Nullable T value) {
         return (value == null) ? none() : some(value);
     }
 
@@ -122,7 +123,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   the value type
      * @return a {@code Some} containing {@code value}
      */
-    static <T> Option<T> some(T value) {
+    static <T> Option<T> some(@Nullable T value) {
         return new Some<>(value);
     }
 
@@ -499,19 +500,19 @@ public interface Option<T> extends Value<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
-        private final T value;
+        private final @Nullable T value;
 
         /**
          * Creates a new Some containing the given value.
          *
          * @param value A value, may be null
          */
-        private Some(T value) {
+        private Some(@Nullable T value) {
             this.value = value;
         }
 
         @Override
-        public T get() {
+        public @Nullable T get() {
             return value;
         }
 

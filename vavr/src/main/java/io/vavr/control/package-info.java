@@ -23,4 +23,5 @@
  * {@linkplain io.vavr.control.Try.Success}, containing a result, or a {@linkplain io.vavr.control.Try.Failure},
  * containing an Exception.
  */
+@org.jspecify.annotations.NullMarked
 package io.vavr.control;

@@ -6,4 +6,5 @@
  * operations in parallel. The value of a Future is supplied concurrently and can subsequently be used. Multiple
  * concurrent tasks represented by Futures can be composed to a single Future.
  */
+@org.jspecify.annotations.NullMarked
 package io.vavr.concurrent;

@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.API.Invalid;
 import static io.vavr.API.Left;
@@ -141,7 +142,7 @@ public interface Value<T> extends Iterable<T> {
      * @param element An Object of type A, may be null.
      * @return true, if element is contained, false otherwise.
      */
-    default boolean contains(T element) {
+    default boolean contains(@Nullable T element) {
         return exists(e -> Objects.equals(e, element));
     }
 
