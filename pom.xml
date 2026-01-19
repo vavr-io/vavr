@@ -55,7 +55,7 @@
         <maven.jar.version>3.5.0</maven.jar.version>
         <maven.javadoc.version>3.12.0</maven.javadoc.version>
         <maven.release.version>3.3.1</maven.release.version>
-        <maven.versions.version>2.20.1</maven.versions.version>
+        <maven.versions.version>2.21.0</maven.versions.version>
         <maven.surefire.version>3.5.4</maven.surefire.version>
         <spotless.version>3.1.0</spotless.version>
         <maven.source.version>3.4.0</maven.source.version>
