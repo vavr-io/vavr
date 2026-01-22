@@ -61,7 +61,7 @@
         <maven.source.version>3.4.0</maven.source.version>
         <maven.exec.version>3.6.3</maven.exec.version>
         <scala.maven.version>4.9.8</scala.maven.version>
-        <scala.version>3.7.4</scala.version>
+        <scala.version>3.8</scala.version>
     </properties>
     <dependencyManagement>
         <dependencies>
