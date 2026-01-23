@@ -596,6 +596,16 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return isRight() ? this : (Either<L, R>) supplier.get();
     }
 
+    @Override
+    default <U> Either<L, U> mapTo(U value) {
+        return this.map(__ -> value);
+    }
+
+    @Override
+    default Either<L, Void> mapToVoid() {
+        return this.mapTo(null);
+    }
+
     /**
      * Indicates that a right-biased {@code Either} computes its value synchronously.
      *
