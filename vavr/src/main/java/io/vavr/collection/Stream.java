@@ -162,12 +162,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Returns an infinitely long Stream of {@code int} values starting from {@code from}.
+     * Returns an infinitely long Stream of {@code int} values starting from {@code value}.
      * <p>
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
-     * @return a new Stream of int values starting from {@code from}
+     * @return a new Stream of int values starting from {@code value}
      */
     static Stream<Integer> from(int value) {
         return Stream.ofAll(Iterator.from(value));
@@ -180,19 +180,19 @@ public interface Stream<T> extends LinearSeq<T> {
      *
      * @param value a start int value
      * @param step  the step by which to advance on each next value
-     * @return a new {@code Stream} of int values starting from {@code from}
+     * @return a new {@code Stream} of int values starting from {@code value}
      */
     static Stream<Integer> from(int value, int step) {
         return Stream.ofAll(Iterator.from(value, step));
     }
 
     /**
-     * Returns an infinitely long Stream of {@code long} values starting from {@code from}.
+     * Returns an infinitely long Stream of {@code long} values starting from {@code value}.
      * <p>
-     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     * The {@code Stream} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
      * @param value a start long value
-     * @return a new Stream of long values starting from {@code from}
+     * @return a new Stream of long values starting from {@code value}
      */
     static Stream<Long> from(long value) {
         return Stream.ofAll(Iterator.from(value));
@@ -205,14 +205,14 @@ public interface Stream<T> extends LinearSeq<T> {
      *
      * @param value a start long value
      * @param step  the step by which to advance on each next value
-     * @return a new {@code Stream} of long values starting from {@code from}
+     * @return a new {@code Stream} of long values starting from {@code value}
      */
     static Stream<Long> from(long value, long step) {
         return Stream.ofAll(Iterator.from(value, step));
     }
 
     /**
-     * Generates an (theoretically) infinitely long Stream using a value Supplier.
+     * Generates a (theoretically) infinitely long Stream using a value Supplier.
      *
      * @param supplier A Supplier of Stream values
      * @param <T>      value type
@@ -1836,7 +1836,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Extends (continues) this {@code Stream} with a Stream of values created by applying
      * consecutively provided {@code Function} to the last element of the original Stream.
      *
-     * @param nextFunction a function which calculates the next value basing on the previous value
+     * @param nextFunction a function which calculates the next value based on the previous value
      * @return new {@code Stream} composed from this stream extended with values calculated by the provided function
      */
     default Stream<T> extend(@NonNull Function<? super T, ? extends T> nextFunction) {

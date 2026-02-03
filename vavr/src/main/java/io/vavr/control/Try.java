@@ -129,7 +129,7 @@ public interface Try<T> extends Value<T>, Serializable {
         Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
-            return new Success<>(null); // null represents the absence of an value, i.e. Void
+            return new Success<>(null); // null represents the absence of a value, i.e. Void
         } catch (Throwable t) {
             return new Failure<>(t);
         }
