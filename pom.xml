@@ -226,12 +226,12 @@
                             <path>
                                 <groupId>io.vavr</groupId>
                                 <artifactId>vavr-match</artifactId>
-                                <version>0.11.0</version>
+                                <version>1.0.0</version>
                             </path>
                             <path>
                                 <groupId>io.vavr</groupId>
                                 <artifactId>vavr-match-processor</artifactId>
-                                <version>0.11.0</version>
+                                <version>1.0.0</version>
                             </path>
                         </annotationProcessorPaths>
                         <annotationProcessors>
