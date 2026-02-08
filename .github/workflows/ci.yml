@@ -54,8 +54,17 @@ jobs:
           server-password: CENTRAL_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
+      - name: Read project version
+        id: version
+        run: |
+          VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Deploy Snapshot
-        run: ./mvnw -B --no-transfer-progress -Pmaven-central-release -Prelease-sign-artifacts -DskipTests=true deploy
+        if: endsWith(steps.version.outputs.version, '-SNAPSHOT')
+        run: mvn -B --no-transfer-progress \
+          -Pmaven-central-release \
+          -DskipTests=true deploy
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
