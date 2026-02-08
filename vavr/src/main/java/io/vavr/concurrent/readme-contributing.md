@@ -13,7 +13,7 @@ drill down to those which access instance variables. These classes are typically
 clean and easy to maintain, thread-safe core.
 
 The interfaces define, beside abstract methods, static factory methods, static extension methods and default methods.
-The default implementations are built on top of the tread-safe core mentioned above. Typically, no additional
+The default implementations are built on top of the thread-safe core mentioned above. Typically, no additional
 synchronization takes place here.
 
 ### Read-only vs. write-once

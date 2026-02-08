@@ -34,16 +34,16 @@ Led and maintained by [@pivovarit](http://github.com/pivovarit)
     <dependency>
         <groupId>io.vavr</groupId>
         <artifactId>vavr</artifactId>
-        <version>0.10.7</version>
+        <version>1.0.0</version>
     </dependency>
 
 ### Gradle Dependency
 
-    implementation 'io.vavr:vavr:0.10.7'
+    implementation 'io.vavr:vavr:1.0.0'
 
 ## Using Vavr
 
-See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc/io.vavr/vavr).
+See [User Guide](https://docs.vavr.io) and/or [Javadoc](https://www.javadoc.io/doc/io.vavr/vavr).
 
 ### Useful Maven Goals
 
