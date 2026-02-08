@@ -1504,7 +1504,7 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link HashMap} instance containing the given entries
-     * @deprecated Will be removed in a future version.
+     * @deprecated Will be removed in version 2.0.0. Use {@link HashMap#ofEntries(Tuple2...)} instead.
      */
     @Deprecated
     @SuppressWarnings("varargs")
@@ -1752,7 +1752,7 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link LinkedHashMap} instance containing the given entries
-     * @deprecated Will be removed in a future version.
+     * @deprecated Will be removed in version 2.0.0. Use {@link LinkedHashMap#ofEntries(Tuple2...)} instead.
      */
     @Deprecated
     @SuppressWarnings("varargs")
@@ -2024,7 +2024,7 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link TreeMap} instance containing the given entries
-     * @deprecated Will be removed in a future version.
+     * @deprecated Will be removed in version 2.0.0. Use {@link TreeMap#ofEntries(Tuple2...)} instead.
      */
     @Deprecated
     @SuppressWarnings("varargs")
@@ -2041,7 +2041,7 @@ public final class API {
      * @param keyComparator The comparator used to sort the entries by their key
      * @param entries       Map entries.
      * @return A new {@link TreeMap} instance containing the given entry
-     * @deprecated Will be removed in a future version.
+     * @deprecated Will be removed in version 2.0.0. Use {@link TreeMap#ofEntries(Comparator, Tuple2...)} instead.
      */
     @Deprecated
     @SuppressWarnings("varargs")
@@ -2057,7 +2057,7 @@ public final class API {
      * @param <V> The value type.
      * @param map A map entry.
      * @return A new {@link TreeMap} instance containing the given map
-     * @deprecated Will be removed in a future version.
+     * @deprecated Will be removed in version 2.0.0. Use {@link TreeMap#ofAll(java.util.Map)} instead.
      */
     @Deprecated
     public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(java.util.Map<? extends K, ? extends V> map) {

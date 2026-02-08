@@ -102,7 +102,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param index an index
      * @return the element at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Use {@link #get(int)} directly instead.
      */
     @Deprecated
     @Override
@@ -581,7 +581,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @return a function that takes an index i and returns the value of
      * this sequence in a Some if the index is within bounds, otherwise a None.
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Create a custom lambda or method reference instead.
      */
     @Deprecated
     default Function1<Integer, Option<T>> lift() {
@@ -1309,7 +1309,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @param defaultValue default value to return for out of bound indexes
      * @return a total function from index to T
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Create a custom lambda or method reference instead.
      */
     @Deprecated
     default Function1<Integer, T> withDefaultValue(T defaultValue) {
@@ -1322,7 +1322,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @param defaultFunction function to evaluate for all out-of-bounds indexes.
      * @return a total function from index to T
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Create a custom lambda or method reference instead.
      */
     @Deprecated
     default Function1<Integer, T> withDefault(@NonNull Function<? super Integer, ? extends T> defaultFunction) {

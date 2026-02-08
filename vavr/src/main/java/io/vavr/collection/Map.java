@@ -673,7 +673,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      *
      * @param defaultFunction function to evaluate for all keys not present in the map
      * @return a total function from K to T
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Create a custom lambda or method reference instead.
      */
     @Deprecated
     default Function1<K, V> withDefault(@NonNull Function<? super K, ? extends V> defaultFunction) {
@@ -686,7 +686,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      *
      * @param defaultValue default value to return for all keys not present in the map
      * @return a total function from K to T
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Create a custom lambda or method reference instead.
      */
     @Deprecated
     default Function1<K, V> withDefaultValue(V defaultValue) {

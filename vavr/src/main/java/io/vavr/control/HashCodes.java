@@ -3,14 +3,16 @@ package io.vavr.control;
 import java.util.List;
 import java.util.Objects;
 
-// TODO should we generate this file and add more permutations of parameter types?
+// This file is generated to provide optimized hashCode implementations for common use cases.
+// For generic hashcode calculation, use Objects.hash() or Arrays.hashCode() instead.
 
 /**
  * Utility that allows to compute hashcodes without var-arg conversion into arrays for common
  * types of vavr.
  *
  * @author Sebastian Zarnekow
- * @deprecated Will be removed from public API
+ * @deprecated Will be removed from public API in version 2.0.0. 
+ *             Use {@link java.util.Objects#hash(Object...)} or {@link java.util.Arrays#hashCode(Object[])} instead.
  */
 @Deprecated
 public interface HashCodes {

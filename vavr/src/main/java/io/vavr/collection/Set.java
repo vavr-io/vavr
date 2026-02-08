@@ -86,7 +86,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      *
      * @param element the element to test for membership.
      * @return {@code true} if the given {@code element} is contained, {@code false} otherwise.
-     * @deprecated Will be removed
+     * @deprecated Will be removed in version 2.0.0. Use {@link #contains(Object)} directly instead.
      */
     @Override
     @Deprecated

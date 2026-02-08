@@ -237,7 +237,7 @@ def generateMainClasses(): Unit = {
          * @param <V>     The value type.
          * @param entries Map entries.
          * @return A new {@link $mapType} instance containing the given entries
-         * @deprecated Will be removed in a future version.
+         * @deprecated Will be removed in version 2.0.0. Use {@link $mapType#ofEntries(Tuple2...)} instead.
          */
         @Deprecated
         @SuppressWarnings("varargs")
@@ -308,7 +308,7 @@ def generateMainClasses(): Unit = {
          * @param <V>     The value type.
          * @param entries Map entries.
          * @return A new {@link $mapType} instance containing the given entries
-         * @deprecated Will be removed in a future version.
+         * @deprecated Will be removed in version 2.0.0. Use {@link $mapType#ofEntries(Tuple2...)} instead.
          */
         @Deprecated
         @SuppressWarnings("varargs")
@@ -325,7 +325,7 @@ def generateMainClasses(): Unit = {
          * @param keyComparator The comparator used to sort the entries by their key
          * @param entries       Map entries.
          * @return A new {@link $mapType} instance containing the given entry
-         * @deprecated Will be removed in a future version.
+         * @deprecated Will be removed in version 2.0.0. Use {@link $mapType#ofEntries($JavaComparatorType, Tuple2...)} instead.
          */
         @Deprecated
         @SuppressWarnings("varargs")
@@ -341,7 +341,7 @@ def generateMainClasses(): Unit = {
          * @param <V> The value type.
          * @param map A map entry.
          * @return A new {@link $mapType} instance containing the given map
-         * @deprecated Will be removed in a future version.
+         * @deprecated Will be removed in version 2.0.0. Use {@link $mapType#ofAll($JavaMapType)} instead.
          */
         @Deprecated
         public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
