@@ -1,8 +1,8 @@
 # Vavr
 
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/ci.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/ci.yml)
-[![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=0)](https://central.sonatype.com/artifact/io.vavr/vavr/versions)
-[![javadoc](https://javadoc.io/badge2/io.vavr/vavr/0.11.0/javadoc.svg)](https://javadoc.io/doc/io.vavr/vavr/0.11.0)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=1)](https://central.sonatype.com/artifact/io.vavr/vavr/versions)
+[![javadoc](https://javadoc.io/badge2/io.vavr/vavr/1.0.0/javadoc.svg)](https://javadoc.io/doc/io.vavr/vavr/1.0.0)
 
 ```text
  ____  ______________  ________________________  __________
@@ -32,12 +32,12 @@ Led and maintained by [@pivovarit](http://github.com/pivovarit)
     <dependency>
         <groupId>io.vavr</groupId>
         <artifactId>vavr</artifactId>
-        <version>0.11.0</version>
+        <version>1.0.0</version>
     </dependency>
 
 ### Gradle Dependency
 
-    implementation 'io.vavr:vavr:0.11.0'
+    implementation 'io.vavr:vavr:1.0.0'
 
 ## Using Vavr
 
