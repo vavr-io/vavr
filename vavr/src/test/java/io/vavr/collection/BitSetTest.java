@@ -66,25 +66,26 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {
+        return new ObjectAssert<>(actual) {
+            
             @Override
             public ObjectAssert<T> isEqualTo(Object expected) {
-                if (actual instanceof Tuple2) {
-                    final Tuple2<?, ?> t1 = (Tuple2<?, ?>) actual;
-                    final Tuple2<?, ?> t2 = (Tuple2<?, ?>) expected;
-                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
-                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
-                    return this;
-                } else if (actual instanceof Tuple3) {
-                    final Tuple3<?, ?, ?> t1 = (Tuple3<?, ?, ?>) actual;
-                    final Tuple3<?, ?, ?> t2 = (Tuple3<?, ?, ?>) expected;
-                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
-                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
-                    assertThat((Iterable<?>) t1._3).isEqualTo(t2._3);
-                    return this;
-                } else {
-                    return super.isEqualTo(expected);
-                }
+                return switch (actual) {
+                    case Tuple2<?, ?> t1 -> {
+                        final Tuple2<?, ?> t2 = (Tuple2<?, ?>) expected;
+                        assertThat((Iterable<?>) t1._1()).isEqualTo(t2._1());
+                        assertThat((Iterable<?>) t1._2()).isEqualTo(t2._2());
+                        yield this;
+                    }
+                    case Tuple3<?, ?, ?> t1 -> {
+                        final Tuple3<?, ?, ?> t2 = (Tuple3<?, ?, ?>) expected;
+                        assertThat((Iterable<?>) t1._1()).isEqualTo(t2._1());
+                        assertThat((Iterable<?>) t1._2()).isEqualTo(t2._2());
+                        assertThat((Iterable<?>) t1._3()).isEqualTo(t2._3());
+                        yield this;
+                    }
+                    case null, default -> super.isEqualTo(expected);
+                };
             }
         };
     }

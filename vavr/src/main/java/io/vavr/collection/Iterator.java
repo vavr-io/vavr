@@ -1318,7 +1318,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(empty(), empty());
         } else {
             final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
+            return Tuple.of(source.map(t -> (T1) t._1()).iterator(), source.map(t -> (T2) t._2()).iterator());
         }
     }
 
@@ -1330,7 +1330,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(empty(), empty(), empty());
         } else {
             final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
+            return Tuple.of(source.map(t -> (T1) t._1()).iterator(), source.map(t -> (T2) t._2()).iterator(), source.map(t -> (T3) t._3()).iterator());
         }
     }
 
@@ -1386,7 +1386,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static <T, U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.<U> ofAll(
-                unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
+                unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2(), t._1())))))
                 .reverse().iterator();
     }
 
@@ -1427,8 +1427,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             @Override
             public U getNext() {
                 Tuple2<? extends U, ? extends T> tuple = nextVal.get().get();
-                final U result = tuple._1;
-                nextVal = Lazy.of(() -> f.apply(tuple._2));
+                final U result = tuple._1();
+                nextVal = Lazy.of(() -> f.apply(tuple._2()));
                 return result;
             }
         };
@@ -1580,8 +1580,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 @Override
                 public T getNext() {
                     final Tuple2<T, io.vavr.collection.Queue<T>> t = queue.append(that.next()).dequeue();
-                    queue = t._2;
-                    return t._1;
+                    queue = t._2();
+                    return t._1();
                 }
             };
         }
@@ -1854,7 +1854,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(empty(), empty());
         } else {
             final Tuple2<Iterator<T>, Iterator<T>> dup = IteratorModule.duplicate(this);
-            return Tuple.of(dup._1.filter(predicate), dup._2.filter(predicate.negate()));
+            return Tuple.of(dup._1().filter(predicate), dup._2().filter(predicate.negate()));
         }
     }
 
@@ -2136,7 +2136,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     while (that.hasNext()) {
                         queue = queue.enqueue(that.next());
                         if (queue.length() > n) {
-                            queue = queue.dequeue()._2;
+                            queue = queue.dequeue()._2();
                         }
                     }
                     return !queue.isEmpty();
@@ -2145,8 +2145,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 @Override
                 public T getNext() {
                     final Tuple2<T, io.vavr.collection.Queue<T>> t = queue.dequeue();
-                    queue = t._2;
-                    return t._1;
+                    queue = t._2();
+                    return t._1();
                 }
             };
         }

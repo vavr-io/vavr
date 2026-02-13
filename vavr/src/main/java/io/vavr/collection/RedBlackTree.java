@@ -127,7 +127,7 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
      * @return A new RedBlackTree if the value is present, otherwise this.
      */
     default RedBlackTree<T> delete(T value) {
-        final RedBlackTree<T> tree = Node.delete(this, value)._1;
+        final RedBlackTree<T> tree = Node.delete(this, value)._1();
         return Node.color(tree, BLACK);
     }
 
@@ -138,7 +138,7 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
         } else {
             final Node<T> that = (Node<T>) tree;
             final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
-            return Node.merge(split._1.difference(that.left), split._2.difference(that.right));
+            return Node.merge(split._1().difference(that.left), split._2().difference(that.right));
         }
     }
 
@@ -171,9 +171,9 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
             final Node<T> that = (Node<T>) tree;
             final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
             if (contains(that.value)) {
-                return Node.join(split._1.intersection(that.left), that.value, split._2.intersection(that.right));
+                return Node.join(split._1().intersection(that.left), that.value, split._2().intersection(that.right));
             } else {
-                return Node.merge(split._1.intersection(that.left), split._2.intersection(that.right));
+                return Node.merge(split._1().intersection(that.left), split._2().intersection(that.right));
             }
         }
     }
@@ -242,7 +242,7 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
                 return that.color(BLACK);
             } else {
                 final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
-                return Node.join(split._1.union(that.left), that.value, split._2.union(that.right));
+                return Node.join(split._1().union(that.left), that.value, split._2().union(that.right));
             }
         }
     }
@@ -292,9 +292,9 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
                 @Override
                 public T getNext() {
                     final Tuple2<Node<T>, ? extends List<Node<T>>> result = stack.pop2();
-                    final Node<T> node = result._1;
-                    stack = node.right.isEmpty() ? result._2 : pushLeftChildren(result._2, (Node<T>) node.right);
-                    return result._1.value;
+                    final Node<T> node = result._1();
+                    stack = node.right.isEmpty() ? result._2() : pushLeftChildren(result._2(), (Node<T>) node.right);
+                    return result._1().value;
                 }
 
                 private List<Node<T>> pushLeftChildren(List<Node<T>> initialStack, Node<T> that) {
@@ -536,8 +536,8 @@ interface RedBlackTreeModule {
                 final int comparison = node.comparator().compare(value, node.value);
                 if (comparison < 0) {
                     final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.left, value);
-                    final RedBlackTree<T> l = deleted._1;
-                    final boolean d = deleted._2;
+                    final RedBlackTree<T> l = deleted._1();
+                    final boolean d = deleted._2();
                     if (d) {
                         return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right,
                                 node.empty);
@@ -548,8 +548,8 @@ interface RedBlackTreeModule {
                     }
                 } else if (comparison > 0) {
                     final Tuple2<? extends RedBlackTree<T>, Boolean> deleted = delete(node.right, value);
-                    final RedBlackTree<T> r = deleted._1;
-                    final boolean d = deleted._2;
+                    final RedBlackTree<T> r = deleted._1();
+                    final boolean d = deleted._2();
                     if (d) {
                         return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r,
                                 node.empty);
@@ -568,9 +568,9 @@ interface RedBlackTreeModule {
                     } else {
                         final Node<T> nodeRight = (Node<T>) node.right;
                         final Tuple3<? extends RedBlackTree<T>, Boolean, T> newRight = deleteMin(nodeRight);
-                        final RedBlackTree<T> r = newRight._1;
-                        final boolean d = newRight._2;
-                        final T m = newRight._3;
+                        final RedBlackTree<T> r = newRight._1();
+                        final boolean d = newRight._2();
+                        final T m = newRight._3();
                         if (d) {
                             return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, m, r, node.empty);
                         } else {
@@ -593,13 +593,13 @@ interface RedBlackTreeModule {
             } else{
                 final Node<T> nodeLeft = (Node<T>) node.left;
                 final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
-                final RedBlackTree<T> l = newNode._1;
-                final boolean deleted = newNode._2;
-                final T m = newNode._3;
+                final RedBlackTree<T> l = newNode._1();
+                final boolean deleted = newNode._2();
+                final T m = newNode._3();
                 if (deleted) {
                     final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
                             node.value, node.right, node.empty);
-                    return Tuple.of(tD._1, tD._2, m);
+                    return Tuple.of(tD._1(), tD._2(), m);
                 } else {
                     final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
                     return Tuple.of(tD, false, m);
@@ -699,7 +699,7 @@ interface RedBlackTreeModule {
 
         private static <T> Node<T> mergeEQ(Node<T> n1, Node<T> n2) {
             final T m = Node.minimum(n2);
-            final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
+            final RedBlackTree<T> t2 = Node.deleteMin(n2)._1();
             final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
             if (n1.blackHeight == h2) {
                 return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
@@ -760,10 +760,10 @@ interface RedBlackTreeModule {
                 final int comparison = node.comparator().compare(value, node.value);
                 if (comparison < 0) {
                     final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.left, value);
-                    return Tuple.of(split._1, Node.join(split._2, node.value, Node.color(node.right, BLACK)));
+                    return Tuple.of(split._1(), Node.join(split._2(), node.value, Node.color(node.right, BLACK)));
                 } else if (comparison > 0) {
                     final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.right, value);
-                    return Tuple.of(Node.join(Node.color(node.left, BLACK), node.value, split._1), split._2);
+                    return Tuple.of(Node.join(Node.color(node.left, BLACK), node.value, split._1()), split._2());
                 } else {
                     return Tuple.of(Node.color(node.left, BLACK), Node.color(node.right, BLACK));
                 }

@@ -244,7 +244,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a tupled function equivalent to this.
      */
     default Function1<Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
-        return t -> apply(t._1, t._2, t._3, t._4, t._5);
+        return t -> apply(t._1(), t._2(), t._3(), t._4(), t._5());
     }
 
     /**

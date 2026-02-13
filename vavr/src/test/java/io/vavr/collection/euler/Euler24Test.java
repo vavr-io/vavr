@@ -50,8 +50,8 @@ public class Euler24Test {
     public void shouldSolveProblem24() {
         List.of("012", "021", "102", "120", "201", "210").zipWithIndex()
                 .forEach(p -> {
-                    assertThat(lexicographicPermutationNaive(List.of("1", "0", "2"), p._2 + 1)).isEqualTo(p._1);
-                    assertThat(lexicographicPermutation(List.of("1", "0", "2"), p._2 + 1)).isEqualTo(p._1);
+                    assertThat(lexicographicPermutationNaive(List.of("1", "0", "2"), p._2() + 1)).isEqualTo(p._1());
+                    assertThat(lexicographicPermutation(List.of("1", "0", "2"), p._2() + 1)).isEqualTo(p._1());
                 });
 
         assertThat(lexicographicPermutation(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), 1_000_000)).isEqualTo("2783915460");
