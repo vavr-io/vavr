@@ -31,6 +31,34 @@ val comment = "//"
 val javadoc = "**"
 
 /**
+ * Pre-computed type variable strings for a given arity.
+ *
+ * Centralizes the repeated patterns like "T1, T2, T3", "<T1, T2, T3, R>", "t1, t2, t3", etc.
+ * that are rebuilt identically throughout the generator.
+ *
+ * @param i the arity (number of type parameters), 0 to N
+ */
+case class Arity(i: Int) {
+  val generics: String = (1 to i).gen(j => s"T$j")(using ", ") // "T1, T2, T3"
+  val genericsTuple: String = if (i > 0) s"<$generics>" else "" // "<T1, T2, T3>" or "" for arity 0
+  val fullGenerics: String = s"<${(i > 0).gen(s"$generics, ")}R>" // "<T1, T2, T3, R>"
+  val wideGenerics: String = (1 to i).gen(j => s"? super T$j")(using ", ") // "? super T1, ? super T2"
+  val covariantGenerics: String = (1 to i).gen(j => s"? extends T$j")(using ", ") // "? extends T1, ? extends T2"
+  val fullWideGenerics: String = s"<${(i > 0).gen(s"$wideGenerics, ")}? extends R>" // "<? super T1, ? super T2, ? extends R>"
+  val genericsReversed: String = (1 to i).reverse.gen(j => s"T$j")(using ", ") // "T3, T2, T1"
+  val genericsFunction: String = if (i > 0) s"$generics, " else "" // "T1, T2, T3, " or "" for arity 0 (trailing comma for prepending to R)
+  val paramsDecl: String = (1 to i).gen(j => s"T$j t$j")(using ", ") // "T1 t1, T2 t2, T3 t3"
+  val params: String = (1 to i).gen(j => s"t$j")(using ", ") // "t1, t2, t3"
+  val paramsReversed: String = (1 to i).reverse.gen(j => s"t$j")(using ", ") // "t3, t2, t1"
+  val tupled: String = (1 to i).gen(j => s"t._$j")(using ", ") // "t._1, t._2, t._3"
+  val underscoreParams: String = (1 to i).gen(j => s"_$j")(using ", ") // "_1, _2, _3"
+
+  /** Generates @param javadoc tags for type parameters T1..Ti */
+  def typeParamDocs(description: Int => String = j => s"type of the ${j.ordinal} element"): String =
+    (0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> ${description(j)}")(using "\n")
+}
+
+/**
  * Returns the standard java.util.function type name for the given arity.
  * Arities 0, 1, and 2 map to Supplier, Function, and BiFunction respectively;
  * higher arities map to Vavr's FunctionN.
@@ -42,9 +70,6 @@ def javaFunctionType(i: Int, im: ImportManager): String = i match {
   case _ => s"Function$i"
 }
 
-/**
- * ENTRY POINT
- */
 def run(): Unit = {
   generateMainClasses()
   generateTestClasses()
@@ -382,8 +407,7 @@ def generateMainClasses(): Unit = {
           // -- Function
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(using ", ")
-            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            val a = Arity(i)
             xs"""
               /$javadoc
                * Alias for {@link Function$i#of(Function$i)}
@@ -392,7 +416,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link Function$i}
                */
-              public static $fullGenerics Function$i$fullGenerics Function(Function$i$fullGenerics methodReference) {
+              public static ${a.fullGenerics} Function$i${a.fullGenerics} Function(Function$i${a.fullGenerics} methodReference) {
                   return Function$i.of(methodReference);
               }
             """
@@ -401,8 +425,7 @@ def generateMainClasses(): Unit = {
           // -- CheckedFunction
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(using ", ")
-            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            val a = Arity(i)
             xs"""
               /$javadoc
                * Alias for {@link CheckedFunction$i#of(CheckedFunction$i)}
@@ -411,7 +434,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link CheckedFunction$i}
                */
-              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction(CheckedFunction$i$fullGenerics methodReference) {
+              public static ${a.fullGenerics} CheckedFunction$i${a.fullGenerics} CheckedFunction(CheckedFunction$i${a.fullGenerics} methodReference) {
                   return CheckedFunction$i.of(methodReference);
               }
             """
@@ -420,8 +443,7 @@ def generateMainClasses(): Unit = {
           // -- unchecked
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(using ", ")
-            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            val a = Arity(i)
             xs"""
               /$javadoc
                * Alias for {@link CheckedFunction$i#unchecked}
@@ -430,7 +452,7 @@ def generateMainClasses(): Unit = {
                * @param f    A method reference
                * @return An unchecked wrapper of supplied {@link CheckedFunction$i}
                */
-              public static $fullGenerics Function$i$fullGenerics unchecked(CheckedFunction$i$fullGenerics f) {
+              public static ${a.fullGenerics} Function$i${a.fullGenerics} unchecked(CheckedFunction$i${a.fullGenerics} f) {
                   return f.unchecked();
               }
             """
@@ -448,10 +470,8 @@ def generateMainClasses(): Unit = {
           }
 
           ${(1 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(using ", ")
+            val a = Arity(i)
             val links = (1 to i).gen(j => s"Object")(using ", ")
-            val params = (1 to i).gen(j => s"T$j t$j")(using ", ")
-            val args = (1 to i).gen(j => s"t$j")(using ", ")
             xs"""
               /$javadoc
                * Alias for {@link Tuple#of($links)}
@@ -462,8 +482,8 @@ def generateMainClasses(): Unit = {
                ${(1 to i).gen(j => s"* @param t$j   the ${j.ordinal} element")(using "\n")}
                * @return a tuple of ${i.numerus("element")}.
                */
-              public static <$generics> Tuple$i<$generics> Tuple($params) {
-                  return Tuple.of($args);
+              public static <${a.generics}> Tuple$i<${a.generics}> Tuple(${a.paramsDecl}) {
+                  return Tuple.of(${a.params});
               }
             """
           })(using "\n\n")}
@@ -1057,9 +1077,10 @@ def generateMainClasses(): Unit = {
           }
 
           ${(1 to N).gen(i => {
-            val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
-            val generics = (1 to i).gen(j => s"T$j")(using ", ")
-            val params = (i > 1).gen("(") + (1 to i).gen(j => s"_$j")(using ", ") + (i > 1).gen(")")
+            val a = Arity(i)
+            val argTypes = a.wideGenerics
+            val generics = a.generics
+            val params = (i > 1).gen("(") + a.underscoreParams + (i > 1).gen(")")
             val functionType = javaFunctionType(i, im)
             val typeDocs = (1 to i).gen(j => s"* @param <T$j>     Intermediate type $j for the pattern\n")
 
@@ -1341,8 +1362,9 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
-                val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
-                val generics = (1 to i).gen(j => s"T$j")(using ", ")
+                val a = Arity(i)
+                val argTypes = a.wideGenerics
+                val generics = a.generics
                 val functionType = javaFunctionType(i, im)
                 val accessModifier = i match {
                   case 1 => "transient final"
@@ -1488,8 +1510,9 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
+                val a = Arity(i)
                 val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j")(using ", ")
-                val resultGenerics = (1 to i).gen(j => s"T$j")(using ", ")
+                val resultGenerics = a.generics
                 val resultType = if (i == 1) resultGenerics else s"Tuple$i<$resultGenerics>"
                 val unapplyGenerics = (1 to i).gen(j => s"U$j")(using ", ")
                 val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
@@ -1758,21 +1781,12 @@ def generateMainClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val generics = (1 to i).gen(j => s"T$j")(using ", ")
-        val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
-        val wideGenerics = (1 to i).gen(j => s"? super T$j")(using ", ")
-        val fullWideGenerics = s"<${(i > 0).gen(s"$wideGenerics, ")}? extends R>"
-        val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(using ", ")
-        val genericsTuple = if (i > 0) s"<$generics>" else ""
-        val genericsFunction = if (i > 0) s"$generics, " else ""
+        val a = Arity(i)
+        import a.{generics, fullGenerics, wideGenerics, fullWideGenerics, genericsReversed, genericsTuple, genericsFunction, paramsDecl, params, paramsReversed, tupled}
         val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
         val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Option")}<R>>"
         val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(using " -> ")
-        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
-        val params = (1 to i).gen(j => s"t$j")(using ", ")
-        val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(using ", ")
-        val tupled = (1 to i).gen(j => s"t._$j")(using ", ")
         val compositionType = if(checked) "CheckedFunction1" else im.getType("java.util.function.Function")
 
         // imports
@@ -2257,10 +2271,11 @@ def generateMainClasses(): Unit = {
      * Generates Tuple1..N
      */
     def genTuple(i: Int)(im: ImportManager, packageName: String, className: String): String = {
-      val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"T$j")(using ", ")}>"
-      val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
-      val params = (1 to i).gen(j => s"_$j")(using ", ")
-      val paramTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
+      val a = Arity(i)
+      val generics = a.genericsTuple
+      val paramsDecl = a.paramsDecl
+      val params = a.underscoreParams
+      val paramTypes = a.wideGenerics
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(using ", ")}>"
       val mapResult = i match {
         case 0 => ""
@@ -2587,10 +2602,8 @@ def generateMainClasses(): Unit = {
       val Seq = im.getType("io.vavr.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(using ", ")
-        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
-        val params = (1 to i).gen(j => s"t$j")(using ", ")
-        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
+        val a = Arity(i)
+        import a.{generics, paramsDecl, params, covariantGenerics => wideGenerics}
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
@@ -2627,8 +2640,8 @@ def generateMainClasses(): Unit = {
       }
 
       def genNarrowMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(using ", ")
-        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
+        val a = Arity(i)
+        import a.{generics, covariantGenerics => wideGenerics}
         xs"""
           /**
            * Narrows a widened {@code Tuple$i<$wideGenerics>} to {@code Tuple$i<$generics>}.
@@ -2645,10 +2658,11 @@ def generateMainClasses(): Unit = {
       }
 
       def genSeqMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(using ", ")
+        val a = Arity(i)
+        import a.generics
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(using ", ")
         val Stream = im.getType("io.vavr.collection.Stream")
-        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
+        val widenedGenerics = a.covariantGenerics
         xs"""
             /**
              * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
