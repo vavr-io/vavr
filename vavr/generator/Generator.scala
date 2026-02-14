@@ -31,6 +31,18 @@ val comment = "//"
 val javadoc = "**"
 
 /**
+ * Returns the standard java.util.function type name for the given arity.
+ * Arities 0, 1, and 2 map to Supplier, Function, and BiFunction respectively;
+ * higher arities map to Vavr's FunctionN.
+ */
+def javaFunctionType(i: Int, im: ImportManager): String = i match {
+  case 0 => im.getType("java.util.function.Supplier")
+  case 1 => im.getType("java.util.function.Function")
+  case 2 => im.getType("java.util.function.BiFunction")
+  case _ => s"Function$i"
+}
+
+/**
  * ENTRY POINT
  */
 def run(): Unit = {
@@ -742,185 +754,55 @@ def generateMainClasses(): Unit = {
         """
       }
 
-      def genLazyFor(im: ImportManager, packageName: String, className: String): String = {
-        xs"""
-          ${
-          monadicTypesFor
-            .filterNot(_ == "Iterable")
-            .gen(mtype => (2 to N).gen(i => {
-              val forClassName = s"ForLazy$i$mtype"
-              val isComplex = monadicTypesThatNeedParameter.contains(mtype)
-              val parameterInset = if (isComplex) "L, " else ""
-              val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
+      /**
+       * Generates For-comprehension factory methods and class definitions.
+       * @param isLazy true for lazy For (function-wrapped subsequent params), false for eager For
+       */
+      def genForComprehensions(isLazy: Boolean): String = {
+        val types = if (isLazy) monadicTypesFor.filterNot(_ == "Iterable") else monadicTypesFor
+        val arityRange: Range = if (isLazy) 2 to N else 1 to N
 
-              val params = (1 to i).gen { j =>
-                if (j == 1)
-                  s"@NonNull $mtype<${parameterInset}T1> ts1"
-                else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
-                  s"@NonNull Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
-                }
-              }(using ", ")
+        def forClassName(mtype: String, i: Int): String =
+          if (!isLazy && mtype == "Iterable") s"For$i" else s"${if (isLazy) "ForLazy" else "For"}$i$mtype"
 
-              val ctorArgs = (1 to i).gen(j => s"ts$j")(using ", ")
+        /** Returns the type of the j-th For parameter/field (function-wrapped in lazy mode for j > 1). */
+        def tsType(mtype: String, parameterInset: String, j: Int): String =
+          if (isLazy && j > 1) {
+            val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
+            s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>>"
+          } else s"$mtype<${parameterInset}T$j>"
 
-              xs"""
-                    /$javadoc
-                     * Creates a lazy {@code For}-comprehension over ${i.numerus(mtype)}.
-                     *
-                     * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
-                     * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
-                     * bound so far and returns the next ${mtype}. This method only constructs the
-                     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-                     * is invoked.</p>
-                     *
-                     ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")(using "\n")}
-                     ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-                     ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
-                     * @return a new {@code $forClassName} builder of arity $i
-                     * @throws NullPointerException if any argument is {@code null}
-                     */
-                    public static <$generics> $forClassName<$generics> For($params) {
-                        ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
-                        return new $forClassName<>($ctorArgs);
-                    }
-                  """
-            })(using "\n\n"))(using "\n\n")
-        }
+        val factories = types.gen(mtype => arityRange.gen(i => {
+          val isComplex = monadicTypesThatNeedParameter.contains(mtype)
+          val parameterInset = if (isComplex) "L, " else ""
+          val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
+          val fcn = forClassName(mtype, i)
+          val params = (1 to i).gen(j => s"@NonNull ${tsType(mtype, parameterInset, j)} ts$j")(using ", ")
+          val ctorArgs = (1 to i).gen(j => s"ts$j")(using ", ")
 
-          ${
-          monadicTypesFor
-            .filterNot(_ == "Iterable")
-            .gen(mtype => (2 to N).gen(i => {
-              val rtype = mtype
-              val forClassName = s"ForLazy$i$mtype"
-              val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
-              val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
-
-              val fields = (1 to i).gen { j =>
-                if (j == 1)
-                  s"private final $mtype<${parameterInset}T1> ts1;"
-                else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
-                  s"private final Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j;"
-                }
-              }(using "\n")
-
-              val ctorParams = (1 to i).gen { j =>
-                if (j == 1)
-                  s"$mtype<${parameterInset}T1> ts1"
-                else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
-                  s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
-                }
-              }(using ", ")
-
-              val assignments = (1 to i).gen(j => s"this.ts$j = ts$j;")(using "\n")
-
-              val yieldBody = {
-                def nestedLambda(j: Int): String = {
-                  val base = " " * 23
-                  val indent = "  " * (j + 1)
-                  if (j == i) {
-                    val argsList = (1 to i).map(k => s"t$k").mkString(", ")
-                    val inputArgs = (1 until i).map(k => s"t$k").mkString(", ")
-                    s"ts$i.apply($inputArgs).map(t$i -> f.apply($argsList))"
-                  } else if (j == 1) {
-                    s"ts1.flatMap(t1 -> {\n" +
-                      s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
-                      s"${base}${indent}})"
-                  } else {
-                    val inputArgs = (1 until j).map(k => s"t$k").mkString(", ")
-                    s"ts$j.apply($inputArgs).flatMap(t$j -> {\n" +
-                      s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
-                      s"${base}${indent}})"
-                  }
-                }
-
-                nestedLambda(1)
+          if (isLazy) {
+            xs"""
+              /$javadoc
+               * Creates a lazy {@code For}-comprehension over ${i.numerus(mtype)}.
+               *
+               * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
+               * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
+               * bound so far and returns the next ${mtype}. This method only constructs the
+               * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+               * is invoked.</p>
+               *
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")(using "\n")}
+               ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+               ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
+               * @return a new {@code $fcn} builder of arity $i
+               * @throws NullPointerException if any argument is {@code null}
+               */
+              public static <$generics> $fcn<$generics> For($params) {
+                  ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
+                  return new $fcn<>($ctorArgs);
               }
-
-              xs"""
-                  /$javadoc
-                   * A lazily evaluated {@code For}-comprehension with ${i.numerus(mtype)}.
-                   *
-                   * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-                   * Construction is side-effect free; underlying ${i.plural(mtype)} are traversed
-                   * only when {@code yield(...)} is invoked.</p>
-                   *
-                   ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-                   ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
-                   */
-                  public static class $forClassName<$generics> {
-
-                      $fields
-
-                      private $forClassName($ctorParams) {
-                          $assignments
-                      }
-
-                      /$javadoc
-                       * Produces results by mapping the Cartesian product of all bound values.
-                       *
-                       * <p>Evaluation is lazy and delegated to the underlying ${i.plural(mtype)} by
-                       * composing {@code flatMap} and {@code map} chains.</p>
-                       *
-                       * @param f a function mapping a tuple of bound values to a result
-                       * @param <R> the element type of the resulting {@code $rtype}
-                       * @return an {@code $rtype} containing mapped results
-                       * @throws NullPointerException if {@code f} is {@code null}
-                       */
-                      public <R> $rtype<${parameterInset}R> yield(${
-                if (i == 2)
-                  s"@NonNull BiFunction<? super T1, ? super T2, ? extends R>"
-                else
-                  s"@NonNull Function$i<${(1 to i).map(j => s"? super T$j").mkString(", ")}, ? extends R>"
-              } f) {
-                          $Objects.requireNonNull(f, "f is null");
-                          return $yieldBody;
-                      }
-                  }
-                """
-            })(using "\n\n"))(using "\n\n")
-        }
-        """
-      }
-
-
-      def genFor(im: ImportManager, packageName: String, className: String): String = {
-        xs"""
-          //
-          // For-Comprehension
-          //
-
-          /**
-           * A shortcut for {@code Iterator.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
-           * {@code For(...).yield(...)}.
-           * <p>
-           * Example:
-           * <pre>{@code 
-           * For(getPersons(), person ->
-           *     For(person.getTweets(), tweet ->
-           *         For(tweet.getReplies())
-           *             .yield(reply -> person + ", " + tweet + ", " + reply)));
-           * }</pre>
-           *
-           * @param ts An iterable
-           * @param f A function {@code T -> Iterable<U>}
-           * @param <T> element type of {@code ts}
-           * @param <U> component type of the resulting {@code Iterator}
-           * @return A new Iterator
-           */
-          public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
-              return $IteratorType.ofAll(ts).flatMap(f);
-          }
-
-          ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
-            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
-            val isComplex = monadicTypesThatNeedParameter.contains(mtype)
-            val parameterInset = (if (isComplex) {"L, "} else "")
-            val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
-            val params = (1 to i).gen(j => s"@NonNull $mtype<${parameterInset}T$j> ts$j")(using ", ")
+            """
+          } else {
             xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
@@ -929,25 +811,91 @@ def generateMainClasses(): Unit = {
                ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")(using "\n")}
                * @return a new {@code For}-comprehension of arity $i
                */
-              public static <$generics> $forClassName<$generics> For($params) {
+              public static <$generics> $fcn<$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
-                  return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(using ", ")});
+                  return new $fcn<>($ctorArgs);
               }
             """
-          })(using "\n\n"))(using "\n\n")}
+          }
+        })(using "\n\n"))(using "\n\n")
 
-           ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
-            val rtype = if (mtype == "Iterable") { IteratorType } else { mtype }
-            val cons: String => String = if (mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
-            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
-            val parameterInset = (if (monadicTypesThatNeedParameter.contains(mtype)) { "L, " } else "")
-            val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
-            val functionType = i match {
-              case 1 => FunctionType
-              case 2 => BiFunctionType
-              case _ => s"Function$i"
+        val classes = types.gen(mtype => arityRange.gen(i => {
+          val rtype = if (!isLazy && mtype == "Iterable") IteratorType else mtype
+          val cons: String => String = if (!isLazy && mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
+          val fcn = forClassName(mtype, i)
+          val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
+          val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
+
+          val fields = (1 to i).gen(j => s"private final ${tsType(mtype, parameterInset, j)} ts$j;")(using "\n")
+          val ctorParams = (1 to i).gen(j => s"${tsType(mtype, parameterInset, j)} ts$j")(using ", ")
+          val assignments = (1 to i).gen(j => s"this.ts$j = ts$j;")(using "\n")
+
+          if (isLazy) {
+            val yieldBody = {
+              def nestedLambda(j: Int): String = {
+                val base = " " * 19
+                val indent = "  " * (j + 1)
+                if (j == i) {
+                  val argsList = (1 to i).map(k => s"t$k").mkString(", ")
+                  val inputArgs = (1 until i).map(k => s"t$k").mkString(", ")
+                  s"ts$i.apply($inputArgs).map(t$i -> f.apply($argsList))"
+                } else if (j == 1) {
+                  s"ts1.flatMap(t1 -> {\n" +
+                    s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
+                    s"${base}${indent}})"
+                } else {
+                  val inputArgs = (1 until j).map(k => s"t$k").mkString(", ")
+                  s"ts$j.apply($inputArgs).flatMap(t$j -> {\n" +
+                    s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
+                    s"${base}${indent}})"
+                }
+              }
+              nestedLambda(1)
             }
 
+            xs"""
+              /$javadoc
+               * A lazily evaluated {@code For}-comprehension with ${i.numerus(mtype)}.
+               *
+               * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+               * Construction is side-effect free; underlying ${i.plural(mtype)} are traversed
+               * only when {@code yield(...)} is invoked.</p>
+               *
+               ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+               ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
+               */
+              public static class $fcn<$generics> {
+
+                  $fields
+
+                  private $fcn($ctorParams) {
+                      $assignments
+                  }
+
+                  /$javadoc
+                   * Produces results by mapping the Cartesian product of all bound values.
+                   *
+                   * <p>Evaluation is lazy and delegated to the underlying ${i.plural(mtype)} by
+                   * composing {@code flatMap} and {@code map} chains.</p>
+                   *
+                   * @param f a function mapping a tuple of bound values to a result
+                   * @param <R> the element type of the resulting {@code $rtype}
+                   * @return an {@code $rtype} containing mapped results
+                   * @throws NullPointerException if {@code f} is {@code null}
+                   */
+                  public <R> $rtype<${parameterInset}R> yield(${
+                if (i == 2)
+                  s"@NonNull BiFunction<? super T1, ? super T2, ? extends R>"
+                else
+                  s"@NonNull Function$i<${(1 to i).map(j => s"? super T$j").mkString(", ")}, ? extends R>"
+              } f) {
+                      $Objects.requireNonNull(f, "f is null");
+                      return $yieldBody;
+                  }
+              }
+            """
+          } else {
+            val functionType = javaFunctionType(i, im)
             val parameterDoc = (if (monadicTypesThatNeedParameter.contains(mtype)) {
               s"\n* @param <L> The left-hand type of all {@link $mtype}s"
             } else { "" })
@@ -959,11 +907,11 @@ def generateMainClasses(): Unit = {
                $parameterDoc
                $typeDocs
                */
-              public static class $forClassName<$generics> {
+              public static class $fcn<$generics> {
 
                   ${(1 to i).gen(j => xs"""private final $mtype<${parameterInset}T$j> ts$j;""")(using "\n")}
 
-                  private $forClassName(${(1 to i).gen(j => s"$mtype<${parameterInset}T$j> ts$j")(using ", ")}) {
+                  private $fcn(${(1 to i).gen(j => s"$mtype<${parameterInset}T$j> ts$j")(using ", ")}) {
                       ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")(using "\n")}
                   }
 
@@ -997,8 +945,48 @@ def generateMainClasses(): Unit = {
                   """)}
               }
             """
-          })(using "\n\n"))(using "\n\n")}
-        """
+          }
+        })(using "\n\n"))(using "\n\n")
+
+        if (isLazy) {
+          xs"""
+              $factories
+
+              $classes
+          """
+        } else {
+          xs"""
+              //
+              // For-Comprehension
+              //
+
+              /**
+               * A shortcut for {@code Iterator.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
+               * {@code For(...).yield(...)}.
+               * <p>
+               * Example:
+               * <pre>{@code
+               * For(getPersons(), person ->
+               *     For(person.getTweets(), tweet ->
+               *         For(tweet.getReplies())
+               *             .yield(reply -> person + ", " + tweet + ", " + reply)));
+               * }</pre>
+               *
+               * @param ts An iterable
+               * @param f A function {@code T -> Iterable<U>}
+               * @param <T> element type of {@code ts}
+               * @param <U> component type of the resulting {@code Iterator}
+               * @return A new Iterator
+               */
+              public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+                  return $IteratorType.ofAll(ts).flatMap(f);
+              }
+
+              $factories
+
+               $classes
+          """
+        }
       }
 
       def genMatch(im: ImportManager, packageName: String, className: String): String =
@@ -1072,11 +1060,7 @@ def generateMainClasses(): Unit = {
             val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
             val generics = (1 to i).gen(j => s"T$j")(using ", ")
             val params = (i > 1).gen("(") + (1 to i).gen(j => s"_$j")(using ", ") + (i > 1).gen(")")
-            val functionType = i match {
-              case 1 => FunctionType
-              case 2 => BiFunctionType
-              case _ => s"Function$i"
-            }
+            val functionType = javaFunctionType(i, im)
             val typeDocs = (1 to i).gen(j => s"* @param <T$j>     Intermediate type $j for the pattern\n")
 
             xs"""
@@ -1359,11 +1343,7 @@ def generateMainClasses(): Unit = {
               ${(1 to N).gen(i => {
                 val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
                 val generics = (1 to i).gen(j => s"T$j")(using ", ")
-                val functionType = i match {
-                  case 1 => FunctionType
-                  case 2 => BiFunctionType
-                  case _ => s"Function$i"
-                }
+                val functionType = javaFunctionType(i, im)
                 val accessModifier = i match {
                   case 1 => "transient final"
                   case 2 => "transient final"
@@ -1756,9 +1736,9 @@ def generateMainClasses(): Unit = {
 
             ${genJavaTypeTweaks(im, packageName, className)}
 
-            ${genFor(im, packageName, className)}
+            ${genForComprehensions(isLazy = false)}
 
-            ${genLazyFor(im, packageName, className)}
+            ${genForComprehensions(isLazy = true)}
 
             ${genMatch(im, packageName, className)}
         }
@@ -2289,12 +2269,7 @@ def generateMainClasses(): Unit = {
       }
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(using ", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(using ", ")}>"
-      val functionType = i match {
-        case 0 => im.getType("java.util.function.Supplier")
-        case 1 => im.getType("java.util.function.Function")
-        case 2 => im.getType("java.util.function.BiFunction")
-        case _ => s"Function$i"
-      }
+      val functionType = javaFunctionType(i, im)
       val NonNullType = im.getType("org.jspecify.annotations.NonNull")
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
@@ -4368,16 +4343,6 @@ object Generator {
       iterable.map(x => f.apply(x.toString)) mkString delimiter
   }
 
-  implicit class Tuple1Extensions(tuple: Tuple1[Any]) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      f.apply(tuple._1.toString) mkString delimiter
-  }
-
-  implicit class Tuple2Extensions(tuple: (Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
   /**
    * Generates a String based on a tuple of objects. Objects are converted to Strings via toString.
    * {{{
@@ -4385,106 +4350,11 @@ object Generator {
    * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(using ", ")})"
    * }}}
    *
-   * @param tuple A Tuple
+   * @param product A Product (all Scala tuples extend Product)
    */
-  implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
+  implicit class ProductExtensions(product: Product) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple4Extensions(tuple: (Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple5Extensions(tuple: (Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple6Extensions(tuple: (Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple7Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple8Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple9Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple10Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple11Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple12Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple13Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple14Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple15Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple16Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple17Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple18Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple19Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple20Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple21Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
-  }
-
-  implicit class Tuple22Extensions(tuple: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any)) {
-    def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
+      product.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
   }
 
   /**

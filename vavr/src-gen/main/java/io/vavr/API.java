@@ -2313,7 +2313,7 @@ public final class API {
      * {@code For(...).yield(...)}.
      * <p>
      * Example:
-     * <pre>{@code 
+     * <pre>{@code
      * For(getPersons(), person ->
      *     For(person.getTweets(), tweet ->
      *         For(tweet.getReplies())
