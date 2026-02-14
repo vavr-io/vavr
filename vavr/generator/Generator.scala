@@ -137,58 +137,24 @@ def generateMainClasses(): Unit = {
       val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType, EitherType, ValidationType)
       val monadicTypesThatNeedParameter = List(EitherType, ValidationType)
 
-      def genTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
+      def genTraversableAliases(traversableType: String, returnType: String, name: String, sorted: Boolean = false) = {
+        val bound = if (sorted) " extends Comparable<? super T>" else ""
+        val ofLinkParam = if (sorted) "Comparable" else "Object"
+        val emptyReturn = if (sorted) s"A new {@link $traversableType} empty instance" else s"A singleton instance of empty {@link $traversableType}"
+        xs"""
         // -- $name
 
         /$javadoc
          * Alias for {@link $traversableType#empty()}
          *
          * @param <T> Component type of element.
-         * @return A singleton instance of empty {@link $traversableType}
+         * @return $emptyReturn
          */
-        public static <T> $returnType<T> $name() {
+        public static <T$bound> $returnType<T> $name() {
             return $traversableType.empty();
         }
 
-        /$javadoc
-         * Alias for {@link $traversableType#of(Object)}
-         *
-         * @param <T>     Component type of element.
-         * @param element An element.
-         * @return A new {@link $traversableType} instance containing the given element
-         */
-        public static <T> $returnType<T> $name(T element) {
-            return $traversableType.of(element);
-        }
-
-        /$javadoc
-         * Alias for {@link $traversableType#of(Object...)}
-         *
-         * @param <T>      Component type of elements.
-         * @param elements Zero or more elements.
-         * @return A new {@link $traversableType} instance containing the given elements
-         * @throws NullPointerException if {@code elements} is null
-         */
-        @SuppressWarnings("varargs")
-        @SafeVarargs
-        public static <T> $returnType<T> $name(T @NonNull ... elements) {
-            return $traversableType.of(elements);
-        }
-      """
-
-      def genSortedTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
-        // -- $name
-
-        /$javadoc
-         * Alias for {@link $traversableType#empty()}
-         *
-         * @param <T> Component type of element.
-         * @return A new {@link $traversableType} empty instance
-         */
-        public static <T extends Comparable<? super T>> $returnType<T> $name() {
-            return $traversableType.empty();
-        }
-
+        ${if (sorted) xs"""
         /$javadoc
          * Alias for {@link $traversableType#empty($JavaComparatorType)}
          *
@@ -196,21 +162,23 @@ def generateMainClasses(): Unit = {
          * @param comparator The comparator used to sort the elements
          * @return A new {@link $traversableType} empty instance
          */
-        public static <T extends Comparable<? super T>> $returnType<T> $name(@NonNull $JavaComparatorType<? super T> comparator) {
+        public static <T$bound> $returnType<T> $name(@NonNull $JavaComparatorType<? super T> comparator) {
             return $traversableType.empty(comparator);
         }
+        """ else ""}
 
         /$javadoc
-         * Alias for {@link $traversableType#of(Comparable)}
+         * Alias for {@link $traversableType#of($ofLinkParam)}
          *
          * @param <T>     Component type of element.
          * @param element An element.
          * @return A new {@link $traversableType} instance containing the given element
          */
-        public static <T extends Comparable<? super T>> $returnType<T> $name(T element) {
+        public static <T$bound> $returnType<T> $name(T element) {
             return $traversableType.of(element);
         }
 
+        ${if (sorted) xs"""
         /$javadoc
          * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
          *
@@ -222,9 +190,11 @@ def generateMainClasses(): Unit = {
         public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T element) {
             return $traversableType.of(comparator, element);
         }
+        """ else ""}
 
+        ${if (sorted) xs"""
         /$javadoc
-         * Alias for {@link $traversableType#of(Comparable...)}
+         * Alias for {@link $traversableType#of($ofLinkParam...)}
          *
          * @param <T>      Component type of element.
          * @param elements Zero or more elements.
@@ -232,10 +202,26 @@ def generateMainClasses(): Unit = {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <T extends Comparable<? super T>> $returnType<T> $name(T @NonNull ... elements) {
+        public static <T$bound> $returnType<T> $name(T @NonNull ... elements) {
             return $traversableType.of(elements);
         }
+        """ else xs"""
+        /$javadoc
+         * Alias for {@link $traversableType#of($ofLinkParam...)}
+         *
+         * @param <T>      Component type of elements.
+         * @param elements Zero or more elements.
+         * @return A new {@link $traversableType} instance containing the given elements
+         * @throws NullPointerException if {@code elements} is null
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <T> $returnType<T> $name(T @NonNull ... elements) {
+            return $traversableType.of(elements);
+        }
+        """}
 
+        ${if (sorted) xs"""
         /$javadoc
          * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
          *
@@ -249,9 +235,14 @@ def generateMainClasses(): Unit = {
         public static <T> $returnType<T> $name(@NonNull $JavaComparatorType<? super T> comparator, T @NonNull ... elements) {
             return $traversableType.of(comparator, elements);
         }
+        """ else ""}
       """
+      }
 
-      def genMapAliases(mapType: String, returnType: String, name: String) = xs"""
+      def genMapAliases(mapType: String, returnType: String, name: String, sorted: Boolean = false) = {
+        val keyBound = if (sorted) " extends Comparable<? super K>" else ""
+        val ofLinkParam = if (sorted) "Comparable" else "Object"
+        xs"""
         // -- $name
 
         /$javadoc
@@ -259,57 +250,13 @@ def generateMainClasses(): Unit = {
          *
          * @param <K> The key type.
          * @param <V> The value type.
-         * @return A singleton instance of empty {@link $mapType}
+         * @return ${if (sorted) s"A new empty {@link $mapType} instance" else s"A singleton instance of empty {@link $mapType}"}
          */
-        public static <K, V> $returnType<K, V> $name() {
+        public static <K$keyBound, V> $returnType<K, V> $name() {
             return $mapType.empty();
         }
 
-        /$javadoc
-         * Alias for {@link $mapType#ofEntries(Tuple2...)}
-         *
-         * @param <K>     The key type.
-         * @param <V>     The value type.
-         * @param entries Map entries.
-         * @return A new {@link $mapType} instance containing the given entries
-         * @deprecated Will be removed in a future version.
-         */
-        @Deprecated
-        @SuppressWarnings("varargs")
-        @SafeVarargs
-        public static <K, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
-            return $mapType.ofEntries(entries);
-        }
-
-        ${(1 to VARARGS).gen(i => {
-          xs"""
-            /$javadoc
-             * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(using ", ")})}
-             *
-             * @param <K> The key type.
-             * @param <V> The value type.
-             ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
-             * @return A new {@link $mapType} instance containing the given entries
-             */
-            public static <K, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
-                return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
-            }
-          """
-        })(using "\n\n")}
-      """
-
-      def genSortedMapAliases(mapType: String, returnType: String, name: String) = xs"""
-        /$javadoc
-         * Alias for {@link $mapType#empty()}
-         *
-         * @param <K> The key type.
-         * @param <V> The value type.
-         * @return A new empty {@link $mapType} instance
-         */
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name() {
-            return $mapType.empty();
-        }
-
+        ${if (sorted) xs"""
         /$javadoc
          * Alias for {@link $mapType#empty($JavaComparatorType)}
          *
@@ -335,6 +282,7 @@ def generateMainClasses(): Unit = {
         public static <K, V> $returnType<K, V> $name(@NonNull Comparator<? super K> keyComparator, K key, V value) {
             return $mapType.of(keyComparator, key, value);
         }
+        """ else ""}
 
         /$javadoc
          * Alias for {@link $mapType#ofEntries(Tuple2...)}
@@ -348,10 +296,11 @@ def generateMainClasses(): Unit = {
         @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+        public static <K$keyBound, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
             return $mapType.ofEntries(entries);
         }
 
+        ${if (sorted) xs"""
         /$javadoc
          * Alias for {@link $mapType#ofEntries($JavaComparatorType, Tuple2...)}
          *
@@ -379,24 +328,28 @@ def generateMainClasses(): Unit = {
          * @deprecated Will be removed in a future version.
          */
         @Deprecated
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
+        public static <K$keyBound, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
             return $mapType.ofAll(map);
         }
+        """ else ""}
 
-        ${(1 to VARARGS).gen(i => xs"""
-          /$javadoc
-           * Alias for {@link $mapType#of(${(1 to i).gen(j => s"${if (mapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(using ", ")})}
-           *
-           * @param <K> The key type.
-           * @param <V> The value type.
-           ${(1 to i).gen(j => s"* @param k$j  The key${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
-           * @return A new {@link $mapType} instance containing the given entries
-           */
-          public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
-              return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
-          }
-        """)(using "\n\n")}
+        ${(1 to VARARGS).gen(i => {
+          xs"""
+            /$javadoc
+             * Alias for {@link $mapType#of(${(1 to i).gen(j => s"$ofLinkParam, Object")(using ", ")})}
+             *
+             * @param <K> The key type.
+             * @param <V> The value type.
+             ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
+             * @return A new {@link $mapType} instance containing the given entries
+             */
+            public static <K$keyBound, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
+                return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
+            }
+          """
+        })(using "\n\n")}
       """
+      }
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -719,7 +672,7 @@ def generateMainClasses(): Unit = {
 
           // -- TRAVERSABLES
 
-          ${genSortedTraversableAliases(PriorityQueueType, PriorityQueueType, "PriorityQueue")}
+          ${genTraversableAliases(PriorityQueueType, PriorityQueueType, "PriorityQueue", sorted = true)}
 
           // -- SEQUENCES
 
@@ -735,13 +688,13 @@ def generateMainClasses(): Unit = {
 
           ${genTraversableAliases(HashSetType, SetType, "Set")}
           ${genTraversableAliases(LinkedHashSetType, SetType, "LinkedSet")}
-          ${genSortedTraversableAliases(TreeSetType, SortedSetType, "SortedSet")}
+          ${genTraversableAliases(TreeSetType, SortedSetType, "SortedSet", sorted = true)}
 
           // -- MAPS
 
           ${genMapAliases(HashMapType, MapType, "Map")}
           ${genMapAliases(LinkedHashMapType, MapType, "LinkedMap")}
-          ${genSortedMapAliases(TreeMapType, SortedMapType, "SortedMap")}
+          ${genMapAliases(TreeMapType, SortedMapType, "SortedMap", sorted = true)}
 
         """
       }
