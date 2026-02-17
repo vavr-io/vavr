@@ -42,7 +42,7 @@
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>21</java.version>
         <jmh.version>1.37</jmh.version>
-        <junit.version>6.0.2</junit.version>
+        <junit.version>6.0.3</junit.version>
         <maven.enforcer.version>3.6.2</maven.enforcer.version>
         <maven.build-helper.version>3.6.1</maven.build-helper.version>
         <maven.bundle.version>5.1.9</maven.bundle.version>
