@@ -66,6 +66,7 @@ case class Arity(i: Int) {
  */
 def javaFunctionType(i: Int, im: ImportManager): String = i match {
   case 0 => im.getType("java.util.function.Supplier")
+
   case 1 => im.getType("java.util.function.Function")
   case 2 => im.getType("java.util.function.BiFunction")
   case _ => s"Function$i"
