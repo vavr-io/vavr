@@ -31,6 +31,9 @@ import java.util.NoSuchElementException;
  */
 abstract class AbstractIterator<T> implements Iterator<T> {
 
+    private boolean hasPeeked = false;
+    private T peekedValue = null;
+
     @Override
     public String toString() {
         return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
@@ -40,9 +43,42 @@ abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public final T next() {
+        if (hasPeeked) {
+            final T result = peekedValue;
+            peekedValue = null;
+            hasPeeked = false;
+            return result;
+        }
         if (!hasNext()) {
             throw new NoSuchElementException("next() on empty iterator");
         }
         return getNext();
+    }
+
+    @Override
+    public T head() {
+        if (hasPeeked) {
+            return peekedValue;
+        }
+        if (!hasNext()) {
+            throw new NoSuchElementException("head() on empty iterator");
+        }
+        peekedValue = getNext();
+        hasPeeked = true;
+        return peekedValue;
+    }
+
+    @Override
+    public Iterator<T> tail() {
+        if (hasPeeked) {
+            peekedValue = null;
+            hasPeeked = false;
+            return this;
+        }
+        if (!hasNext()) {
+            throw new UnsupportedOperationException();
+        }
+        getNext(); // skip first element
+        return this;
     }
 }
