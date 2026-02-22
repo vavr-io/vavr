@@ -117,6 +117,7 @@ public interface Stream<T> extends LinearSeq<T> {
     /**
      * The serial version UID for serialization.
      */
+    @Serial
     long serialVersionUID = 1L;
 
     /**
@@ -1905,6 +1906,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     final class Empty<T> implements Stream<T>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private static final Empty<?> INSTANCE = new Empty<>();
@@ -1965,6 +1967,7 @@ public interface Stream<T> extends LinearSeq<T> {
          * @return The singleton instance of Nil.
          * @see java.io.Serializable
          */
+        @Serial
         private Object readResolve() {
             return INSTANCE;
         }
@@ -1977,6 +1980,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     abstract class Cons<T> implements Stream<T> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -2040,6 +2044,7 @@ interface StreamModule {
 
     final class ConsImpl<T> extends Cons<T> implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         ConsImpl(T head, Supplier<Stream<T>> tail) {
@@ -2051,11 +2056,13 @@ interface StreamModule {
             return tail.get();
         }
 
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
@@ -2064,6 +2071,7 @@ interface StreamModule {
 
     final class AppendElements<T> extends Cons<T> implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final io.vavr.collection.Queue<T> queue;
@@ -2100,11 +2108,13 @@ interface StreamModule {
             }
         }
 
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
@@ -2122,6 +2132,7 @@ interface StreamModule {
     @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     final class SerializationProxy<T> implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
@@ -2145,6 +2156,7 @@ interface StreamModule {
          * @param s An object serialization stream.
          * @throws java.io.IOException If an error occurs writing to the stream.
          */
+        @Serial
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(stream.length());
@@ -2161,6 +2173,7 @@ interface StreamModule {
          * @throws InvalidObjectException If the stream contains no stream elements.
          * @throws IOException            If an error occurs reading from the stream.
          */
+        @Serial
         private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
             s.defaultReadObject();
             final int size = s.readInt();
@@ -2186,6 +2199,7 @@ interface StreamModule {
          *
          * @return A deserialized instance of the enclosing class.
          */
+        @Serial
         private Object readResolve() {
             return stream;
         }

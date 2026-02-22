@@ -18,8 +18,10 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Serializables;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
+import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Spliterator;
@@ -29,6 +31,8 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HashMapTest extends AbstractMapTest {
 
@@ -200,4 +204,24 @@ public class HashMapTest extends AbstractMapTest {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
 
+    // -- serialization
+
+    @Test
+    public void shouldNotSerializeEnclosingClass() {
+        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(HashMap.of(1, "a")));
+    }
+
+    enum Key { A, B, C }
+
+    @Test
+    public void shouldSerializeDeserializeMapWithEnumKeys() {
+        // Enums use Object.hashCode() which is non-deterministic across JVM restarts.
+        final HashMap<Key, String> original = HashMap.of(Key.A, "A", Key.B, "B", Key.C, "C");
+        final HashMap<Key, String> deserialized = Serializables.deserialize(Serializables.serialize(original));
+
+        Assertions.assertThat(deserialized.get(Key.A)).isEqualTo(Option.of("A"));
+        Assertions.assertThat(deserialized.get(Key.B)).isEqualTo(Option.of("B"));
+        Assertions.assertThat(deserialized.get(Key.C)).isEqualTo(Option.of("C"));
+        Assertions.assertThat(deserialized).isEqualTo(original);
+    }
 }

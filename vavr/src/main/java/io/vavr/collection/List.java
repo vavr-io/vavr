@@ -130,6 +130,7 @@ public interface List<T> extends LinearSeq<T> {
     /**
      * The serial version UID for serialization.
      */
+    @Serial
     long serialVersionUID = 1L;
 
     /**
@@ -1872,6 +1873,7 @@ public interface List<T> extends LinearSeq<T> {
      */
     final class Nil<T> implements List<T>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
@@ -1932,6 +1934,7 @@ public interface List<T> extends LinearSeq<T> {
          * @return The singleton instance of Nil.
          * @see java.io.Serializable
          */
+        @Serial
         private Object readResolve() {
             return INSTANCE;
         }
@@ -1945,6 +1948,7 @@ public interface List<T> extends LinearSeq<T> {
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
     final class Cons<T> implements List<T>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -2007,6 +2011,7 @@ public interface List<T> extends LinearSeq<T> {
          *
          * @return A SerializationProxy for this enclosing class.
          */
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
@@ -2020,6 +2025,7 @@ public interface List<T> extends LinearSeq<T> {
          * @param stream An object serialization stream.
          * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
          */
+        @Serial
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
@@ -2036,6 +2042,7 @@ public interface List<T> extends LinearSeq<T> {
         @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private static final class SerializationProxy<T> implements Serializable {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
@@ -2059,6 +2066,7 @@ public interface List<T> extends LinearSeq<T> {
              * @param s An object serialization stream.
              * @throws java.io.IOException If an error occurs writing to the stream.
              */
+            @Serial
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeInt(list.length());
@@ -2075,6 +2083,7 @@ public interface List<T> extends LinearSeq<T> {
              * @throws InvalidObjectException If the stream contains no list elements.
              * @throws IOException            If an error occurs reading from the stream.
              */
+            @Serial
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final int size = s.readInt();
@@ -2099,6 +2108,7 @@ public interface List<T> extends LinearSeq<T> {
              *
              * @return A deserialized instance of the enclosing class.
              */
+            @Serial
             private Object readResolve() {
                 return list;
             }
