@@ -37,6 +37,7 @@ import org.jspecify.annotations.NonNull;
  */
 public final class HashSet<T> implements Set<T>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
@@ -1117,6 +1118,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      *
      * @return A SerializationProxy for this enclosing class.
      */
+    @Serial
     private Object writeReplace() {
         return new SerializationProxy<>(this.tree);
     }
@@ -1129,6 +1131,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param stream An object serialization stream.
      * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
      */
+    @Serial
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
         throw new InvalidObjectException("Proxy required");
     }
@@ -1143,6 +1146,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     // classes. Also, it may not be compatible with circular object graphs.
     private static final class SerializationProxy<T> implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
@@ -1166,6 +1170,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * @param s An object serialization stream.
          * @throws java.io.IOException If an error occurs writing to the stream.
          */
+        @Serial
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(tree.size());
@@ -1182,6 +1187,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * @throws InvalidObjectException If the stream contains no list elements.
          * @throws IOException            If an error occurs reading from the stream.
          */
+        @Serial
         private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
             s.defaultReadObject();
             final int size = s.readInt();
@@ -1206,6 +1212,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          *
          * @return A deserialized instance of the enclosing class.
          */
+        @Serial
         private Object readResolve() {
             return tree.isEmpty() ? HashSet.empty() : new HashSet<>(tree);
         }
