@@ -949,4 +949,34 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).isSequential()).isTrue();
     }
 
+    // -- head/tail Traversable contract (issue #2936)
+
+    @Test
+    public void shouldFollowTraversableContractForHeadAndTail() {
+        Traversable<Integer> traversable = Iterator.of(0, 1, 2, 3);
+        assertThat(traversable.head()).isEqualTo(0);
+        traversable = traversable.tail();
+        assertThat(traversable.head()).isEqualTo(1);
+        traversable = traversable.tail();
+        assertThat(traversable.head()).isEqualTo(2);
+        traversable = traversable.tail();
+        assertThat(traversable.head()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldReturnSameHeadOnMultipleCalls() {
+        Iterator<Integer> it = Iterator.of(1, 2, 3);
+        assertThat(it.head()).isEqualTo(1);
+        assertThat(it.head()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnHeadAfterNextDoesNotConflict() {
+        Iterator<Integer> it = Iterator.of(1, 2, 3);
+        assertThat(it.next()).isEqualTo(1);
+        assertThat(it.head()).isEqualTo(2);
+        assertThat(it.next()).isEqualTo(2);
+        assertThat(it.next()).isEqualTo(3);
+    }
+
 }
