@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.assertj.core.api.BooleanAssert;
@@ -63,18 +62,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings("deprecation")
 @ExtendWith(AbstractMultimapTest.TestTemplateProvider.class)
 public abstract class AbstractValueTest {
-
-    protected Random getRandom(int seed) {
-        if (seed >= 0) {
-            return new Random(seed);
-        } else {
-            final Random random = new Random();
-            seed = random.nextInt();
-            System.out.println("using seed: " + seed);
-            random.setSeed(seed);
-            return random;
-        }
-    }
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
