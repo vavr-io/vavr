@@ -1407,6 +1407,149 @@ public interface Value<T> extends Iterable<T> {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
     }
 
+    /**
+     * Generic conversion method to transform this {@code Iterable<T>} into 
+     * an instance of type {@code R} by applying the given function.
+     *
+     * <p>This method is a convenience for applying a custom transformation
+     * to the current object with a fluent syntax.</p>
+     *
+     * @param <R> the type of the result produced by the transformation function
+     * @param function the function to apply to this {@code Iterable<T>}
+     * @return the result of applying the transformation function
+     * @throws NullPointerException if the provided function is {@code null}
+     * @author Andrea Rombaldi
+     */    
+    default <R> R to(final Function<? super Iterable<T>, R> function) {
+        Objects.requireNonNull(function, "function is null");
+        return function.apply(this);
+    }
+    
+    /**
+     * Generic conversion method to transform this {@code Iterable<T>} into 
+     * a result of type {@code R} by first mapping each element into a tuple 
+     * of values using the provided mapping functions, and then applying 
+     * a transformation function to the resulting collection of tuples.
+     *
+     * <p>Each element {@code x} of the iterable is transformed into a {@code Tuple2<T1, T2>}
+     * where {@code T1 = mapper1.apply(x)} and {@code T2 = mapper2.apply(x)}.
+     * The resulting {@code Iterable<Tuple2<T1, T2>>} is then passed to the final
+     * transformation function.</p>
+     *
+     * <p>This method is a convenience for applying a custom transformation
+     * to the current object with a fluent syntax.</p>
+     * 
+     * @param <T1> the result type of the first mapping function
+     * @param <T2> the result type of the second mapping function
+     * @param <R> the type of the result produced by the final transformation function
+     * @param mapper1 the first mapping function to apply to each element
+     * @param mapper2 the second mapping function to apply to each element
+     * @param function the function to apply to the resulting {@code Iterable} of tuples
+     * @return the result of applying the transformation function to the collection of tuples
+     * @throws NullPointerException if any of the provided functions is {@code null}
+     * @author Andrea Rombaldi
+     */
+    default <T1, T2, R> R to(
+            final Function<? super T, T1> mapper1,
+            final Function<? super T, T2> mapper2,
+            final Function<? super Iterable<Tuple2<T1, T2>>, R> function) {
+        Objects.requireNonNull(mapper1, "mapper1 is null");
+        Objects.requireNonNull(mapper2, "mapper2 is null");
+        Objects.requireNonNull(function, "function is null");
+        return function.apply(map(x -> Tuple(
+                mapper1.apply(x), 
+                mapper2.apply(x))));
+    }
+
+    /**
+     * Generic conversion method to transform this {@code Iterable<T>} into 
+     * a result of type {@code R} by first mapping each element into a tuple 
+     * of values using the provided mapping functions, and then applying 
+     * a transformation function to the resulting collection of tuples.
+     *
+     * <p>Each element {@code x} of the iterable is transformed into a {@code Tuple3<T1, T2, T3>}
+     * where {@code T1 = mapper1.apply(x)}, {@code T2 = mapper2.apply(x)} and 
+     * {@code T3 = mapper3.apply(x)}. The resulting {@code Iterable<Tuple3<T1, T2, T3>>} 
+     * is then passed to the final transformation function.</p>
+     *
+     * <p>This method is a convenience for applying a custom transformation
+     * to the current object with a fluent syntax.</p>
+     * 
+     * @param <T1> the result type of the first mapping function
+     * @param <T2> the result type of the second mapping function
+     * @param <T3> the result type of the third mapping function
+     * @param <R> the type of the result produced by the final transformation function
+     * @param mapper1 the first mapping function to apply to each element
+     * @param mapper2 the second mapping function to apply to each element
+     * @param mapper3 the third mapping function to apply to each element
+     * @param function the function to apply to the resulting {@code Iterable} of tuples
+     * @return the result of applying the transformation function to the collection of tuples
+     * @throws NullPointerException if any of the provided functions is {@code null}
+     * @author Andrea Rombaldi
+     */
+    default <T1, T2, T3, R> R to(
+            final Function<? super T, T1> mapper1,
+            final Function<? super T, T2> mapper2,
+            final Function<? super T, T3> mapper3,
+            final Function<? super Iterable<Tuple3<T1, T2, T3>>, R> function) {
+        Objects.requireNonNull(mapper1, "mapper1 is null");
+        Objects.requireNonNull(mapper2, "mapper2 is null");
+        Objects.requireNonNull(mapper3, "mapper3 is null");
+        Objects.requireNonNull(function, "function is null");
+        return function.apply(map(x -> Tuple(
+                    mapper1.apply(x), 
+                    mapper2.apply(x),
+                    mapper3.apply(x))));
+    }
+    
+    /**
+     * Generic conversion method to transform this {@code Iterable<T>} into 
+     * a result of type {@code R} by first mapping each element into a tuple 
+     * of values using the provided mapping functions, and then applying 
+     * a transformation function to the resulting collection of tuples.
+     *
+     * <p>Each element {@code x} of the iterable is transformed into a {@code Tuple4<T1, T2, T3, T4>}
+     * where {@code T1 = mapper1.apply(x)}, {@code T2 = mapper2.apply(x)},
+     * {@code T3 = mapper3.apply(x)} and {@code T4 = mapper4.apply(x)}. 
+     * The resulting {@code Iterable<Tuple4<T1, T2, T3, T4>>} is then passed 
+     * to the final transformation function.</p>
+     *
+     * <p>This method is a convenience for applying a custom transformation
+     * to the current object with a fluent syntax.</p>
+     * 
+     * @param <T1> the result type of the first mapping function
+     * @param <T2> the result type of the second mapping function
+     * @param <T3> the result type of the third mapping function
+     * @param <T4> the result type of the fourth mapping function
+     * @param <R> the type of the result produced by the final transformation function
+     * @param mapper1 the first mapping function to apply to each element
+     * @param mapper2 the second mapping function to apply to each element
+     * @param mapper3 the third mapping function to apply to each element
+     * @param mapper4 the fourth mapping function to apply to each element
+     * @param function the function to apply to the resulting {@code Iterable} of tuples
+     * @return the result of applying the transformation function to the collection of tuples
+     * @throws NullPointerException if any of the provided functions is {@code null}
+     * @author Andrea Rombaldi
+     */
+    default <T1, T2, T3, T4, R> R to(
+            final Function<? super T, T1> mapper1,
+            final Function<? super T, T2> mapper2,
+            final Function<? super T, T3> mapper3,
+            final Function<? super T, T4> mapper4,
+            final Function<? super Iterable<Tuple4<T1, T2, T3, T4>>, R> function) {
+        Objects.requireNonNull(mapper1, "mapper1 is null");
+        Objects.requireNonNull(mapper2, "mapper2 is null");
+        Objects.requireNonNull(mapper3, "mapper3 is null");
+        Objects.requireNonNull(mapper4, "mapper4 is null");
+        Objects.requireNonNull(function, "function is null");
+        return function.apply(map(x -> Tuple(
+                    mapper1.apply(x), 
+                    mapper2.apply(x),
+                    mapper3.apply(x),
+                    mapper4.apply(x))));
+    }    
+    
+    
     @Override
     default Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), isEmpty() ? 0 : 1,
