@@ -69,8 +69,8 @@ public class Euler32Test {
                                 .map(multiplier -> Tuple.of(multiplicand.mkString(), multiplier.mkString()))
                         )
                 )
-                .map(t -> Tuple.of(t._1, t._2, Long.valueOf(t._1) * Long.valueOf(t._2)))
-                .filter(t -> isPandigital(1, 9, t._1 + t._2 + Long.toString(t._3)))
+                .map(t -> Tuple.of(t._1(), t._2(), Long.valueOf(t._1()) * Long.valueOf(t._2())))
+                .filter(t -> isPandigital(1, 9, t._1() + t._2() + Long.toString(t._3())))
                 .map(Tuple3::_3)
                 .distinct()
                 .sum().longValue();
