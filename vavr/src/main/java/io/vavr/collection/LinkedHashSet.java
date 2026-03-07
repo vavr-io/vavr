@@ -37,6 +37,7 @@ import org.jspecify.annotations.NonNull;
  */
 public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
@@ -1147,6 +1148,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      *
      * @return A SerializationProxy for this enclosing class.
      */
+    @Serial
     private Object writeReplace() {
         return new SerializationProxy<>(this.map);
     }
@@ -1159,6 +1161,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param stream An object serialization stream.
      * @throws InvalidObjectException This method will throw with the message "Proxy required".
      */
+    @Serial
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
         throw new InvalidObjectException("Proxy required");
     }
@@ -1173,6 +1176,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     // classes. Also, it may not be compatible with circular object graphs.
     private static final class SerializationProxy<T> implements Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
@@ -1196,6 +1200,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * @param s An object serialization stream.
          * @throws IOException If an error occurs writing to the stream.
          */
+        @Serial
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(map.size());
@@ -1212,6 +1217,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * @throws InvalidObjectException If the stream contains no list elements.
          * @throws IOException            If an error occurs reading from the stream.
          */
+        @Serial
         private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
             s.defaultReadObject();
             final int size = s.readInt();
@@ -1236,6 +1242,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          *
          * @return A deserialized instance of the enclosing class.
          */
+        @Serial
         private Object readResolve() {
             return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
         }

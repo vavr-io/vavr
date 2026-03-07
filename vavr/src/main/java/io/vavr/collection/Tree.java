@@ -41,6 +41,7 @@ import static io.vavr.collection.Tree.Order.PRE_ORDER;
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 
+    @Serial
     long serialVersionUID = 1L;
 
     /**
@@ -871,6 +872,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     final class Node<T> implements Tree<T>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -990,6 +992,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
          *
          * @return A SerializationProxy for this enclosing class.
          */
+        @Serial
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
@@ -1002,6 +1005,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
          * @param stream An object serialization stream.
          * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
          */
+        @Serial
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -1016,6 +1020,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
@@ -1039,6 +1044,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
              * @param s An object serialization stream.
              * @throws java.io.IOException If an error occurs writing to the stream.
              */
+            @Serial
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeObject(node.value);
@@ -1052,6 +1058,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
              * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
              * @throws IOException            If an error occurs reading from the stream.
              */
+            @Serial
             @SuppressWarnings("unchecked")
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
@@ -1069,6 +1076,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
              *
              * @return A deserialized instance of the enclosing class.
              */
+            @Serial
             private Object readResolve() {
                 return node;
             }
@@ -1082,6 +1090,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     final class Empty<T> implements Tree<T>, Serializable {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private static final Empty<?> INSTANCE = new Empty<>();
@@ -1156,6 +1165,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
          * @return The singleton instance of Nil.
          * @see java.io.Serializable
          */
+        @Serial
         private Object readResolve() {
             return INSTANCE;
         }

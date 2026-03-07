@@ -45,7 +45,7 @@
         <junit.version>6.0.3</junit.version>
         <maven.enforcer.version>3.6.2</maven.enforcer.version>
         <maven.build-helper.version>3.6.1</maven.build-helper.version>
-        <maven.bundle.version>5.1.9</maven.bundle.version>
+        <maven.bundle.version>6.0.2</maven.bundle.version>
         <maven.clean.version>3.5.0</maven.clean.version>
         <maven.install.version>3.1.4</maven.install.version>
         <maven.compiler.version>3.15.0</maven.compiler.version>
@@ -56,11 +56,11 @@
         <maven.javadoc.version>3.12.0</maven.javadoc.version>
         <maven.release.version>3.3.1</maven.release.version>
         <maven.versions.version>2.21.0</maven.versions.version>
-        <maven.surefire.version>3.5.4</maven.surefire.version>
-        <spotless.version>3.2.1</spotless.version>
+        <maven.surefire.version>3.5.5</maven.surefire.version>
+        <spotless.version>3.3.0</spotless.version>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.exec.version>3.6.3</maven.exec.version>
-        <scala.maven.version>4.9.9</scala.maven.version>
+        <scala.maven.version>4.9.10</scala.maven.version>
         <scala.version>3.8.1</scala.version>
     </properties>
     <dependencyManagement>
