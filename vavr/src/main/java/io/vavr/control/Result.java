@@ -62,7 +62,7 @@ import org.jspecify.annotations.NonNull;
  *
  * @author Grzegorz Piwowarek
  */
-public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
+public sealed interface Result<T, E> extends io.vavr.Value<T>, Serializable permits Result.Value, Result.Error {
 
     // -- Static factories
 
@@ -129,7 +129,7 @@ public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
         Vector<T> values = Vector.empty();
         for (Result<? extends T, ? extends E> result : results) {
             if (result.isError()) {
-                return Result.error(((Result.Error<?, E>) result).getError());
+                return Result.error(((Result.Error<?, E>) result).error());
             }
             values = values.append(result.get());
         }
@@ -163,14 +163,18 @@ public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
      *
      * @return whether this result is a success
      */
-    boolean isValue();
+    default boolean isValue() {
+        return this instanceof Result.Value<T, E>;
+    }
 
     /**
      * Returns {@code true} if this is an {@link Error} (failure), {@code false} otherwise.
      *
      * @return whether this result is an error
      */
-    boolean isError();
+    default boolean isError() {
+        return this instanceof Result.Error<T, E>;
+    }
 
     /**
      * Returns {@code true} if this is an {@link Error}. Satisfies {@link io.vavr.Value}'s contract:
@@ -482,33 +486,16 @@ public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
         return isValue() ? Either.right(get()) : Either.left(getError());
     }
 
-    // -- Inner classes
+    // -- Inner records
 
     /**
      * The success variant of {@link Result}. Wraps a value of type {@code T}.
      *
+     * @param value the success value
      * @param <T> type of the success value
      * @param <E> type of the error
      */
-    final class Value<T, E> implements Result<T, E>, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private final T value;
-
-        private Value(T value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean isValue() {
-            return true;
-        }
-
-        @Override
-        public boolean isError() {
-            return false;
-        }
+    record Value<T, E>(T value) implements Result<T, E> {
 
         @Override
         public T get() {
@@ -560,44 +547,21 @@ public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
 
         @Override
         public String toString() {
-            return stringPrefix() + "(" + value + ")";
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Result.Value && Objects.equals(value, ((Result.Value<?, ?>) obj).value));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(value);
+            return "Value(" + value + ")";
         }
     }
 
     /**
      * The error variant of {@link Result}. Wraps an error of type {@code E}.
      *
+     * @param error the error value
      * @param <T> type of the success value
      * @param <E> type of the error
      */
-    final class Error<T, E> implements Result<T, E>, Serializable {
+    record Error<T, E>(@NonNull E error) implements Result<T, E> {
 
-        private static final long serialVersionUID = 1L;
-
-        private final E error;
-
-        private Error(E error) {
-            this.error = error;
-        }
-
-        @Override
-        public boolean isValue() {
-            return false;
-        }
-
-        @Override
-        public boolean isError() {
-            return true;
+        public Error {
+            Objects.requireNonNull(error, "error is null");
         }
 
         @Override
@@ -650,17 +614,7 @@ public interface Result<T, E> extends io.vavr.Value<T>, Serializable {
 
         @Override
         public String toString() {
-            return stringPrefix() + "(" + error + ")";
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Result.Error && Objects.equals(error, ((Result.Error<?, ?>) obj).error));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(error);
+            return "Error(" + error + ")";
         }
     }
 }
