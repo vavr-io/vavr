@@ -30,7 +30,7 @@ jobs:
         run: ./mvnw -B package
 
       - name: Verify jar
-        uses: pivovarit/verify-jar-action@v1.3.0
+        uses: pivovarit/verify-jar-action@v1.4.0
         with:
           directory: 'vavr/target'
           java-version: '21'
