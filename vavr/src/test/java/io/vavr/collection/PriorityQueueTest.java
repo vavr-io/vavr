@@ -285,7 +285,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     @Test
     public void shouldBehaveExactlyLikeAnotherPriorityQueue() {
         for (int i = 0; i < 10; i++) {
-            final Random random = getRandom(987654321);
+            final Random random = new Random();
 
             final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
             PriorityQueue<Integer> functionalPriorityQueue = PriorityQueue.empty();
