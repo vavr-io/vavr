@@ -112,7 +112,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void testBigDataWeakHashCode() {
-        testBigData(5000, t -> Tuple.of(new WeakInteger(t._1), t._2));
+        testBigData(5000, t -> Tuple.of(new WeakInteger(t._1()), t._2()));
     }
 
     private <K extends Comparable<? super K>, V> void testBigData(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
@@ -195,7 +195,7 @@ public class HashArrayMappedTrieTest {
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
-            hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e._1)).isEqualTo(e._2));
+            hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e._1())).isEqualTo(e._2()));
             classic.forEach((k, v) -> {
                 assertThat(hamt.get(k).get()).isEqualTo(v);
                 assertThat(hamt.getOrElse(k, null)).isEqualTo(v);
@@ -218,7 +218,7 @@ public class HashArrayMappedTrieTest {
         final java.util.HashMap<K, V> mp = new java.util.HashMap<>();
         for (int i = 0; i < count; i++) {
             final Tuple2<K, V> entry = mapper.apply(Tuple.of(r.nextInt(), r.nextInt()));
-            mp.put(entry._1, entry._2);
+            mp.put(entry._1(), entry._2());
         }
         return mp;
     }
