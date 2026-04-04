@@ -832,13 +832,13 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
             s"ts$i.apply($inputArgs).map(t$i -> f.apply($argsList))"
           } else if (j == 1) {
             s"ts1.flatMap(t1 -> {\n" +
-              s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
-              s"${base}${indent}})"
+              s"$base$indent  return ${nestedLambda(j + 1)};\n" +
+              s"$base$indent})"
           } else {
             val inputArgs = (1 until j).map(k => s"t$k").mkString(", ")
             s"ts$j.apply($inputArgs).flatMap(t$j -> {\n" +
-              s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
-              s"${base}${indent}})"
+              s"$base$indent  return ${nestedLambda(j + 1)};\n" +
+              s"$base$indent})"
           }
         }
         nestedLambda(1)
@@ -853,7 +853,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          * only when {@code yield(...)} is invoked.</p>
          *
          ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-         ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
+         ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} $mtype")(using "\n")}
          */
         public static class $fcn<$generics> {
 
@@ -887,9 +887,9 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
       """
     } else {
       val functionType = javaFunctionType(i, im)
-      val parameterDoc = (if (monadicTypesThatNeedParameter.contains(mtype)) {
+      val parameterDoc = if (monadicTypesThatNeedParameter.contains(mtype)) {
         s"\n* @param <L> The left-hand type of all {@link $mtype}s"
-      } else { "" })
+      } else { "" }
       val typeDocs = (1 to i).gen(j => s"* @param <T$j> component type of {@link $mtype} number $j\n")
       val args = Arity(i).wideGenerics
       xs"""
