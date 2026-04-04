@@ -35,9 +35,9 @@ def genFunctions(targetMain: String): Unit = {
     def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
       val a = Arity(i)
-      import a.{generics, fullGenerics, wideGenerics, fullWideGenerics, genericsReversed, genericsTuple, genericsFunction, genericsReversedFunction, paramsDecl, params, paramsReversed, tupled}
-      val genericsOptionReturnType = s"<${genericsFunction}${im.getType("io.vavr.control.Option")}<R>>"
-      val genericsTryReturnType = s"<${genericsFunction}${im.getType("io.vavr.control.Try")}<R>>"
+      import a.{generics, fullGenerics, fullWideGenerics, genericsTuple, genericsFunction, genericsReversedFunction, paramsDecl, params, paramsReversed, tupled}
+      val genericsOptionReturnType = s"<$genericsFunction${im.getType("io.vavr.control.Option")}<R>>"
+      val genericsTryReturnType = s"<$genericsFunction${im.getType("io.vavr.control.Try")}<R>>"
       val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(using " -> ")
       val compositionType = if(checked) "CheckedFunction1" else im.getType("java.util.function.Function")
 

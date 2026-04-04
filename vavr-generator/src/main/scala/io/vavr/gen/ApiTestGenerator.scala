@@ -50,9 +50,9 @@ def genAPITests(targetTest: String): Unit = {
 
     val monadicTypesFor = List(OptionType, EitherType, ValidationType)
     val monadicTypeMetadataFor = Map(
-      (OptionType -> ("", "of")),
-      (EitherType -> ("Object, ", "right")),
-      (ValidationType -> ("Object, ", "valid"))
+      OptionType -> ("", "of"),
+      EitherType -> ("Object, ", "right"),
+      ValidationType -> ("Object, ", "valid")
     )
     val monadicFunctionTypesFor = List(FutureType, TryType)
 
@@ -355,13 +355,13 @@ def genAPITests(targetTest: String): Unit = {
               """)(using "\n\n")}
 
               ${monadicTypesFor.gen(mtype => (1 to N).gen(i =>
-                val (parameterInset, builderName) = monadicTypeMetadataFor(mtype);
+                val (parameterInset, builderName) = monadicTypeMetadataFor(mtype)
                 { xs"""
 
                 @$test
                 public void shouldIterateFor$mtype$i() {
                     final $mtype<${parameterInset}Integer> result = For(
-                        ${(1 to i).gen(j => s"$mtype.${builderName}($j)")(using ",\n")}
+                        ${(1 to i).gen(j => s"$mtype.$builderName($j)")(using ",\n")}
                     ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")});
                     $assertThat(result.get()).isEqualTo(${(1 to i).sum});
                 }
@@ -370,11 +370,11 @@ def genAPITests(targetTest: String): Unit = {
                 public void shouldIterateLazyFor$mtype$i() {
                     final $mtype<${parameterInset}Integer> result = For(
                         ${(1 to i).gen(j => if (j == 1) {
-                            s"$mtype.${builderName}($j)"
+                            s"$mtype.$builderName($j)"
                         } else {
                             val args = (1 until j).map(k => s"r$k").mkString(", ")
                             val argsUsed = (1 until j).map(k => s"r$k").mkString(" + ")
-                            s"($args) -> $mtype.${builderName}(${argsUsed} + $j)"
+                            s"($args) -> $mtype.$builderName($argsUsed + $j)"
                         } )(using ",\n")}
                     ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")});
 

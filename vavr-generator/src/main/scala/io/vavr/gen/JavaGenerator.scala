@@ -127,7 +127,7 @@ object JavaGenerator {
     private def simplify(fullQualifiedName: String, imports: mutable.HashMap[String, String]): String = {
       val simpleName = getSimpleName(fullQualifiedName)
       val packageName = getPackageName(fullQualifiedName)
-      if (packageName.isEmpty && !packageNameOfClass.isEmpty) {
+      if (packageName.isEmpty && packageNameOfClass.nonEmpty) {
         throw new IllegalStateException(s"Can't import class '$simpleName' located in default package")
       } else if (packageName == packageNameOfClass) {
         simpleName

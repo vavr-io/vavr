@@ -776,15 +776,15 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
         /$javadoc
          * Creates a lazy {@code For}-comprehension over ${i.numerus(mtype)}.
          *
-         * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
+         * <p>The first argument ({@code ts1}) is the initial $mtype. Each subsequent
          * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
-         * bound so far and returns the next ${mtype}. This method only constructs the
+         * bound so far and returns the next $mtype. This method only constructs the
          * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
          * is invoked.</p>
          *
-         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")(using "\n")}
+         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")(using "\n")}
          ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-         ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
+         ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} $mtype")(using "\n")}
          * @return a new {@code $fcn} builder of arity $i
          * @throws NullPointerException if any argument is {@code null}
          */

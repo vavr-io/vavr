@@ -90,10 +90,10 @@ object Generator {
     def first: String = s.substring(0, 1)
 
     // converts first char of s to upper case. throws if string is empty
-    def firstUpper: String = s(0).toUpper + s.substring(1)
+    def firstUpper: String = s(0).toUpper.toString + s.substring(1)
 
     // converts first char of s to lower case. throws if string is empty
-    def firstLower: String = s(0).toLower + s.substring(1)
+    def firstLower: String = s(0).toLower.toString + s.substring(1)
   }
 
   implicit class BooleanExtensions(condition: Boolean) {
@@ -199,7 +199,7 @@ object Generator {
       val split = (interpolator(indentedArgs).replaceAll( """(^[ \t]*\r?\n)|(\r?\n[ \t]*$)""", "") + '\u0000').split("\r?\n")
 
       // find smallest indentation
-      val prefix = split filter (!_.trim().isEmpty) map { s =>
+      val prefix = split filter (_.trim().nonEmpty) map { s =>
         """^\s+""".r.findFirstIn(s).getOrElse("")
       } match {
         case prefixes: Array[String] if prefixes.length > 0 => prefixes reduce { (s1, s2) =>
