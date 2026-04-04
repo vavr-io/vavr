@@ -45,9 +45,6 @@ object Generator {
    * @param charset The charset, by default UTF-8
    */
   def genFile(baseDir: String, dirName: String, fileName: String, createOption: StandardOpenOption = StandardOpenOption.CREATE_NEW)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
-
-    // println(s"Generating $dirName${File.separator}$fileName")
-
     Files.write(
       Files.createDirectories(Paths.get(baseDir, dirName)).resolve(fileName),
       contents.getBytes(charset),
