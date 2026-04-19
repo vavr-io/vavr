@@ -90,8 +90,8 @@ public interface Foldable<T> {
      * <p>
      * <strong>Example:</strong>
      * <pre>{@code
-     * // Result: "cba!"
-     * List.of("a", "b", "c").foldLeft("!", (acc, x) -> x + acc);
+     * // Result: 42
+     * List.of('4', '2').foldLeft(0, (acc, x) -> acc * 10 + x - '0');
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
