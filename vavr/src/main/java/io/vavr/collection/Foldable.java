@@ -45,32 +45,27 @@ public interface Foldable<T> {
 
     /**
      * Folds the elements of this structure using the given associative binary operator,
-     * starting with the provided {@code zero} element and successively applying {@code combine}.
+     * starting with the provided {@code zero} value and successively applying {@code combine}.
      * <p>
-     * The order in which elements are combined is non-deterministic. Therefore, {@code combine}
-     * must be associative to guarantee a consistent result regardless of traversal order.
-     * <p>
-     * The fold operations differ in how elements are combined:
+     * Associativity allows implementations to choose different evaluation orders; e.g. for
+     * string concatenation with a {@code zero} of {@code ""}, {@code "a", "b", "c", "d"} could
+     * be folded as any of
      * <ul>
-     *   <li>{@link #foldLeft(Object, BiFunction)}: combines elements from left to right.</li>
-     *   <li>{@link #foldRight(Object, BiFunction)}: combines elements from right to left.</li>
-     *   <li>{@code fold}: requires an associative combine operation, as the element traversal
-     *       is unordered. Associativity ensures the result is the same regardless of combination order.
-     *       Note that most binary operators are not associative, so the result may vary if
-     *       elements are combined in a different order.
-     *       <p>
-     *       Together, this {@code Foldable} and the associative {@code combine} operation form a
-     *       <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
-     *   </li>
+     *   <li>{@code ((("" + "a") + "b") + "c") + "d"} (left-to-right);
+     *   <li>{@code "a" + ("b" + ("c" + ("d" + "")))} (right-to-left),
+     *   e.g. if the list happens to be stored in reverse order;
+     *   or
+     *   <li>{@code ("" + (("" + "a") + "b")) + (("" + "c") + "d")}
+     *   (left two, then right two, then combine), e.g. to leverage parallelism.
      * </ul>
+     * Note that {@code fold} requires that {@code zero} and {@code Foldable} elements
+     * must be of the same type.<br>
+     * If you want to fold into an "accumulator" that has a different type than the operands,
+     * use {@link #foldLeft} or {@link #foldRight}.
      *
-     * <strong>Example:</strong>
-     * <pre>{@code
-     * // Result: 6
-     * Set.of(1, 2, 3).fold(0, (a, b) -> a + b);
-     * }</pre>
-     *
-     * @param zero    the initial value to start folding with
+     * @param zero    the initial value to start folding with.<br>
+     *                {@code combine.apply(zero, x)} must give the same result as {@code combine.apply(x, zero)}
+     *                for all elements of this {@code Foldable}.
      * @param combine the function to combine two elements
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
@@ -87,14 +82,23 @@ public interface Foldable<T> {
      * Folding from the left means that elements are combined in the order they are encountered,
      * associating each step with the accumulated result so far.
      * <p>
+     * Note that {@code zero} is not necessarily a zero in the mathematical sense,
+     * which would be the neutral element of {@code combine};
+     * it may even be of a different type than the elements of this {@code Foldable}.<br>
+     * Think of it as the initial value for the accumulator inside the {@code foldLeft} function,
+     * which is updated with each call to {@code combine}.
+     * <p>
      * <strong>Example:</strong>
      * <pre>{@code
-     * // Result: "cba!"
-     * List.of("a", "b", "c").foldLeft("!", (acc, x) -> x + acc);
+     * // Result: 42
+     * List.of('4', '2').foldLeft(0, (acc, x) -> acc * 10 + x - '0');
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
-     * @param zero    the initial value to start folding with
+     * @param zero    the initial value to start folding with.<br>
+     *                <i>This is not a zero in the mathematical sense!</i><br>
+     *                Think of this as the starting value for the accumulator,
+     *                replaced with a new accumulator value with every call to {@code combine}.
      * @param combine a function that combines the accumulated value and the next element
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
@@ -103,21 +107,19 @@ public interface Foldable<T> {
 
 
     /**
-     * Folds the elements of this structure from the right, starting with the given {@code zero} value
-     * and successively applying the {@code combine} function to each element.
+     * Same as {@link #foldLeft}, but starting from the right and working to the left.
      * <p>
-     * Folding from the right means that elements are combined starting from the last element
-     * and associating each step with the accumulated result so far.
-     * <p>
-     * <strong>Example:</strong>
+     * <strong>Example</strong> (note the different result):
      * <pre>{@code
-     * // Result: "!cba"
-     * List.of("a", "b", "c").foldRight("!", (x, acc) -> acc + x);
+     * // Result: 24
+     * List.of('4', '2').foldRight(0, (x, acc) -> acc * 10 + x - '0');
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
      * @param zero    the initial value to start folding with
-     * @param combine a function that combines the next element and the accumulated value
+     * @param combine a function that combines the next element and the accumulated value.
+     *                Note that the parameter order is reversed wrt. the {@code combine} in {@code foldLeft}:
+     *                first operand, then accumulator.
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
