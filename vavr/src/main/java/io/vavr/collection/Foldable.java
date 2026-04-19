@@ -82,6 +82,12 @@ public interface Foldable<T> {
      * Folding from the left means that elements are combined in the order they are encountered,
      * associating each step with the accumulated result so far.
      * <p>
+     * Note that {@code zero} is not necessarily a zero in the mathematical sense,
+     * which would be the neutral element of {@code combine};
+     * it may even be of a different type than the elements of this {@code Foldable}.<br>
+     * Think of it as the initial value for the accumulator inside the {@code foldLeft} function,
+     * which is updated with each call to {@code combine}.
+     * <p>
      * <strong>Example:</strong>
      * <pre>{@code
      * // Result: "cba!"
@@ -89,7 +95,10 @@ public interface Foldable<T> {
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
-     * @param zero    the initial value to start folding with
+     * @param zero    the initial value to start folding with.<br>
+     *                <i>This is not a zero in the mathematical sense!</i><br>
+     *                Think of this as the starting value for the accumulator,
+     *                replaced with a new accumulator value with every call to {@code combine}.
      * @param combine a function that combines the accumulated value and the next element
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
