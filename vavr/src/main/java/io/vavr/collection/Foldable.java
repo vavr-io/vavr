@@ -45,7 +45,7 @@ public interface Foldable<T> {
 
     /**
      * Folds the elements of this structure using the given associative binary operator,
-     * starting with the provided {@code zero} element and successively applying {@code combine}.
+     * starting with the provided {@code zero} value and successively applying {@code combine}.
      * <p>
      * The order in which elements are combined is non-deterministic. Therefore, {@code combine}
      * must be associative to guarantee a consistent result regardless of traversal order.
