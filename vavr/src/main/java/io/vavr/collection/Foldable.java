@@ -47,30 +47,25 @@ public interface Foldable<T> {
      * Folds the elements of this structure using the given associative binary operator,
      * starting with the provided {@code zero} value and successively applying {@code combine}.
      * <p>
-     * The order in which elements are combined is non-deterministic. Therefore, {@code combine}
-     * must be associative to guarantee a consistent result regardless of traversal order.
-     * <p>
-     * The fold operations differ in how elements are combined:
+     * Associativity allows implementations to choose different evaluation orders; e.g. for
+     * string concatenation with a {@code zero} of {@code ""}, {@code "a", "b", "c", "d"} could
+     * be folded as any of
      * <ul>
-     *   <li>{@link #foldLeft(Object, BiFunction)}: combines elements from left to right.</li>
-     *   <li>{@link #foldRight(Object, BiFunction)}: combines elements from right to left.</li>
-     *   <li>{@code fold}: requires an associative combine operation, as the element traversal
-     *       is unordered. Associativity ensures the result is the same regardless of combination order.
-     *       Note that most binary operators are not associative, so the result may vary if
-     *       elements are combined in a different order.
-     *       <p>
-     *       Together, this {@code Foldable} and the associative {@code combine} operation form a
-     *       <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
-     *   </li>
+     *   <li>{@code ((("" + "a") + "b") + "c") + "d"} (left-to-right);
+     *   <li>{@code "a" + ("b" + ("c" + ("d" + "")))} (right-to-left),
+     *   e.g. if the list happens to be stored in reverse order;
+     *   or
+     *   <li>{@code ("" + (("" + "a") + "b")) + (("" + "c") + "d")}
+     *   (left two, then right two, then combine), e.g. to leverage parallelism.
      * </ul>
+     * Note that {@code fold} requires that {@code zero} and {@code Foldable} elements
+     * must be of the same type.<br>
+     * If you want to fold into an "accumulator" that has a different type than the operands,
+     * use {@link #foldLeft} or {@link #foldRight}.
      *
-     * <strong>Example:</strong>
-     * <pre>{@code
-     * // Result: 6
-     * Set.of(1, 2, 3).fold(0, (a, b) -> a + b);
-     * }</pre>
-     *
-     * @param zero    the initial value to start folding with
+     * @param zero    the initial value to start folding with.<br>
+     *                {@code combine.apply(zero, x)} must give the same result as {@code combine.apply(x, zero)}
+     *                for all elements of this {@code Foldable}.
      * @param combine the function to combine two elements
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
