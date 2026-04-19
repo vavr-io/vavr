@@ -107,21 +107,19 @@ public interface Foldable<T> {
 
 
     /**
-     * Folds the elements of this structure from the right, starting with the given {@code zero} value
-     * and successively applying the {@code combine} function to each element.
+     * Same as {@link #foldLeft}, but starting from the right and working to the left.
      * <p>
-     * Folding from the right means that elements are combined starting from the last element
-     * and associating each step with the accumulated result so far.
-     * <p>
-     * <strong>Example:</strong>
+     * <strong>Example</strong> (note the different result):
      * <pre>{@code
-     * // Result: "!cba"
-     * List.of("a", "b", "c").foldRight("!", (x, acc) -> acc + x);
+     * // Result: 24
+     * List.of('4', '2').foldRight(0, (x, acc) -> acc * 10 + x - '0');
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
      * @param zero    the initial value to start folding with
-     * @param combine a function that combines the next element and the accumulated value
+     * @param combine a function that combines the next element and the accumulated value.
+     *                Note that the parameter order is reversed wrt. the {@code combine} in {@code foldLeft}:
+     *                first operand, then accumulator.
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
