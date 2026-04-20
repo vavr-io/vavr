@@ -40,74 +40,9 @@ import org.jspecify.annotations.NonNull;
  * @param <T5> type of the 5th element
  * @param <T6> type of the 6th element
  * @param <T7> type of the 7th element
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparable<Tuple7<T1, T2, T3, T4, T5, T6, T7>>, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The 1st element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T1 _1;
-
-    /**
-     * The 2nd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T2 _2;
-
-    /**
-     * The 3rd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T3 _3;
-
-    /**
-     * The 4th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T4 _4;
-
-    /**
-     * The 5th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T5 _5;
-
-    /**
-     * The 6th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T6 _6;
-
-    /**
-     * The 7th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T7 _7;
-
-    /**
-     * Constructs a tuple of 7 elements.
-     *
-     * @param t1 the 1st element
-     * @param t2 the 2nd element
-     * @param t3 the 3rd element
-     * @param t4 the 4th element
-     * @param t5 the 5th element
-     * @param t6 the 6th element
-     * @param t7 the 7th element
-     */
-    public Tuple7(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
-        this._1 = t1;
-        this._2 = t2;
-        this._3 = t3;
-        this._4 = t4;
-        this._5 = t5;
-        this._6 = t6;
-        this._7 = t7;
-    }
+public record Tuple7<T1, T2, T3, T4, T5, T6, T7>(T1 _1, T2 _2, T3 _3, T4 _4, T5 _5, T6 _6, T7 _7) implements Tuple, Comparable<Tuple7<T1, T2, T3, T4, T5, T6, T7>>, Serializable {
 
     public static <T1, T2, T3, T4, T5, T6, T7> Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp) {
         return (Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> & Serializable) (t1, t2) -> {
@@ -140,14 +75,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
             if (check6 != 0) {
                 return check6;
             }
-
-            final int check7 = t7Comp.compare(t1._7, t2._7);
-            if (check7 != 0) {
-                return check7;
-            }
-
-            // all components are equal
-            return 0;
+            return t7Comp.compare(t1._7, t2._7);
         };
     }
 
@@ -185,14 +113,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         if (check6 != 0) {
             return check6;
         }
-
-        final int check7 = t1._7.compareTo(t2._7);
-        if (check7 != 0) {
-            return check7;
-        }
-
-        // all components are equal
-        return 0;
+        return t1._7.compareTo(t2._7);
     }
 
     @Override
@@ -206,15 +127,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
-     * Getter of the 1st element of this tuple.
-     *
-     * @return the 1st element of this Tuple.
-     */
-    public T1 _1() {
-        return _1;
-    }
-
-    /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -222,15 +134,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update1(T1 value) {
         return new Tuple7<>(value, _2, _3, _4, _5, _6, _7);
-    }
-
-    /**
-     * Getter of the 2nd element of this tuple.
-     *
-     * @return the 2nd element of this Tuple.
-     */
-    public T2 _2() {
-        return _2;
     }
 
     /**
@@ -244,15 +147,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
-     * Getter of the 3rd element of this tuple.
-     *
-     * @return the 3rd element of this Tuple.
-     */
-    public T3 _3() {
-        return _3;
-    }
-
-    /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -260,15 +154,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update3(T3 value) {
         return new Tuple7<>(_1, _2, value, _4, _5, _6, _7);
-    }
-
-    /**
-     * Getter of the 4th element of this tuple.
-     *
-     * @return the 4th element of this Tuple.
-     */
-    public T4 _4() {
-        return _4;
     }
 
     /**
@@ -282,15 +167,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
-     * Getter of the 5th element of this tuple.
-     *
-     * @return the 5th element of this Tuple.
-     */
-    public T5 _5() {
-        return _5;
-    }
-
-    /**
      * Sets the 5th element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -301,15 +177,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
-     * Getter of the 6th element of this tuple.
-     *
-     * @return the 6th element of this Tuple.
-     */
-    public T6 _6() {
-        return _6;
-    }
-
-    /**
      * Sets the 6th element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -317,15 +184,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update6(T6 value) {
         return new Tuple7<>(_1, _2, _3, _4, _5, value, _7);
-    }
-
-    /**
-     * Getter of the 7th element of this tuple.
-     *
-     * @return the 7th element of this Tuple.
-     */
-    public T7 _7() {
-        return _7;
     }
 
     /**
@@ -349,7 +207,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param <U5> new type of the 5th component
      * @param <U6> new type of the 6th component
      * @param <U7> new type of the 7th component
-     * @return A new Tuple of same arity.
+     * @return A new Tuple of the same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<U1, U2, U3, U4, U5, U6, U7>> mapper) {
@@ -374,7 +232,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param <U5> new type of the 5th component
      * @param <U6> new type of the 6th component
      * @param <U7> new type of the 7th component
-     * @return A new Tuple of same arity.
+     * @return A new Tuple of the same arity.
      * @throws NullPointerException if one of the arguments is null
      */
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(@NonNull Function<? super T1, ? extends U1> f1, @NonNull Function<? super T2, ? extends U2> f2, @NonNull Function<? super T3, ? extends U3> f3, @NonNull Function<? super T4, ? extends U4> f4, @NonNull Function<? super T5, ? extends U5> f5, @NonNull Function<? super T6, ? extends U6> f6, @NonNull Function<? super T7, ? extends U7> f7) {
@@ -395,10 +253,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 1st component
      */
-    public <U> Tuple7<U, T2, T3, T4, T5, T6, T7> map1(Function<? super T1, ? extends U> mapper) {
+    public <U> Tuple7<U, T2, T3, T4, T5, T6, T7> map1(@NonNull Function<? super T1, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_1);
-        return Tuple.of(u, _2, _3, _4, _5, _6, _7);
+        return Tuple.of(mapper.apply(_1), _2, _3, _4, _5, _6, _7);
     }
 
     /**
@@ -408,10 +265,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 2nd component
      */
-    public <U> Tuple7<T1, U, T3, T4, T5, T6, T7> map2(Function<? super T2, ? extends U> mapper) {
+    public <U> Tuple7<T1, U, T3, T4, T5, T6, T7> map2(@NonNull Function<? super T2, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_2);
-        return Tuple.of(_1, u, _3, _4, _5, _6, _7);
+        return Tuple.of(_1, mapper.apply(_2), _3, _4, _5, _6, _7);
     }
 
     /**
@@ -421,10 +277,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 3rd component
      */
-    public <U> Tuple7<T1, T2, U, T4, T5, T6, T7> map3(Function<? super T3, ? extends U> mapper) {
+    public <U> Tuple7<T1, T2, U, T4, T5, T6, T7> map3(@NonNull Function<? super T3, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_3);
-        return Tuple.of(_1, _2, u, _4, _5, _6, _7);
+        return Tuple.of(_1, _2, mapper.apply(_3), _4, _5, _6, _7);
     }
 
     /**
@@ -434,10 +289,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 4th component
      */
-    public <U> Tuple7<T1, T2, T3, U, T5, T6, T7> map4(Function<? super T4, ? extends U> mapper) {
+    public <U> Tuple7<T1, T2, T3, U, T5, T6, T7> map4(@NonNull Function<? super T4, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_4);
-        return Tuple.of(_1, _2, _3, u, _5, _6, _7);
+        return Tuple.of(_1, _2, _3, mapper.apply(_4), _5, _6, _7);
     }
 
     /**
@@ -447,10 +301,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 5th component
      */
-    public <U> Tuple7<T1, T2, T3, T4, U, T6, T7> map5(Function<? super T5, ? extends U> mapper) {
+    public <U> Tuple7<T1, T2, T3, T4, U, T6, T7> map5(@NonNull Function<? super T5, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_5);
-        return Tuple.of(_1, _2, _3, _4, u, _6, _7);
+        return Tuple.of(_1, _2, _3, _4, mapper.apply(_5), _6, _7);
     }
 
     /**
@@ -460,10 +313,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 6th component
      */
-    public <U> Tuple7<T1, T2, T3, T4, T5, U, T7> map6(Function<? super T6, ? extends U> mapper) {
+    public <U> Tuple7<T1, T2, T3, T4, T5, U, T7> map6(@NonNull Function<? super T6, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_6);
-        return Tuple.of(_1, _2, _3, _4, _5, u, _7);
+        return Tuple.of(_1, _2, _3, _4, _5, mapper.apply(_6), _7);
     }
 
     /**
@@ -473,10 +325,9 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 7th component
      */
-    public <U> Tuple7<T1, T2, T3, T4, T5, T6, U> map7(Function<? super T7, ? extends U> mapper) {
+    public <U> Tuple7<T1, T2, T3, T4, T5, T6, U> map7(@NonNull Function<? super T7, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_7);
-        return Tuple.of(_1, _2, _3, _4, _5, _6, u);
+        return Tuple.of(_1, _2, _3, _4, _5, _6, mapper.apply(_7));
     }
 
     /**
@@ -518,36 +369,11 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      */
     public <T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple1<T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, _5, _6, _7, tuple._1);
-    }
-
-    // -- Object
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof Tuple7)) {
-            return false;
-        } else {
-            final Tuple7<?, ?, ?, ?, ?, ?, ?> that = (Tuple7<?, ?, ?, ?, ?, ?, ?>) o;
-            return Objects.equals(this._1, that._1)
-                  && Objects.equals(this._2, that._2)
-                  && Objects.equals(this._3, that._3)
-                  && Objects.equals(this._4, that._4)
-                  && Objects.equals(this._5, that._5)
-                  && Objects.equals(this._6, that._6)
-                  && Objects.equals(this._7, that._7);
-        }
+        return Tuple.of(_1, _2, _3, _4, _5, _6, _7, tuple._1());
     }
 
     @Override
-    public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4, _5, _6, _7);
-    }
-
-    @Override
-    public String toString() {
+    public @NonNull String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
     }
 
