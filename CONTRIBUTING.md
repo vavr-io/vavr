@@ -8,18 +8,6 @@ Vavr needs to be compiled with **jdk 1.8.0_40** at a minimum, which fixes many t
 
 Some people have reported problems building Vavr on their platforms. You should be able to build Vavr with Java 8 or above, but on some platforms (operating systems or distributions), you might need to choose from a narrower range of versions of Java, Maven, and the Scala plugin for Maven. See [this issue](https://github.com/vavr-io/vavr/issues/2321) for details.
 
-## IDE
-
-We use recent IDE version to develop Vavr. IntelliJ IDEA is preferred over Eclipse.
-
-Using IntelliJ IDEA, the Community Edition works out-of-the-box. The idea-settings.jar can be found in the repo.
-
-The IDEA settings include:
-
-* Code Style
-* File templates
-* Inspection profiles
-
 ## Coding Conventions
 
 We follow _Rob Pike's 5 Rules of Programming_:
