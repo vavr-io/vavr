@@ -702,7 +702,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Returns the maximum element of this Traversable according to the natural order of its elements.
      * <p>
-     * Note that the underlying order of sorted collections is not considered—only the natural ordering of elements matters.
+     * Note that the underlying order of sorted collections is not considered - only the natural ordering of elements matters.
      * <p>
      * Examples:
      * <pre>{@code

@@ -642,7 +642,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param from        the first number (inclusive)
      * @param toExclusive the end number (exclusive)
-     *                     — last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
+     *                     - last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
      * @param step        the increment; must not be zero
      * @return an iterator over the specified range, or empty if the step direction does not match the
      *         direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
@@ -686,7 +686,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param from        the first number (inclusive)
      * @param toExclusive the end number (exclusive)
-     *                     — last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
+     *                     - last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
      * @param step        the increment; must not be zero
      * @return an iterator over the specified range, or empty if the step direction does not match
      *         the direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
