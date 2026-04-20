@@ -949,4 +949,31 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).isSequential()).isTrue();
     }
 
+    // -- head() / tail() Traversable contract
+
+    @Test
+    public void shouldHeadNotAdvanceIteratorSoTailSkipsCorrectElement() {
+        Iterator<Integer> it = of(0, 1, 2, 3);
+        assertThat(it.head()).isEqualTo(0);
+        it = it.tail(); // should skip only 0
+        assertThat(it.head()).isEqualTo(1);
+        it = it.tail(); // should skip only 1
+        assertThat(it.head()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldHeadReturnSameValueOnRepeatedCalls() {
+        Iterator<Integer> it = of(10, 20, 30);
+        assertThat(it.head()).isEqualTo(10);
+        assertThat(it.head()).isEqualTo(10);
+        assertThat(it.head()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldTailWithoutPriorHeadCallSkipFirstElement() {
+        Iterator<Integer> it = of(0, 1, 2);
+        it = it.tail();
+        assertThat(it.head()).isEqualTo(1);
+    }
+
 }
