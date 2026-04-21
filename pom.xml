@@ -8,6 +8,7 @@
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
     <modules>
+        <module>vavr-generator</module>
         <module>vavr</module>
     </modules>
     <url>https://vavr.io</url>
@@ -148,18 +149,6 @@
                         <scalaVersion>${scala.version}</scalaVersion>
                         <failOnMultipleScalaVersions>true</failOnMultipleScalaVersions>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>script</goal>
-                            </goals>
-                            <configuration>
-                                <includeScopes>plugin</includeScopes>
-                                <scriptFile>${project.basedir}/generator/Generator.scala</scriptFile>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
