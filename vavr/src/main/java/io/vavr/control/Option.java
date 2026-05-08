@@ -57,7 +57,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   the value type
      * @return {@code Some(value)} if the value is non-null, otherwise {@code None}
      */
-    static <T> Option<T> of(T value) {
+    static <T> Option<@NonNull T> of(T value) {
         return (value == null) ? none() : some(value);
     }
 
