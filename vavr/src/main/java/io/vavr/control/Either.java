@@ -509,6 +509,29 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
     }
 
+    /**
+     * Transforms this {@code Either} into a value of type {@code U} using the given function.
+     *
+     * <pre>{@code
+     * import static io.vavr.API.*;
+     *
+     * // = "R:1"
+     * Right(1).transform(e -> e.fold(l -> "L:" + l, r -> "R:" + r));
+     *
+     * // = "L:error"
+     * Left("error").transform(e -> e.fold(l -> "L:" + l, r -> "R:" + r));
+     * }</pre>
+     *
+     * @param f   a function to transform this {@code Either}
+     * @param <U> the type of the result
+     * @return the result of applying {@code f} to this {@code Either}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(@NonNull Function<? super Either<L, R>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     // -- Adjusted return types of Value methods
 
     /**
