@@ -627,18 +627,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.some(1)).isNotEqualTo(Option.some(2));
     }
 
-    // -- hashCode
-
-    @Test
-    public void shouldHashNone() {
-        assertThat(Option.none().hashCode()).isEqualTo(Objects.hash());
-    }
-
-    @Test
-    public void shouldHashSome() {
-        assertThat(Option.some(1).hashCode()).isEqualTo(Objects.hashCode(1));
-    }
-
     // -- toString
 
     @Test

@@ -46,7 +46,7 @@ import org.jspecify.annotations.NonNull;
  *
  * @param <T> the type of the optional value
  */
-public interface Option<T> extends Value<T>, Serializable {
+public sealed interface Option<T> extends Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -489,23 +489,9 @@ public interface Option<T> extends Value<T>, Serializable {
      * {@link Option#of(Object)} is sufficient.
      *
      * @param <T> The type of the optional value.
-     * @author Daniel Dietrich
+     * @author Daniel Dietrich, Grzegorz Piwowarek
      */
-    final class Some<T> implements Option<T>, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        @SuppressWarnings("serial") // Conditionally serializable
-        private final T value;
-
-        /**
-         * Creates a new Some containing the given value.
-         *
-         * @param value A value, may be null
-         */
-        private Some(T value) {
-            this.value = value;
-        }
+    record Some<T>(T value) implements Option<T>, Serializable {
 
         @Override
         public T get() {
@@ -515,16 +501,6 @@ public interface Option<T> extends Value<T>, Serializable {
         @Override
         public boolean isEmpty() {
             return false;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(value);
         }
 
         @Override
@@ -544,20 +520,9 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
      */
-    final class None<T> implements Option<T>, Serializable {
+    record None<T>() implements Option<T>, Serializable {
 
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * The singleton instance of None.
-         */
         private static final None<?> INSTANCE = new None<>();
-
-        /**
-         * Hidden constructor.
-         */
-        private None() {
-        }
 
         @Override
         public T get() {
@@ -570,16 +535,6 @@ public interface Option<T> extends Value<T>, Serializable {
         }
 
         @Override
-        public boolean equals(Object o) {
-            return o == this;
-        }
-
-        @Override
-        public int hashCode() {
-            return 1;
-        }
-
-        @Override
         public String stringPrefix() {
             return "None";
         }
@@ -588,8 +543,6 @@ public interface Option<T> extends Value<T>, Serializable {
         public String toString() {
             return stringPrefix();
         }
-
-        // -- Serializable implementation
 
         /**
          * Instance control for object serialization.
