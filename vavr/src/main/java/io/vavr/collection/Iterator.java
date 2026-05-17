@@ -1655,13 +1655,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Option<T> findLast(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         T last = null;
+        boolean found = false;
         while (hasNext()) {
             final T elem = next();
             if (predicate.test(elem)) {
                 last = elem;
+                found = true;
             }
         }
-        return Option.of(last);
+        return found ? Option.some(last) : Option.none();
     }
 
     /**
