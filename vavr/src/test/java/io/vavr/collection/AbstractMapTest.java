@@ -1358,12 +1358,18 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Nested
-    class Computeifabsent2Tests {
+    class ComputeIfPresentTests {
         @Test
         public void shouldComputeIfPresent() {
             final Map<Integer, String> map = emptyIntString().put(1, "v");
             assertThat(map.computeIfPresent(1, (k, v) -> "b")).isEqualTo(Tuple.of(Option.of("b"), emptyIntString().put(1, "b")));
             assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
+        }
+
+        @Test
+        public void shouldComputeIfPresentWithNullResult() {
+            final Map<Integer, String> map = emptyIntString().put(1, "v");
+            assertThat(map.computeIfPresent(1, (k, v) -> null)).isEqualTo(Tuple.of(Option.some(null), emptyIntString().put(1, null)));
         }
     }
 
