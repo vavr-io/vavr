@@ -1206,10 +1206,15 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @Override
     public Queue<T> replace(T currentElement, T newElement) {
         final io.vavr.collection.List<T> newFront = front.replace(currentElement, newElement);
-        final io.vavr.collection.List<T> newRear = rear.replace(currentElement, newElement);
-        return newFront.size() + newRear.size() == 0 ? empty()
-                                                     : newFront == front && newRear == rear ? this
-                                                                                            : new Queue<>(newFront, newRear);
+        if (newFront != front) {
+            return new Queue<>(newFront, rear);
+        }
+        final io.vavr.collection.List<T> rearInOrder = rear.reverse();
+        final io.vavr.collection.List<T> newRearInOrder = rearInOrder.replace(currentElement, newElement);
+        if (newRearInOrder == rearInOrder) {
+            return this;
+        }
+        return new Queue<>(front, newRearInOrder.reverse());
     }
 
     @Override
