@@ -64,8 +64,17 @@ public interface Foldable<T> {
      * use {@link #foldLeft} or {@link #foldRight}.
      *
      * @param zero    the initial value to start folding with.<br>
-     *                {@code combine.apply(zero, x)} must give the same result as {@code combine.apply(x, zero)}
-     *                for all elements of this {@code Foldable}.
+     *                It must be the <i>neutral element</i> of {@code combine}:
+     *                {@code combine.apply(zero, x)} and {@code combine.apply(x, zero)} must
+     *                be equal to {@code x}, for all elements {@code x} of this {@code Foldable}.<br>
+     *                Note that while it is allowed to use an {@code zero} that is neutral only
+     *                for data that happens to be in the {@code Foldable}, it is almost always
+     *                a really bad idea to actually do so. If you have to, make sure all places
+     *                where data goes into the {@code Foldable} have that dependency documented.<br>
+     *                Note that it is entirely possible to have multiple neutral elements for a
+     *                {@code combine} operation - e.g. all multiples of {@code N} when adding
+     *                modulo {@code N}. On the rare occasions where this can be exploited to
+     *                simplify code, there is little reason not to.
      * @param combine the function to combine two elements
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
