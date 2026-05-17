@@ -1352,12 +1352,25 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.failure(error())).isEqualTo(Try.failure(error()));
     }
 
+    @Test
+    public void shouldNotEqualFailureWithDifferentExceptionType() {
+        final NullPointerException npe = new NullPointerException("msg");
+        final IllegalArgumentException iae = new IllegalArgumentException("msg");
+        npe.setStackTrace(iae.getStackTrace());
+        assertThat(Try.failure(npe)).isNotEqualTo(Try.failure(iae));
+    }
+
+    @Test
+    public void shouldNotEqualFailureWithDifferentMessage() {
+        assertThat(Try.failure(new RuntimeException("a"))).isNotEqualTo(Try.failure(new RuntimeException("b")));
+    }
+
     // hashCode
 
     @Test
     public void shouldHashFailure() {
         final Throwable error = error();
-        assertThat(Try.failure(error).hashCode()).isEqualTo(Arrays.hashCode(error.getStackTrace()));
+        assertThat(Try.failure(error).hashCode()).isEqualTo(Objects.hash(error.getClass(), error.getMessage()));
     }
 
     // toString
