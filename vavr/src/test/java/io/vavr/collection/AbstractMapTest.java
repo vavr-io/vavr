@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import org.assertj.core.api.IterableAssert;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.Some;
@@ -290,18 +291,19 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(3);
     }
 
-    // -- mappers collector
+    @Nested
+    class MappersCollectorTests {
+        @Test
+        public void shouldCollectWithKeyMapper() {
+            Map<Integer, Integer> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMapper(i -> i * 2));
+            assertThat(map).isEqualTo(mapOf(2, 1, 4, 2, 6, 3));
+        }
 
-    @Test
-    public void shouldCollectWithKeyMapper() {
-        Map<Integer, Integer> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMapper(i -> i * 2));
-        assertThat(map).isEqualTo(mapOf(2, 1, 4, 2, 6, 3));
-    }
-
-    @Test
-    public void shouldCollectWithKeyValueMappers() {
-        Map<Integer, String> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMappers(i -> i * 2, String::valueOf));
-        assertThat(map).isEqualTo(mapOf(2, "1", 4, "2", 6, "3"));
+        @Test
+        public void shouldCollectWithKeyValueMappers() {
+            Map<Integer, String> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMappers(i -> i * 2, String::valueOf));
+            assertThat(map).isEqualTo(mapOf(2, "1", 4, "2", 6, "3"));
+        }
     }
 
     // -- construction
@@ -460,157 +462,168 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
-    // -- asPartialFunction
+    @Nested
+    class AspartialfunctionTests {
+        @Test
+        public void shouldImplementPartialFunction() {
+            PartialFunction<Integer, String> f = mapOf(1, "1").asPartialFunction();
+            assertThat(f.isDefinedAt(1)).isTrue();
+            assertThat(f.apply(1)).isEqualTo("1");
+            assertThat(f.isDefinedAt(2)).isFalse();
+        }
 
-    @Test
-    public void shouldImplementPartialFunction() {
-        PartialFunction<Integer, String> f = mapOf(1, "1").asPartialFunction();
-        assertThat(f.isDefinedAt(1)).isTrue();
-        assertThat(f.apply(1)).isEqualTo("1");
-        assertThat(f.isDefinedAt(2)).isFalse();
+        @Test
+        public void shouldApplyExistingKey() {
+            assertThat(emptyInt().put(1, 2).asPartialFunction().apply(1)).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldApplyNonExistingKey() {
+            assertThrows(NoSuchElementException.class, () -> emptyInt().put(1, 2).asPartialFunction().apply(3));
+        }
     }
 
-    @Test
-    public void shouldApplyExistingKey() {
-        assertThat(emptyInt().put(1, 2).asPartialFunction().apply(1)).isEqualTo(2);
+    @Nested
+    class EqualityTests {
+        @Test
+        public void shouldObeyEqualityConstraints() {
+
+            // sequential collections
+            assertThat(emptyMap().equals(io.vavr.collection.HashMap.empty())).isTrue();
+            assertThat(mapOf(1, "a").equals(io.vavr.collection.HashMap.of(1, "a"))).isTrue();
+            assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(io.vavr.collection.HashMap.of(1, "a", 2, "b",3, "c"))).isTrue();
+            assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(io.vavr.collection.HashMap.of(3, "c", 2, "b",1, "a"))).isTrue();
+
+            // other classes
+            assertThat(empty().equals(io.vavr.collection.List.empty())).isFalse();
+            assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(io.vavr.collection.HashSet.empty())).isFalse();
+
+            assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(io.vavr.collection.LinkedHashSet.empty())).isFalse();
+
+            assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(io.vavr.collection.TreeSet.empty())).isFalse();
+        }
     }
 
-    @Test
-    public void shouldApplyNonExistingKey() {
-        assertThrows(NoSuchElementException.class, () -> emptyInt().put(1, 2).asPartialFunction().apply(3));
+    @Nested
+    class HeadTests {
+        @Test
+        public void shouldThrowWhenHeadEmpty() {
+            assertThrows(NoSuchElementException.class, () -> emptyMap().head());
+        }
     }
 
-    // -- equality
-
-    @Test
-    public void shouldObeyEqualityConstraints() {
-
-        // sequential collections
-        assertThat(emptyMap().equals(io.vavr.collection.HashMap.empty())).isTrue();
-        assertThat(mapOf(1, "a").equals(io.vavr.collection.HashMap.of(1, "a"))).isTrue();
-        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(io.vavr.collection.HashMap.of(1, "a", 2, "b",3, "c"))).isTrue();
-        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(io.vavr.collection.HashMap.of(3, "c", 2, "b",1, "a"))).isTrue();
-
-        // other classes
-        assertThat(empty().equals(io.vavr.collection.List.empty())).isFalse();
-        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(io.vavr.collection.HashSet.empty())).isFalse();
-
-        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(io.vavr.collection.LinkedHashSet.empty())).isFalse();
-
-        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(io.vavr.collection.TreeSet.empty())).isFalse();
+    @Nested
+    class InitTests {
+        @Test
+        public void shouldThrowWhenInitEmpty() {
+            assertThrows(UnsupportedOperationException.class, () -> emptyMap().init());
+        }
     }
 
-    // -- head
-
-    @Test
-    public void shouldThrowWhenHeadEmpty() {
-        assertThrows(NoSuchElementException.class, () -> emptyMap().head());
+    @Nested
+    class TailTests {
+        @Test
+        public void shouldThrowWhenTailEmpty() {
+            assertThrows(UnsupportedOperationException.class, () -> emptyMap().tail());
+        }
     }
 
-    // -- init
-
-    @Test
-    public void shouldThrowWhenInitEmpty() {
-        assertThrows(UnsupportedOperationException.class, () -> emptyMap().init());
+    @Nested
+    class TostringTests {
+        @Test
+        public void shouldMakeString() {
+            assertThat(emptyMap().toString()).isEqualTo(className() + "()");
+            assertThat(emptyInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
+        }
     }
 
-    // -- tail
-
-    @Test
-    public void shouldThrowWhenTailEmpty() {
-        assertThrows(UnsupportedOperationException.class, () -> emptyMap().tail());
+    @Nested
+    class TojavamapTests {
+        @Test
+        public void shouldConvertToJavaMap() {
+            final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3");
+            final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
+            assertThat(actual.toJavaMap()).isEqualTo(expected);
+        }
     }
 
-    // -- toString
+    @Nested
+    class ContainsTests {
+        @Test
+        public void shouldFindKey() {
+            assertThat(emptyInt().put(1, 2).containsKey(1)).isTrue();
+            assertThat(emptyInt().put(1, 2).containsKey(2)).isFalse();
+        }
 
-    @Test
-    public void shouldMakeString() {
-        assertThat(emptyMap().toString()).isEqualTo(className() + "()");
-        assertThat(emptyInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
+        @Test
+        public void shouldFindValue() {
+            assertThat(emptyInt().put(1, 2).containsValue(2)).isTrue();
+            assertThat(emptyInt().put(1, 2).containsValue(1)).isFalse();
+        }
+
+        @Test
+        public void shouldRecognizeNotContainedKeyValuePair() {
+            final io.vavr.collection.TreeMap<String, Integer> testee = io.vavr.collection.TreeMap.of(Tuple.of("one", 1));
+            assertThat(testee.contains(Tuple.of("one", 0))).isFalse();
+        }
+
+        @Test
+        public void shouldRecognizeContainedKeyValuePair() {
+            final io.vavr.collection.TreeMap<String, Integer> testee = io.vavr.collection.TreeMap.of(Tuple.of("one", 1));
+            assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
+        }
     }
 
-    // -- toJavaMap
-
-    @Test
-    public void shouldConvertToJavaMap() {
-        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3");
-        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
-        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    @Nested
+    class FlatmapTests {
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldFlatMapUsingBiFunction() {
+            final Map<Integer, Integer> testee = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33));
+            final Map<String, String> actual = testee
+                    .flatMap((k, v) -> io.vavr.collection.List.of(Tuple.of(String.valueOf(k), String.valueOf(v)),
+                            Tuple.of(String.valueOf(k * 10), String.valueOf(v * 10))));
+            final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"),
+                    Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330"));
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
-    // -- contains
+    @Nested
+    class KeysetTests {
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldReturnKeySet() {
+            final io.vavr.collection.Set<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
+            assertThat(actual).isEqualTo(io.vavr.collection.HashSet.of(1, 2, 3));
+        }
 
-    @Test
-    public void shouldFindKey() {
-        assertThat(emptyInt().put(1, 2).containsKey(1)).isTrue();
-        assertThat(emptyInt().put(1, 2).containsKey(2)).isFalse();
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldReturnKeysIterator() {
+            final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keysIterator();
+            assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(1, 2, 3));
+        }
     }
 
-    @Test
-    public void shouldFindValue() {
-        assertThat(emptyInt().put(1, 2).containsValue(2)).isTrue();
-        assertThat(emptyInt().put(1, 2).containsValue(1)).isFalse();
-    }
+    @Nested
+    class ValuesTests {
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldReturnValuesSeq() {
+            final Seq<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).values();
+            assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
+        }
 
-    @Test
-    public void shouldRecognizeNotContainedKeyValuePair() {
-        final io.vavr.collection.TreeMap<String, Integer> testee = io.vavr.collection.TreeMap.of(Tuple.of("one", 1));
-        assertThat(testee.contains(Tuple.of("one", 0))).isFalse();
-    }
-
-    @Test
-    public void shouldRecognizeContainedKeyValuePair() {
-        final io.vavr.collection.TreeMap<String, Integer> testee = io.vavr.collection.TreeMap.of(Tuple.of("one", 1));
-        assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
-    }
-
-    // -- flatMap
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFlatMapUsingBiFunction() {
-        final Map<Integer, Integer> testee = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33));
-        final Map<String, String> actual = testee
-                .flatMap((k, v) -> io.vavr.collection.List.of(Tuple.of(String.valueOf(k), String.valueOf(v)),
-                        Tuple.of(String.valueOf(k * 10), String.valueOf(v * 10))));
-        final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"),
-                Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330"));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- keySet
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldReturnKeySet() {
-        final io.vavr.collection.Set<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
-        assertThat(actual).isEqualTo(io.vavr.collection.HashSet.of(1, 2, 3));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldReturnKeysIterator() {
-        final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keysIterator();
-        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(1, 2, 3));
-    }
-
-    // -- values
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldReturnValuesSeq() {
-        final Seq<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).values();
-        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldReturnValuesIterator() {
-        final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).valuesIterator();
-        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldReturnValuesIterator() {
+            final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).valuesIterator();
+            assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
+        }
     }
 
     // -- biMap
@@ -628,6 +641,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     // -- orElse
+
     // DEV-Note: IntMap converts `other` to map
 
     @Override
@@ -792,93 +806,98 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         }
     }
 
-    // -- equality
-
-    @Test
-    public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
-        final Map<?, ?> map1 = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        final Map<?, ?> map2 = emptyInt().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
-        assertThat(map1).isEqualTo(map2);
+    @Nested
+    class Equality2Tests {
+        @Test
+        public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
+            final Map<?, ?> map1 = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+            final Map<?, ?> map2 = emptyInt().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
+            assertThat(map1).isEqualTo(map2);
+        }
     }
 
-    // -- put
+    @Nested
+    class PutTests {
+        @Test
+        public void shouldPutTuple() {
+            assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
+        }
 
-    @Test
-    public void shouldPutTuple() {
-        assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
+        @Test
+        public void shouldPutNullKeyIntoMapThatContainsNullKey() {
+            final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b", 2, "c");
+            assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
+        }
+
+        @Test
+        public void shouldPutExistingKeyAndNonEqualValue() {
+            final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
+
+            // we need to compare Strings because equals (intentionally) does not work for IntMod2
+            final String actual = map.put(new IntMod2(3), "b").toString();
+            final String expected = map.stringPrefix() + "((3, b))";
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldPutExistingKeyAndEqualValue() {
+            final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
+
+            // we need to compare Strings because equals (intentionally) does not work for IntMod2
+            final String actual = map.put(new IntMod2(3), "a").toString();
+            final String expected = map.stringPrefix() + "((3, a))";
+
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
-    @Test
-    public void shouldPutNullKeyIntoMapThatContainsNullKey() {
-        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b", 2, "c");
-        assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
+    @Nested
+    class RemoveTests {
+        @Test
+        public void shouldRemoveKey() {
+            final Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+            assertThat(src.remove(2)).isEqualTo(emptyInt().put(1, 'a').put(3, 'c'));
+            assertThat(src.remove(33)).isSameAs(src);
+        }
+
+        @Test
+        public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
+            final Map<Integer, String> map = mapOfNullKey(null, "a", 1, "b", 2, "c");
+            assertThat(map.remove(1)).isEqualTo(mapOfNullKey(null, "a", 2, "c"));
+        }
     }
 
-    @Test
-    public void shouldPutExistingKeyAndNonEqualValue() {
-        final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
+    @Nested
+    class RemoveallTests {
+        @Test
+        public void shouldRemoveAllKeys() {
+            final Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+            assertThat(src.removeAll(io.vavr.collection.List.of(1, 3))).isEqualTo(emptyInt().put(2, 'b'));
+            assertThat(src.removeAll(io.vavr.collection.List.of(33))).isSameAs(src);
+            assertThat(src.removeAll(io.vavr.collection.List.empty())).isSameAs(src);
+        }
 
-        // we need to compare Strings because equals (intentionally) does not work for IntMod2
-        final String actual = map.put(new IntMod2(3), "b").toString();
-        final String expected = map.stringPrefix() + "((3, b))";
+        @Test
+        public void shouldReturnSameMapWhenNonEmptyRemoveAllEmpty() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+            assertThat(map.removeAll(io.vavr.collection.List.empty())).isSameAs(map);
+        }
 
-        assertThat(actual).isEqualTo(expected);
+        @Test
+        public void shouldReturnSameMapWhenEmptyRemoveAllNonEmpty() {
+            final Map<Integer, String> empty = emptyMap();
+            assertThat(empty.removeAll(io.vavr.collection.List.of(1, 2, 3))).isSameAs(empty);
+        }
     }
 
-    @Test
-    public void shouldPutExistingKeyAndEqualValue() {
-        final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
-
-        // we need to compare Strings because equals (intentionally) does not work for IntMod2
-        final String actual = map.put(new IntMod2(3), "a").toString();
-        final String expected = map.stringPrefix() + "((3, a))";
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- remove
-
-    @Test
-    public void shouldRemoveKey() {
-        final Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        assertThat(src.remove(2)).isEqualTo(emptyInt().put(1, 'a').put(3, 'c'));
-        assertThat(src.remove(33)).isSameAs(src);
-    }
-
-    @Test
-    public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
-        final Map<Integer, String> map = mapOfNullKey(null, "a", 1, "b", 2, "c");
-        assertThat(map.remove(1)).isEqualTo(mapOfNullKey(null, "a", 2, "c"));
-    }
-
-    // -- removeAll
-
-    @Test
-    public void shouldRemoveAllKeys() {
-        final Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        assertThat(src.removeAll(io.vavr.collection.List.of(1, 3))).isEqualTo(emptyInt().put(2, 'b'));
-        assertThat(src.removeAll(io.vavr.collection.List.of(33))).isSameAs(src);
-        assertThat(src.removeAll(io.vavr.collection.List.empty())).isSameAs(src);
-    }
-
-    @Test
-    public void shouldReturnSameMapWhenNonEmptyRemoveAllEmpty() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
-        assertThat(map.removeAll(io.vavr.collection.List.empty())).isSameAs(map);
-    }
-
-    @Test
-    public void shouldReturnSameMapWhenEmptyRemoveAllNonEmpty() {
-        final Map<Integer, String> empty = emptyMap();
-        assertThat(empty.removeAll(io.vavr.collection.List.of(1, 2, 3))).isSameAs(empty);
-    }
-
-    // -- transform
-
-    @Test
-    public void shouldTransform() {
-        final Map<?, ?> actual = emptyIntInt().put(1, 11).transform(map -> map.put(2, 22));
-        assertThat(actual).isEqualTo(emptyIntInt().put(1, 11).put(2, 22));
+    @Nested
+    class TransformTests {
+        @Test
+        public void shouldTransform() {
+            final Map<?, ?> actual = emptyIntInt().put(1, 11).transform(map -> map.put(2, 22));
+            assertThat(actual).isEqualTo(emptyIntInt().put(1, 11).put(2, 22));
+        }
     }
 
     // -- unzip
@@ -1117,26 +1136,27 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isIn(expected);
     }
 
-    // -- forEach
+    @Nested
+    class ForeachTests {
+        @Test
+        public void forEachByKeyValue() {
+            final Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
+            final int[] result = { 0 };
+            map.forEach((k, v) -> {
+                result[0] += k + v;
+            });
+            assertThat(result[0]).isEqualTo(10);
+        }
 
-    @Test
-    public void forEachByKeyValue() {
-        final Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = { 0 };
-        map.forEach((k, v) -> {
-            result[0] += k + v;
-        });
-        assertThat(result[0]).isEqualTo(10);
-    }
-
-    @Test
-    public void forEachByTuple() {
-        final Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = { 0 };
-        map.forEach(t -> {
-            result[0] += t._1 + t._2;
-        });
-        assertThat(result[0]).isEqualTo(10);
+        @Test
+        public void forEachByTuple() {
+            final Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
+            final int[] result = { 0 };
+            map.forEach(t -> {
+                result[0] += t._1 + t._2;
+            });
+            assertThat(result[0]).isEqualTo(10);
+        }
     }
 
     // -- put with merge function
@@ -1246,212 +1266,220 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(lifted.apply("a").isEmpty()).isTrue();
     }
 
-    // -- filter
+    @Nested
+    class FilterTests {
+        @Test
+        public void shouldBiFilterWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.filter((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(8, "8").put(16, "10").put(18, "12"));
+        }
 
-    @Test
-    public void shouldBiFilterWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.filter((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(8, "8").put(16, "10").put(18, "12"));
+        @Test
+        public void shouldKeyFilterWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Map<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
+            assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(8, "8").put(10, "a").put(12, "c").put(14, "e").put(16, "10").put(18, "12"));
+        }
+
+        @Test
+        public void shouldValueFilterWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(10, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(1, "1").put(2, "2").put(3, "3").put(4, "4").put(5, "5").put(6, "6").put(7, "7").put(8, "8").put(9, "9"));
+        }
     }
 
-    @Test
-    public void shouldKeyFilterWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Map<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(8, "8").put(10, "a").put(12, "c").put(14, "e").put(16, "10").put(18, "12"));
+    @Nested
+    class RejectTests {
+        @Test
+        public void shouldBiRejectWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.reject((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+        }
+
+        @Test
+        public void shouldKeyRejectWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Map<Integer, String> dst = src.rejectKeys(k -> k % 2 == 0);
+            assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+        }
+
+        @Test
+        public void shouldValueRejectWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(15, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.rejectValues(v -> isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e"));
+        }
     }
 
-    @Test
-    public void shouldValueFilterWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(10, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(1, "1").put(2, "2").put(3, "3").put(4, "4").put(5, "5").put(6, "6").put(7, "7").put(8, "8").put(9, "9"));
+    @Nested
+    class RemoveByFilterTests {
+        @SuppressWarnings("deprecation")
+        @Test
+        public void shouldBiRemoveWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+        }
+
+        @SuppressWarnings("deprecation")
+        @Test
+        public void shouldKeyRemoveWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Map<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
+            assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+        }
+
+        @SuppressWarnings("deprecation")
+        @Test
+        public void shouldValueRemoveWork() throws Exception {
+            final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+            final Pattern isDigits = Pattern.compile("^\\d+$");
+            final Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
+            assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
+        }
     }
 
-    // -- reject
-
-    @Test
-    public void shouldBiRejectWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.reject((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+    @Nested
+    class ComputeifabsentTests {
+        @Test
+        public void shouldComputeIfAbsent() {
+            final Map<Integer, String> map = emptyIntString().put(1, "v");
+            assertThat(map.computeIfAbsent(1, k -> "b")).isEqualTo(Tuple.of("v", map));
+            assertThat(map.computeIfAbsent(2, k -> "n")).isEqualTo(Tuple.of("n", emptyIntString().put(1, "v").put(2, "n")));
+        }
     }
 
-    @Test
-    public void shouldKeyRejectWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Map<Integer, String> dst = src.rejectKeys(k -> k % 2 == 0);
-        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+    @Nested
+    class Computeifabsent2Tests {
+        @Test
+        public void shouldComputeIfPresent() {
+            final Map<Integer, String> map = emptyIntString().put(1, "v");
+            assertThat(map.computeIfPresent(1, (k, v) -> "b")).isEqualTo(Tuple.of(Option.of("b"), emptyIntString().put(1, "b")));
+            assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
+        }
     }
 
-    @Test
-    public void shouldValueRejectWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(15, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.rejectValues(v -> isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e"));
+    @Nested
+    class GetWithNullsTests {
+        @Test
+        public void shouldReturnOptionOfNullWhenAccessingKeysSetToNull() {
+            final Map<String, String> map = mapOf("1", null);
+            assertThat(map.get("1")).isEqualTo(Option.some(null));
+        }
+
+        @Test
+        public void shouldReturnOptionOfKeyWhenAccessingPresentKeysInAMapWithNulls() {
+            final Map<String, String> map = mapOf("1", "a").put("2", null);
+            assertThat(map.get("1")).isEqualTo(Option.of("a"));
+        }
+
+        @Test
+        public void shouldReturnNoneWhenAccessingAbsentKeysInAMapWithNulls() {
+            final Map<String, String> map = mapOf("1", "a").put("2", null);
+            assertThat(map.get("3")).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldReturnSameInstanceIfReplacingCurrentValueWithNonExistingKey() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replaceValue(3, "?");
+            assertThat(actual).isSameAs(map);
+        }
+
+        @Test
+        public void shouldReplaceCurrentValueForExistingKey() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replaceValue(2, "c");
+            final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(2, "b", "c");
+            final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldReturnSameInstanceForExistingKeyAndNonEqualOldValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(2, "d", "c");
+            assertThat(actual).isSameAs(map);
+        }
+
+        @Test
+        public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(3, "?", "!");
+            assertThat(actual).isSameAs(map);
+        }
+
+        @Test
+        public void shouldReplaceAllValuesWithFunctionResult() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
+            final Map<Integer, String> expected = mapOf(1, "a1", 2, "b2");
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldGetValueOfNullKeyWhenPutFirstHavingTwoEntries() {
+            final Map<Integer, String> map = mapOfNullKey(null, "a", 2, "b");
+            assertThat(map.get(null)).isEqualTo(Some("a"));
+        }
+
+        @Test
+        public void shouldGetValueOfNullKeyWhenPutLastHavingTwoEntries() {
+            final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b");
+            assertThat(map.get(null)).isEqualTo(Some("b"));
+        }
+
+        @Test
+        public void shouldGetAPresentNullValueWhenPutFirstHavingTwoEntries() {
+            final Map<Integer, String> map = mapOf(1, null, 2, "b");
+            assertThat(map.get(1)).isEqualTo(Some(null));
+        }
+
+        @Test
+        public void shouldGetAPresentNullValueWhenPutLastHavingTwoEntries() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, null);
+            assertThat(map.get(2)).isEqualTo(Some(null));
+        }
     }
 
-    // -- remove by filter
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldBiRemoveWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+    @Nested
+    class GetorelseTests {
+        @Test
+        public void shouldReturnDefaultValue() {
+            final Map<String, String> map = mapOf("1", "a").put("2", "b");
+            assertThat(map.getOrElse("3", "3")).isEqualTo("3");
+        }
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldKeyRemoveWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Map<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
-        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldValueRemoveWork() throws Exception {
-        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
-    }
-
-    // -- computeIfAbsent
-
-    @Test
-    public void shouldComputeIfAbsent() {
-        final Map<Integer, String> map = emptyIntString().put(1, "v");
-        assertThat(map.computeIfAbsent(1, k -> "b")).isEqualTo(Tuple.of("v", map));
-        assertThat(map.computeIfAbsent(2, k -> "n")).isEqualTo(Tuple.of("n", emptyIntString().put(1, "v").put(2, "n")));
-    }
-
-    // -- computeIfAbsent
-
-    @Test
-    public void shouldComputeIfPresent() {
-        final Map<Integer, String> map = emptyIntString().put(1, "v");
-        assertThat(map.computeIfPresent(1, (k, v) -> "b")).isEqualTo(Tuple.of(Option.of("b"), emptyIntString().put(1, "b")));
-        assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
-    }
-
-    // -- get with nulls
-
-    @Test
-    public void shouldReturnOptionOfNullWhenAccessingKeysSetToNull() {
-        final Map<String, String> map = mapOf("1", null);
-        assertThat(map.get("1")).isEqualTo(Option.some(null));
-    }
-
-    @Test
-    public void shouldReturnOptionOfKeyWhenAccessingPresentKeysInAMapWithNulls() {
-        final Map<String, String> map = mapOf("1", "a").put("2", null);
-        assertThat(map.get("1")).isEqualTo(Option.of("a"));
-    }
-
-    @Test
-    public void shouldReturnNoneWhenAccessingAbsentKeysInAMapWithNulls() {
-        final Map<String, String> map = mapOf("1", "a").put("2", null);
-        assertThat(map.get("3")).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldReturnSameInstanceIfReplacingCurrentValueWithNonExistingKey() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replaceValue(3, "?");
-        assertThat(actual).isSameAs(map);
-    }
-
-    @Test
-    public void shouldReplaceCurrentValueForExistingKey() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replaceValue(2, "c");
-        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replace(2, "b", "c");
-        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldReturnSameInstanceForExistingKeyAndNonEqualOldValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replace(2, "d", "c");
-        assertThat(actual).isSameAs(map);
-    }
-
-    @Test
-    public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replace(3, "?", "!");
-        assertThat(actual).isSameAs(map);
-    }
-
-    @Test
-    public void shouldReplaceAllValuesWithFunctionResult() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
-        final Map<Integer, String> expected = mapOf(1, "a1", 2, "b2");
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldGetValueOfNullKeyWhenPutFirstHavingTwoEntries() {
-        final Map<Integer, String> map = mapOfNullKey(null, "a", 2, "b");
-        assertThat(map.get(null)).isEqualTo(Some("a"));
-    }
-
-    @Test
-    public void shouldGetValueOfNullKeyWhenPutLastHavingTwoEntries() {
-        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b");
-        assertThat(map.get(null)).isEqualTo(Some("b"));
-    }
-
-    @Test
-    public void shouldGetAPresentNullValueWhenPutFirstHavingTwoEntries() {
-        final Map<Integer, String> map = mapOf(1, null, 2, "b");
-        assertThat(map.get(1)).isEqualTo(Some(null));
-    }
-
-    @Test
-    public void shouldGetAPresentNullValueWhenPutLastHavingTwoEntries() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, null);
-        assertThat(map.get(2)).isEqualTo(Some(null));
-    }
-
-    // -- getOrElse
-
-    @Test
-    public void shouldReturnDefaultValue() {
-        final Map<String, String> map = mapOf("1", "a").put("2", "b");
-        assertThat(map.getOrElse("3", "3")).isEqualTo("3");
-    }
-
-    // -- partition
-
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
-        final Tuple2<? extends Map<String, Integer>, ? extends Map<String, Integer>> results = map.partition(entry -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(mapOf("1", 1, "2", 2, "3", 3));
-        assertThat(results._2).isEmpty();
-        assertThat(count.get()).isEqualTo(3);
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartitionInOneIteration() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
+            final Tuple2<? extends Map<String, Integer>, ? extends Map<String, Integer>> results = map.partition(entry -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(mapOf("1", 1, "2", 2, "3", 3));
+            assertThat(results._2).isEmpty();
+            assertThat(count.get()).isEqualTo(3);
+        }
     }
 
     // -- spliterator

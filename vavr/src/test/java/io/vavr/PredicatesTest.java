@@ -21,6 +21,7 @@ package io.vavr;
 import io.vavr.collection.List;
 import java.math.BigDecimal;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.*;
@@ -35,176 +36,188 @@ public class PredicatesTest {
     private static final Predicate<Integer> IS_GT_ONE = i -> i > 1;
     private static final Predicate<Integer> IS_GT_TWO = i -> i > 2;
     
-    // -- allOf
 
-    @Test
-    public void shouldTestAllOf_PositiveCase() {
-        assertThat(allOf().test(1)).isTrue();
-        assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
+    @Nested
+    class AllofTests {
+        @Test
+        public void shouldTestAllOf_PositiveCase() {
+            assertThat(allOf().test(1)).isTrue();
+            assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
+        }
+
+        @Test
+        public void shouldTestAllOf_NegativeCase() {
+            assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldTestAllOf_NegativeCase() {
-        assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
+    @Nested
+    class AnyofTests {
+        @Test
+        public void shouldTestAnyOf_PositiveCase() {
+            assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
+            assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(2)).isTrue();
+        }
+
+        @Test
+        public void shouldTestAnyOf_NegativeCase() {
+            assertThat(anyOf().test(1)).isFalse();
+            assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(1)).isFalse();
+        }
     }
 
-    // -- anyOf
+    @Nested
+    class ExitsTests {
+        @Test
+        public void shouldTestExists_PositiveCase() {
+            assertThat(exists(IS_GT_ONE).test(List.of(1, 3))).isTrue();
+        }
 
-    @Test
-    public void shouldTestAnyOf_PositiveCase() {
-        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
-        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(2)).isTrue();
+        @Test
+        public void shouldTestExists_NegativeCase() {
+            assertThat(exists(IS_GT_ONE).test(List.of(1, 0))).isFalse();
+        }
+
+        @Test
+        public void shouldCheckExistsByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+            final List<Integer> list = List(1, 2, 3);
+            final Predicate<Number> p = n -> n.intValue() % 2 == 0;
+            final boolean actual = Match(list).of(
+                    Case($(exists(p)), true),
+                    Case($(), false)
+            );
+            assertThat(actual).isTrue();
+        }
     }
 
-    @Test
-    public void shouldTestAnyOf_NegativeCase() {
-        assertThat(anyOf().test(1)).isFalse();
-        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(1)).isFalse();
+    @Nested
+    class ForallTests {
+        @Test
+        public void shouldTestForAll_PositiveCase() {
+            assertThat(forAll(IS_GT_ONE).test(List.of(2, 3))).isTrue();
+        }
+
+        @Test
+        public void shouldTestForAll_NegativeCase() {
+            assertThat(forAll(IS_GT_ONE).test(List.of(3, 0))).isFalse();
+        }
+
+        @Test
+        public void shouldCheckForAllByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+            final List<Integer> list = List(1, 2, 3);
+            final Predicate<Number> p = n -> n.intValue() > 0;
+            final boolean actual = Match(list).of(
+                    Case($(forAll(p)), true),
+                    Case($(), false)
+            );
+            assertThat(actual).isTrue();
+        }
     }
 
-    // -- exits
+    @Nested
+    class InstanceofTests {
+        @Test
+        public void shouldTestInstanceOf_PositiveCase() {
+            assertThat(instanceOf(Number.class).test(1)).isTrue();
+            assertThat(instanceOf(Number.class).test(new BigDecimal("1"))).isTrue();
+            assertThat(IS_RUNTIME_EXCEPTION.test(new NullPointerException())).isTrue();
+        }
 
-    @Test
-    public void shouldTestExists_PositiveCase() {
-        assertThat(exists(IS_GT_ONE).test(List.of(1, 3))).isTrue();
+        @Test
+        public void shouldTestInstanceOf_NegativeCase() {
+            assertThat(IS_RUNTIME_EXCEPTION.test(new Exception())).isFalse();
+            assertThat(IS_RUNTIME_EXCEPTION.test(new Error("error"))).isFalse();
+            assertThat(IS_RUNTIME_EXCEPTION.test(null)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldTestExists_NegativeCase() {
-        assertThat(exists(IS_GT_ONE).test(List.of(1, 0))).isFalse();
+    @Nested
+    class IsTests {
+        @Test
+        public void shouldTestIs_PositiveCase() {
+            assertThat(is(1).test(1)).isTrue();
+            assertThat(is((CharSequence) "1").test("1")).isTrue();
+        }
+
+        @Test
+        public void shouldTestIs_NegativeCase() {
+            assertThat(is(1).test(2)).isFalse();
+            assertThat(is((CharSequence) "1").test(new StringBuilder("1"))).isFalse();
+        }
     }
 
-    @Test
-    public void shouldCheckExistsByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
-        final List<Integer> list = List(1, 2, 3);
-        final Predicate<Number> p = n -> n.intValue() % 2 == 0;
-        final boolean actual = Match(list).of(
-                Case($(exists(p)), true),
-                Case($(), false)
-        );
-        assertThat(actual).isTrue();
+    @Nested
+    class IsinTests {
+        @Test
+        public void shouldTestIsIn_PositiveCase() {
+            assertThat(isIn(1, 2, 3).test(2)).isTrue();
+            assertThat(isIn((CharSequence) "1", "2", "3").test("2")).isTrue();
+        }
+
+        @Test
+        public void shouldTestIsIn_NegativeCase() {
+            assertThat(isIn(1, 2, 3).test(4)).isFalse();
+            assertThat(isIn((CharSequence) "1", "2", "3").test("4")).isFalse();
+        }
     }
 
-    // -- forAll
+    @Nested
+    class IsnullTests {
+        @Test
+        public void shouldTestIsNull_PositiveCase() {
+            assertThat(isNull().test(null)).isTrue();
+        }
 
-    @Test
-    public void shouldTestForAll_PositiveCase() {
-        assertThat(forAll(IS_GT_ONE).test(List.of(2, 3))).isTrue();
+        @Test
+        public void shouldTestIsNull_NegativeCase() {
+            assertThat(isNull().test("")).isFalse();
+        }
     }
 
-    @Test
-    public void shouldTestForAll_NegativeCase() {
-        assertThat(forAll(IS_GT_ONE).test(List.of(3, 0))).isFalse();
+    @Nested
+    class IsnotnullTests {
+        @Test
+        public void shouldTestIsNotNull_PositiveCase() {
+            assertThat(isNotNull().test("")).isTrue();
+        }
+
+        @Test
+        public void shouldTestIsNotNull_NegativeCase() {
+            assertThat(isNotNull().test(null)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldCheckForAllByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
-        final List<Integer> list = List(1, 2, 3);
-        final Predicate<Number> p = n -> n.intValue() > 0;
-        final boolean actual = Match(list).of(
-                Case($(forAll(p)), true),
-                Case($(), false)
-        );
-        assertThat(actual).isTrue();
+    @Nested
+    class NoneofTests {
+        @Test
+        public void shouldTestNoneOf_PositiveCase() {
+            assertThat(noneOf().test(1)).isTrue();
+            assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(1)).isTrue();
+        }
+
+        @Test
+        public void shouldTestNoneOf_NegativeCase() {
+            assertThat(noneOf(IS_GT_ONE).test(2)).isFalse();
+            assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
+        }
     }
 
-    // -- instanceOf
+    @Nested
+    class NotTests {
+        @Test
+        public void shouldThrowWhenNegatingNull() {
+            assertThatThrownBy(() -> not(null)).isInstanceOf(NullPointerException.class);
+        }
 
-    @Test
-    public void shouldTestInstanceOf_PositiveCase() {
-        assertThat(instanceOf(Number.class).test(1)).isTrue();
-        assertThat(instanceOf(Number.class).test(new BigDecimal("1"))).isTrue();
-        assertThat(IS_RUNTIME_EXCEPTION.test(new NullPointerException())).isTrue();
-    }
+        @Test
+        public void shouldNegate_PositiveCase() {
+            assertThat(not(IS_GT_ONE).test(0)).isTrue();
+        }
 
-    @Test
-    public void shouldTestInstanceOf_NegativeCase() {
-        assertThat(IS_RUNTIME_EXCEPTION.test(new Exception())).isFalse();
-        assertThat(IS_RUNTIME_EXCEPTION.test(new Error("error"))).isFalse();
-        assertThat(IS_RUNTIME_EXCEPTION.test(null)).isFalse();
-    }
-
-    // -- is
-
-    @Test
-    public void shouldTestIs_PositiveCase() {
-        assertThat(is(1).test(1)).isTrue();
-        assertThat(is((CharSequence) "1").test("1")).isTrue();
-    }
-
-    @Test
-    public void shouldTestIs_NegativeCase() {
-        assertThat(is(1).test(2)).isFalse();
-        assertThat(is((CharSequence) "1").test(new StringBuilder("1"))).isFalse();
-    }
-
-    // -- isIn
-
-    @Test
-    public void shouldTestIsIn_PositiveCase() {
-        assertThat(isIn(1, 2, 3).test(2)).isTrue();
-        assertThat(isIn((CharSequence) "1", "2", "3").test("2")).isTrue();
-    }
-
-    @Test
-    public void shouldTestIsIn_NegativeCase() {
-        assertThat(isIn(1, 2, 3).test(4)).isFalse();
-        assertThat(isIn((CharSequence) "1", "2", "3").test("4")).isFalse();
-    }
-
-    // -- isNull
-
-    @Test
-    public void shouldTestIsNull_PositiveCase() {
-        assertThat(isNull().test(null)).isTrue();
-    }
-
-    @Test
-    public void shouldTestIsNull_NegativeCase() {
-        assertThat(isNull().test("")).isFalse();
-    }
-
-    // -- isNotNull
-
-    @Test
-    public void shouldTestIsNotNull_PositiveCase() {
-        assertThat(isNotNull().test("")).isTrue();
-    }
-
-    @Test
-    public void shouldTestIsNotNull_NegativeCase() {
-        assertThat(isNotNull().test(null)).isFalse();
-    }
-
-    // -- noneOf
-
-    @Test
-    public void shouldTestNoneOf_PositiveCase() {
-        assertThat(noneOf().test(1)).isTrue();
-        assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(1)).isTrue();
-    }
-
-    @Test
-    public void shouldTestNoneOf_NegativeCase() {
-        assertThat(noneOf(IS_GT_ONE).test(2)).isFalse();
-        assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
-    }
-
-    // -- not
-
-    @Test
-    public void shouldThrowWhenNegatingNull() {
-        assertThatThrownBy(() -> not(null)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void shouldNegate_PositiveCase() {
-        assertThat(not(IS_GT_ONE).test(0)).isTrue();
-    }
-
-    @Test
-    public void shouldNegate_NegativeCase() {
-        assertThat(not(IS_GT_ONE).test(2)).isFalse();
+        @Test
+        public void shouldNegate_NegativeCase() {
+            assertThat(not(IS_GT_ONE).test(2)).isFalse();
+        }
     }
 
 }

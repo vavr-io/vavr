@@ -212,72 +212,76 @@ public class VectorTest extends AbstractIndexedSeqTest {
         return Vector.transpose((Vector<Vector<T>>) rows);
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowVector() {
-        final Vector<Double> doubles = of(1.0d);
-        final Vector<Number> numbers = Vector.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowVector() {
+            final Vector<Double> doubles = of(1.0d);
+            final Vector<Number> numbers = Vector.narrow(doubles);
+            final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- static ofAll
+    @Nested
+    class StaticOfallTests {
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfVector() {
+            final Vector<Integer> source = ofAll(1, 2, 3);
+            final Vector<Integer> target = Vector.ofAll(source);
+            assertThat(target).isSameAs(source);
+        }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfVector() {
-        final Vector<Integer> source = ofAll(1, 2, 3);
-        final Vector<Integer> target = Vector.ofAll(source);
-        assertThat(target).isSameAs(source);
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+            final ListView<Integer, Vector<Integer>> source = JavaConverters
+                    .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
+            final Vector<Integer> target = Vector.ofAll(source);
+            assertThat(target).isSameAs(source.getDelegate());
+        }
     }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final ListView<Integer, Vector<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
-        final Vector<Integer> target = Vector.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartitionInOneIteration() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Vector<Integer> values = ofAll(1, 2, 3);
+            final Tuple2<Vector<Integer>, Vector<Integer>> results = values.partition(v -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(ofAll(1, 2, 3));
+            assertThat(results._2).isEmpty();
+            assertThat(count.get()).isEqualTo(3);
+        }
     }
 
-    // -- partition
+    @Nested
+    class PrimitivesTests {
+        @Test
+        public void shouldAddNullToPrimitiveVector() {
+            final Vector<Integer> primitives = rangeClosed(0, 2);
 
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Vector<Integer> values = ofAll(1, 2, 3);
-        final Tuple2<Vector<Integer>, Vector<Integer>> results = values.partition(v -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(ofAll(1, 2, 3));
-        assertThat(results._2).isEmpty();
-        assertThat(count.get()).isEqualTo(3);
-    }
+            assertThat(primitives.append(null)).isEqualTo(of(0, 1, 2, null));
+            assertThat(primitives.prepend(null)).isEqualTo(of(null, 0, 1, 2));
+            assertThat(primitives.update(1, (Integer) null)).isEqualTo(of(0, null, 2));
+        }
 
-    // -- primitives
+        @Test
+        public void shouldAddObjectToPrimitiveVector() {
+            final String object = "String";
+            final Vector<Object> primitives = Vector.narrow(rangeClosed(0, 2));
 
-    @Test
-    public void shouldAddNullToPrimitiveVector() {
-        final Vector<Integer> primitives = rangeClosed(0, 2);
+            assertThat(primitives.append(object)).isEqualTo(of(0, 1, 2, object));
+            assertThat(primitives.prepend(object)).isEqualTo(of(object, 0, 1, 2));
+            assertThat(primitives.update(1, object)).isEqualTo(of(0, object, 2));
+        }
 
-        assertThat(primitives.append(null)).isEqualTo(of(0, 1, 2, null));
-        assertThat(primitives.prepend(null)).isEqualTo(of(null, 0, 1, 2));
-        assertThat(primitives.update(1, (Integer) null)).isEqualTo(of(0, null, 2));
-    }
-
-    @Test
-    public void shouldAddObjectToPrimitiveVector() {
-        final String object = "String";
-        final Vector<Object> primitives = Vector.narrow(rangeClosed(0, 2));
-
-        assertThat(primitives.append(object)).isEqualTo(of(0, 1, 2, object));
-        assertThat(primitives.prepend(object)).isEqualTo(of(object, 0, 1, 2));
-        assertThat(primitives.update(1, object)).isEqualTo(of(0, object, 2));
-    }
-
-    @Test
-    public void shouldThrowForVoidType() {
-        assertThrows(IllegalArgumentException.class, () -> ArrayType.of(void.class));
+        @Test
+        public void shouldThrowForVoidType() {
+            assertThrows(IllegalArgumentException.class, () -> ArrayType.of(void.class));
+        }
     }
 
     @Nested
@@ -290,48 +294,49 @@ public class VectorTest extends AbstractIndexedSeqTest {
         }
     }
 
-    // -- unfold
+    @Nested
+    class UnfoldTests {
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Vector.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Vector.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldRightSimpleVector() {
+            assertThat(
+                    Vector.unfoldRight(10, x -> x == 0
+                                                ? Option.none()
+                                                : Option.of(new Tuple2<>(x, x - 1))))
+                    .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
 
-    @Test
-    public void shouldUnfoldRightSimpleVector() {
-        assertThat(
-                Vector.unfoldRight(10, x -> x == 0
-                                            ? Option.none()
-                                            : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Vector.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Vector.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldLeftSimpleVector() {
+            assertThat(
+                    Vector.unfoldLeft(10, x -> x == 0
+                                               ? Option.none()
+                                               : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
 
-    @Test
-    public void shouldUnfoldLeftSimpleVector() {
-        assertThat(
-                Vector.unfoldLeft(10, x -> x == 0
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Vector.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldSimpleVector() {
+            assertThat(
+                    Vector.unfold(10, x -> x == 0
                                            ? Option.none()
                                            : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Vector.unfold(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldSimpleVector() {
-        assertThat(
-                Vector.unfold(10, x -> x == 0
-                                       ? Option.none()
-                                       : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
     }
 
     // -- dropRightWhile
@@ -356,31 +361,34 @@ public class VectorTest extends AbstractIndexedSeqTest {
         assertThat(ofAll("abc  ".toCharArray()).dropRightWhile(Character::isWhitespace)).isEqualTo(ofAll("abc".toCharArray()));
     }
 
-    // -- toString
+    @Nested
+    class TostringTests {
+        @Test
+        public void shouldStringifyNil() {
+            assertThat(empty().toString()).isEqualTo("Vector()");
+        }
 
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("Vector()");
+        @Test
+        public void shouldStringifyNonNil() {
+            assertThat(of(null, 1, 2, 3).toString()).isEqualTo("Vector(null, 1, 2, 3)");
+        }
     }
 
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(null, 1, 2, 3).toString()).isEqualTo("Vector(null, 1, 2, 3)");
+    @Nested
+    class ConsTestTests {
+        @Test
+        public void shouldNotSerializeEnclosingClass() {
+            assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(List.of(1)));
+
+        }
     }
 
-    // -- Cons test
-
-    @Test
-    public void shouldNotSerializeEnclosingClass() {
-        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(List.of(1)));
-
-    }
-
-    // -- toVector
-
-    @Test
-    public void shouldReturnSelfOnConvertToVector() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toVector()).isSameAs(value);
+    @Nested
+    class TovectorTests {
+        @Test
+        public void shouldReturnSelfOnConvertToVector() {
+            final Value<Integer> value = of(1, 2, 3);
+            assertThat(value.toVector()).isSameAs(value);
+        }
     }
 }

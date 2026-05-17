@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class LinkedHashMapTest extends AbstractMapTest {
@@ -137,110 +138,117 @@ public class LinkedHashMapTest extends AbstractMapTest {
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowLinkedHashMap() {
-        final LinkedHashMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
-        final LinkedHashMap<Number, Number> number2numberMap = LinkedHashMap.narrow(int2doubleMap);
-        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowLinkedHashMap() {
+            final LinkedHashMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+            final LinkedHashMap<Number, Number> number2numberMap = LinkedHashMap.narrow(int2doubleMap);
+            final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- static ofAll(Iterable)
-
-    @Test
-    public void shouldWrapMap() {
-        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
-        source.put(1, 2);
-        source.put(3, 4);
-        assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+    @Nested
+    class StaticOfallIterableTests {
+        @Test
+        public void shouldWrapMap() {
+            final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+            source.put(1, 2);
+            source.put(3, 4);
+            assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        }
     }
 
-    // -- keySet
-
-    @Test
-    public void shouldKeepKeySetOrder() {
-        final Set<Integer> keySet = LinkedHashMap.of(4, "d", 1, "a", 2, "b").keySet();
-        assertThat(keySet.mkString()).isEqualTo("412");
+    @Nested
+    class KeysetTests {
+        @Test
+        public void shouldKeepKeySetOrder() {
+            final Set<Integer> keySet = LinkedHashMap.of(4, "d", 1, "a", 2, "b").keySet();
+            assertThat(keySet.mkString()).isEqualTo("412");
+        }
     }
 
-    // -- map
-
-    @Test
-    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
-                .mapKeys(Integer::toHexString).mapKeys(String::length);
-        final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class MapTests {
+        @Test
+        public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
+            final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
+                    .mapKeys(Integer::toHexString).mapKeys(String::length);
+            final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
+            assertThat(actual).isEqualTo(expected);
+        }
     }
     
-    // -- put
 
-    @Test
-    public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.put(1, "d");
-        final Map<Integer, String> expected = mapOf(1, "d", 2, "b", 3, "c");
-        assertThat(actual.toList()).isEqualTo(expected.toList());
+    @Nested
+    class PutTests {
+        @Test
+        public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.put(1, "d");
+            final Map<Integer, String> expected = mapOf(1, "d", 2, "b", 3, "c");
+            assertThat(actual.toList()).isEqualTo(expected.toList());
+        }
+
+        @Test
+        public void shouldKeepOrderWhenPuttingAnExistingKeyAndExistingValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.put(1, "a");
+            final Map<Integer, String> expected = mapOf(1, "a", 2, "b", 3, "c");
+            assertThat(actual.toList()).isEqualTo(expected.toList());
+        }
     }
 
-    @Test
-    public void shouldKeepOrderWhenPuttingAnExistingKeyAndExistingValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.put(1, "a");
-        final Map<Integer, String> expected = mapOf(1, "a", 2, "b", 3, "c");
-        assertThat(actual.toList()).isEqualTo(expected.toList());
-    }
+    @Nested
+    class ReplaceTests {
+        @Test
+        public void shouldReturnSameInstanceIfReplacingNonExistingPairUsingNonExistingKey() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(Tuple.of(0, "?"), Tuple.of(0, "!"));
+            assertThat(actual).isSameAs(map);
+        }
 
-    // -- replace
+        @Test
+        public void shouldReturnSameInstanceIfReplacingNonExistingPairUsingExistingKey() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "?"), Tuple.of(2, "!"));
+            assertThat(actual).isSameAs(map);
+        }
 
-    @Test
-    public void shouldReturnSameInstanceIfReplacingNonExistingPairUsingNonExistingKey() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replace(Tuple.of(0, "?"), Tuple.of(0, "!"));
-        assertThat(actual).isSameAs(map);
-    }
+        @Test
+        public void shouldPreserveOrderWhenReplacingExistingPairWithSameKeyAndDifferentValue() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(2, "B"));
+            final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 2, "B", 3, "c");
+            assertThat(actual).isEqualTo(expected);
+            Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
+        }
 
-    @Test
-    public void shouldReturnSameInstanceIfReplacingNonExistingPairUsingExistingKey() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b");
-        final Map<Integer, String> actual = map.replace(Tuple.of(2, "?"), Tuple.of(2, "!"));
-        assertThat(actual).isSameAs(map);
-    }
+        @Test
+        public void shouldPreserveOrderWhenReplacingExistingPairWithDifferentKeyValue() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(4, "B"));
+            final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 4, "B", 3, "c");
+            assertThat(actual).isEqualTo(expected);
+            Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
+        }
 
-    @Test
-    public void shouldPreserveOrderWhenReplacingExistingPairWithSameKeyAndDifferentValue() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(2, "B"));
-        final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 2, "B", 3, "c");
-        assertThat(actual).isEqualTo(expected);
-        Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
-    }
+        @Test
+        public void shouldPreserveOrderWhenReplacingExistingPairAndRemoveOtherIfKeyAlreadyExists() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(4, "B"));
+            final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 4, "B", 3, "c", 5, "e");
+            assertThat(actual).isEqualTo(expected);
+            Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
+        }
 
-    @Test
-    public void shouldPreserveOrderWhenReplacingExistingPairWithDifferentKeyValue() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(4, "B"));
-        final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 4, "B", 3, "c");
-        assertThat(actual).isEqualTo(expected);
-        Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
-    }
-
-    @Test
-    public void shouldPreserveOrderWhenReplacingExistingPairAndRemoveOtherIfKeyAlreadyExists() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e");
-        final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(4, "B"));
-        final Map<Integer, String> expected = LinkedHashMap.of(1, "a", 4, "B", 3, "c", 5, "e");
-        assertThat(actual).isEqualTo(expected);
-        Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
-    }
-
-    @Test
-    public void shouldReturnSameInstanceWhenReplacingExistingPairWithIdentity() {
-        final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(2, "b"));
-        assertThat(actual).isSameAs(map);
+        @Test
+        public void shouldReturnSameInstanceWhenReplacingExistingPairWithIdentity() {
+            final Map<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "b"), Tuple.of(2, "b"));
+            assertThat(actual).isSameAs(map);
+        }
     }
 
     // -- scan, scanLeft, scanRight
@@ -293,23 +301,25 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 Tuple.of(0, "x")));
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldNotHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        }
 
-    @Test
-    public void shouldNotHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        @Test
+        public void shouldHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        }
     }
 
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
-    }
-
-    // -- isSequential()
-
-    @Test
-    public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
+    @Nested
+    class IssequentialTests {
+        @Test
+        public void shouldReturnTrueWhenIsSequentialCalled() {
+            assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
+        }
     }
 
 }

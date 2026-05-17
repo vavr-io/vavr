@@ -47,7 +47,9 @@ public class JavaConvertersTest {
     @SuppressWarnings("unchecked")
     public static java.util.List<Data> data() {
         return asList(
+
           // -- immutable classes
+
           new Data("java.util.Arrays$ArrayList", new ListFactory(java.util.Arrays::asList), IMMUTABLE, GENERIC, NULLABLE),
           new Data(Array.class.getName(), new ListFactory(ts -> Array.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE),
           new Data(CharSeq.class.getName(), new ListFactory(ts -> (java.util.List<Object>) (Object) CharSeq.ofAll((List<Character>) (Object) (List.of(ts))).asJava()), IMMUTABLE, FIXED, NON_NULLABLE),
@@ -57,6 +59,7 @@ public class JavaConvertersTest {
           new Data(Vector.class.getName(), new ListFactory(ts -> Vector.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE),
 
           // -- mutable classes
+
           new Data(java.util.ArrayList.class.getName(), new ListFactory(ts -> {
               final java.util.List<Object> list = new java.util.ArrayList<>();
               java.util.Collections.addAll(list, ts);

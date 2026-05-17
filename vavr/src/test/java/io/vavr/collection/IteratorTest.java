@@ -38,6 +38,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.Iterator.concat;
@@ -212,229 +213,242 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThrows(NoSuchElementException.class, () -> of().next());
     }
 
-    // -- static narrow()
-
-    @Test
-    public void shouldNarrowIterator() {
-        final Iterator<Double> doubles = of(1.0d);
-        final Iterator<Number> numbers = narrow(doubles);
-        final int actual = numbers.concat(Iterator.of(new BigDecimal("2.0"))).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowIterator() {
+            final Iterator<Double> doubles = of(1.0d);
+            final Iterator<Number> numbers = narrow(doubles);
+            final int actual = numbers.concat(Iterator.of(new BigDecimal("2.0"))).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- static ofAll()
+    @Nested
+    class StaticOfallTests {
+        @Test
+        public void shouldFailOfEmptyIterable() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(List.empty()).next());
+        }
 
-    @Test
-    public void shouldFailOfEmptyIterable() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(List.empty()).next());
+        @Test
+        public void shouldFailOfEmptyBoolean() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new boolean[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyByte() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new byte[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyChar() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new char[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyDouble() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new double[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyFloat() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new float[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyInt() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new int[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyLong() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new long[0]).next());
+        }
+
+        @Test
+        public void shouldFailOfEmptyShort() {
+            assertThrows(NoSuchElementException.class, () -> ofAll(new short[0]).next());
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyBoolean() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new boolean[0]).next());
+    @Nested
+    class StaticConcatTests {
+        @Test
+        public void shouldConcatEmptyIterableIterable() {
+            final Iterable<Iterable<Integer>> empty = List.empty();
+            assertThat(concat(empty)).isSameAs(Iterator.empty());
+        }
+
+        @Test
+        public void shouldConcatNonEmptyIterableIterable() {
+            final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
+            assertThat(concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldConcatEmptyArrayIterable() {
+            assertThat(concat()).isSameAs(Iterator.empty());
+        }
+
+        @Test
+        public void shouldConcatNonEmptyArrayIterable() {
+            assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldConcatNestedConcatIterators() {
+            assertThat(concat(List.of(1, 2), List.of(3), concat(List.of(4, 5)))).isEqualTo(Iterator.of(1, 2, 3, 4, 5));
+            assertThat(concat(concat(List.of(4, 5)), List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldConcatToConcatIterator() {
+            assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyByte() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new byte[0]).next());
+    @Nested
+    class FillIntSupplierTests {
+        @Test
+        public void shouldReturnManyAfterFillWithConstantSupplier() {
+            assertThat(fill(17, () -> 7))
+                    .hasSize(17);
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyChar() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new char[0]).next());
+    @Nested
+    class FillIntTTests {
+        @Test
+        public void shouldReturnEmptyAfterFillWithZeroCount() {
+            assertThat(fill(0, 7)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldReturnEmptyAfterFillWithNegativeCount() {
+            assertThat(fill(-1, 7)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldReturnManyAfterFillWithConstant() {
+            assertThat(fill(17, 7))
+                    .hasSize(17);
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyDouble() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new double[0]).next());
+    @Nested
+    class ConcatTests {
+        @Test
+        public void shouldConcatThisNonEmptyWithEmpty() {
+            final Iterator<Integer> it = Iterator.of(1);
+            assertThat(it.concat(Iterator.<Integer> empty())).isSameAs(it);
+        }
+
+        @Test
+        public void shouldConcatThisEmptyWithNonEmpty() {
+            final Iterator<Integer> it = Iterator.of(1);
+            assertThat(Iterator.<Integer> empty().concat(it)).isSameAs(it);
+        }
+
+        @Test
+        public void shouldConcatThisNonEmptyWithNonEmpty() {
+            assertThat(Iterator.of(1).concat(Iterator.of(2))).isEqualTo(Iterator.of(1, 2));
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyFloat() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new float[0]).next());
+    @Nested
+    class TransformTests {
+        @Test
+        public void shouldTransform() {
+            final Iterator<?> it = Iterator.of(1, 2).transform(ii -> ii.drop(1));
+            assertThat(it).isEqualTo(Iterator.of(2));
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyInt() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new int[0]).next());
+    @Nested
+    class StaticFromIntTests {
+        @Test
+        public void shouldGenerateIntStream() {
+            assertThat(from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingIntStream() {
+            //noinspection NumericOverflow
+            assertThat(from(Integer.MAX_VALUE).take(2))
+                    .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyLong() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new long[0]).next());
+    @Nested
+    class StaticFromIntIntTests {
+        @Test
+        public void shouldGenerateIntStreamWithStep() {
+            assertThat(from(-1, 6).take(3)).isEqualTo(Iterator.of(-1, 5, 11));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingIntStreamWithStep() {
+            //noinspection NumericOverflow
+            assertThat(from(Integer.MAX_VALUE, 2).take(2))
+                    .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
+        }
     }
 
-    @Test
-    public void shouldFailOfEmptyShort() {
-        assertThrows(NoSuchElementException.class, () -> ofAll(new short[0]).next());
+    @Nested
+    class StaticFromLongTests {
+        @Test
+        public void shouldGenerateLongStream() {
+            assertThat(from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingLongStream() {
+            //noinspection NumericOverflow
+            assertThat(from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        }
     }
 
-    // -- static concat()
+    @Nested
+    class StaticFromLongLongTests {
+        @Test
+        public void shouldGenerateLongStreamWithStep() {
+            assertThat(from(-1L, 5L).take(3)).isEqualTo(Iterator.of(-1L, 4L, 9L));
+        }
 
-    @Test
-    public void shouldConcatEmptyIterableIterable() {
-        final Iterable<Iterable<Integer>> empty = List.empty();
-        assertThat(concat(empty)).isSameAs(Iterator.empty());
+        @Test
+        public void shouldGenerateOverflowingLongStreamWithStep() {
+            //noinspection NumericOverflow
+            assertThat(from(Long.MAX_VALUE, 2).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
+        }
     }
 
-    @Test
-    public void shouldConcatNonEmptyIterableIterable() {
-        final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
-        assertThat(concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
+    @Nested
+    class StaticContinuallySupplierTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnSupplier() {
+            assertThat(continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        }
+
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnConstant() {
+            assertThat(continually(1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        }
     }
 
-    @Test
-    public void shouldConcatEmptyArrayIterable() {
-        assertThat(concat()).isSameAs(Iterator.empty());
-    }
+    @Nested
+    class StaticIterateTFunctionTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
+            assertThat(iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        }
 
-    @Test
-    public void shouldConcatNonEmptyArrayIterable() {
-        assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldConcatNestedConcatIterators() {
-        assertThat(concat(List.of(1, 2), List.of(3), concat(List.of(4, 5)))).isEqualTo(Iterator.of(1, 2, 3, 4, 5));
-        assertThat(concat(concat(List.of(4, 5)), List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(4, 5, 1, 2, 3));
-    }
-
-    @Test
-    public void shouldConcatToConcatIterator() {
-        assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
-    }
-
-    // -- fill(int, Supplier)
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstantSupplier() {
-        assertThat(fill(17, () -> 7))
-                .hasSize(17);
-    }
-
-    // -- fill(int, T)
-
-    @Test
-    public void shouldReturnEmptyAfterFillWithZeroCount() {
-        assertThat(fill(0, 7)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReturnEmptyAfterFillWithNegativeCount() {
-        assertThat(fill(-1, 7)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstant() {
-        assertThat(fill(17, 7))
-                .hasSize(17);
-    }
-
-    // -- concat
-
-    @Test
-    public void shouldConcatThisNonEmptyWithEmpty() {
-        final Iterator<Integer> it = Iterator.of(1);
-        assertThat(it.concat(Iterator.<Integer> empty())).isSameAs(it);
-    }
-
-    @Test
-    public void shouldConcatThisEmptyWithNonEmpty() {
-        final Iterator<Integer> it = Iterator.of(1);
-        assertThat(Iterator.<Integer> empty().concat(it)).isSameAs(it);
-    }
-
-    @Test
-    public void shouldConcatThisNonEmptyWithNonEmpty() {
-        assertThat(Iterator.of(1).concat(Iterator.of(2))).isEqualTo(Iterator.of(1, 2));
-    }
-
-    // -- transform
-
-    @Test
-    public void shouldTransform() {
-        final Iterator<?> it = Iterator.of(1, 2).transform(ii -> ii.drop(1));
-        assertThat(it).isEqualTo(Iterator.of(2));
-    }
-
-    // -- static from(int)
-
-    @Test
-    public void shouldGenerateIntStream() {
-        assertThat(from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
-    }
-
-    @Test
-    public void shouldGenerateOverflowingIntStream() {
-        //noinspection NumericOverflow
-        assertThat(from(Integer.MAX_VALUE).take(2))
-                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
-    }
-
-    // -- static from(int, int)
-
-    @Test
-    public void shouldGenerateIntStreamWithStep() {
-        assertThat(from(-1, 6).take(3)).isEqualTo(Iterator.of(-1, 5, 11));
-    }
-
-    @Test
-    public void shouldGenerateOverflowingIntStreamWithStep() {
-        //noinspection NumericOverflow
-        assertThat(from(Integer.MAX_VALUE, 2).take(2))
-                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
-    }
-
-    // -- static from(long)
-
-    @Test
-    public void shouldGenerateLongStream() {
-        assertThat(from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
-    }
-
-    @Test
-    public void shouldGenerateOverflowingLongStream() {
-        //noinspection NumericOverflow
-        assertThat(from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
-    }
-
-    // -- static from(long, long)
-
-    @Test
-    public void shouldGenerateLongStreamWithStep() {
-        assertThat(from(-1L, 5L).take(3)).isEqualTo(Iterator.of(-1L, 4L, 9L));
-    }
-
-    @Test
-    public void shouldGenerateOverflowingLongStreamWithStep() {
-        //noinspection NumericOverflow
-        assertThat(from(Long.MAX_VALUE, 2).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
-    }
-
-    // -- static continually(Supplier)
-
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnSupplier() {
-        assertThat(continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
-    }
-
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnConstant() {
-        assertThat(continually(1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
-    }
-
-    // -- static iterate(T, Function)
-
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
-        assertThat(iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
-    }
-
-    @Test
-    public void shouldNotCallSupplierUntilNecessary() {
-        assertThat(iterate(2, (i) -> {
-            throw new RuntimeException();
-        }).head()).isEqualTo(2);
+        @Test
+        public void shouldNotCallSupplierUntilNecessary() {
+            assertThat(iterate(2, (i) -> {
+                throw new RuntimeException();
+            }).head()).isEqualTo(2);
+        }
     }
 
     // -- static iterate(Supplier<Option>)
@@ -476,26 +490,27 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.iterate(new OptionSupplier(1, 4)).take(50000).reduce((i, j) -> i + j)).isEqualTo(6);
     }
 
-    // -- distinct
+    @Nested
+    class DistinctTests {
+        @Test
+        public void shouldStayEmptyOnDistinct() {
+            assertThat(empty().distinct().toList()).isSameAs(List.empty());
+        }
 
-    @Test
-    public void shouldStayEmptyOnDistinct() {
-        assertThat(empty().distinct().toList()).isSameAs(List.empty());
-    }
+        @Test(/* #2425 */)
+        public void shouldNotEatNullOnDistinct() {
+            assertThat(of((String) null).distinct().toList()).isEqualTo(List.of((String) null));
+        }
 
-    @Test(/* #2425 */)
-    public void shouldNotEatNullOnDistinct() {
-        assertThat(of((String) null).distinct().toList()).isEqualTo(List.of((String) null));
-    }
+        @Test
+        public void shouldKeepDistinctElementsOnDistinct() {
+            assertThat(of(1, 2, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
+        }
 
-    @Test
-    public void shouldKeepDistinctElementsOnDistinct() {
-        assertThat(of(1, 2, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldRemoveDuplicatesOnDistinct() {
-        assertThat(of(1, 2, 1, 3, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
+        @Test
+        public void shouldRemoveDuplicatesOnDistinct() {
+            assertThat(of(1, 2, 1, 3, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
+        }
     }
 
     // -- groupBy
@@ -663,139 +678,142 @@ public class IteratorTest extends AbstractTraversableTest {
         }
     }
 
-    // -- next()
+    @Nested
+    class NextTests {
+        @Test
+        public void shouldThrowOnNextWhenEmpty() {
+            assertThatThrownBy(Iterator.empty()::next).isInstanceOf(NoSuchElementException.class);
+        }
 
-    @Test
-    public void shouldThrowOnNextWhenEmpty() {
-        assertThatThrownBy(Iterator.empty()::next).isInstanceOf(NoSuchElementException.class);
+        @Test
+        public void shouldReturnValueOnNextWhenIteratorOfOneElementAndNextWasNotCalled() {
+            final Iterator<Object> iterator = Iterator.of(1);
+            assertThat(iterator.next()).isSameAs(1);
+        }
+
+        @Test
+        public void shouldThrowOnNextWhenIteratorOfOneElementAndNextWasCalled() {
+            final Iterator<Object> iterator = Iterator.of(1);
+            iterator.next();
+            assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
+        }
     }
 
-    @Test
-    public void shouldReturnValueOnNextWhenIteratorOfOneElementAndNextWasNotCalled() {
-        final Iterator<Object> iterator = Iterator.of(1);
-        assertThat(iterator.next()).isSameAs(1);
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartition() {
+            final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition("2"::equals);
+            assertThat(String.join(", ", partitions._1)).isEqualTo("2");
+            assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
+        }
+
+        @Test
+        public void shouldPartitionLazily() {
+            // avoid endless test caused by infinite iterator
+            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+                final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
+
+                // Given an infinite iterator
+                final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
+                    itemsCalled.add(i);
+                    return i + 1;
+                });
+
+                // When partitioning it
+                // Then the partitioning is done lazily (otherwise the test will timeout)
+                final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = iterator.partition(i -> i % 2 == 0);
+                assertThat(itemsCalled).isEmpty();
+
+                // When moving forwards iterators
+                // Then the moves are done as expected
+                assertThat(partitions._1.hasNext()).isTrue();
+                assertThat(partitions._1.next()).isEqualTo(2);
+                for (int i : of(1, 3, 5)) {
+                    assertThat(partitions._2.hasNext()).isTrue();
+                    assertThat(partitions._2.next()).isEqualTo(i);
+                }
+                assertThat(itemsCalled).containsExactly(1, 2, 3, 4);
+            });
+        }
     }
 
-    @Test
-    public void shouldThrowOnNextWhenIteratorOfOneElementAndNextWasCalled() {
-        final Iterator<Object> iterator = Iterator.of(1);
-        iterator.next();
-        assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
-    }
+    @Nested
+    class UnfoldrightTests {
+        @Test
+        void shouldUnfoldRightLazily() {
+            AtomicInteger calls = new AtomicInteger();
 
-    // -- partition()
-
-    @Test
-    public void shouldPartition() {
-        final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition("2"::equals);
-        assertThat(String.join(", ", partitions._1)).isEqualTo("2");
-        assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
-    }
-
-    @Test
-    public void shouldPartitionLazily() {
-        // avoid endless test caused by infinite iterator
-        assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
-            final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
-
-            // Given an infinite iterator
-            final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
-                itemsCalled.add(i);
-                return i + 1;
+            Iterator<Integer> it = Iterator.unfoldRight(1, i -> {
+                calls.incrementAndGet();
+                return i <= 3 ? Option.some(Tuple.of(i, i + 1)) : Option.none();
             });
 
-            // When partitioning it
-            // Then the partitioning is done lazily (otherwise the test will timeout)
-            final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = iterator.partition(i -> i % 2 == 0);
-            assertThat(itemsCalled).isEmpty();
+            assertThat(calls.get()).isZero();
 
-            // When moving forwards iterators
-            // Then the moves are done as expected
-            assertThat(partitions._1.hasNext()).isTrue();
-            assertThat(partitions._1.next()).isEqualTo(2);
-            for (int i : of(1, 3, 5)) {
-                assertThat(partitions._2.hasNext()).isTrue();
-                assertThat(partitions._2.next()).isEqualTo(i);
-            }
-            assertThat(itemsCalled).containsExactly(1, 2, 3, 4);
-        });
-    }
+            assertThat(it.hasNext()).isTrue();
+            assertThat(calls.get()).isEqualTo(1);
 
-    // -- unfoldRight()
+            assertThat(it.next()).isEqualTo(1);
+            assertThat(calls.get()).isEqualTo(1);
 
-    @Test
-    void shouldUnfoldRightLazily() {
-        AtomicInteger calls = new AtomicInteger();
+            assertThat(it.hasNext()).isTrue();
+            assertThat(calls.get()).isEqualTo(2);
 
-        Iterator<Integer> it = Iterator.unfoldRight(1, i -> {
-            calls.incrementAndGet();
-            return i <= 3 ? Option.some(Tuple.of(i, i + 1)) : Option.none();
-        });
+            assertThat(it.next()).isEqualTo(2);
+            assertThat(calls.get()).isEqualTo(2);
 
-        assertThat(calls.get()).isZero();
+            assertThat(it.hasNext()).isTrue();
+            assertThat(calls.get()).isEqualTo(3);
 
-        assertThat(it.hasNext()).isTrue();
-        assertThat(calls.get()).isEqualTo(1);
+            assertThat(it.next()).isEqualTo(3);
+            assertThat(calls.get()).isEqualTo(3);
 
-        assertThat(it.next()).isEqualTo(1);
-        assertThat(calls.get()).isEqualTo(1);
+            assertThat(it.hasNext()).isFalse();
+            assertThat(calls.get()).isEqualTo(4);
+        }
 
-        assertThat(it.hasNext()).isTrue();
-        assertThat(calls.get()).isEqualTo(2);
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Iterator.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-        assertThat(it.next()).isEqualTo(2);
-        assertThat(calls.get()).isEqualTo(2);
+        @Test
+        public void shouldUnfoldRightSimpleList() {
+            assertThat(
+                    Iterator.unfoldRight(10, x -> x == 0
+                                                  ? Option.none()
+                                                  : Option.of(new Tuple2<>(x, x - 1))))
+                    .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
 
-        assertThat(it.hasNext()).isTrue();
-        assertThat(calls.get()).isEqualTo(3);
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Iterator.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-        assertThat(it.next()).isEqualTo(3);
-        assertThat(calls.get()).isEqualTo(3);
+        @Test
+        public void shouldUnfoldLeftSimpleList() {
+            assertThat(
+                    Iterator.unfoldLeft(10, x -> x == 0
+                                                 ? Option.none()
+                                                 : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
 
-        assertThat(it.hasNext()).isFalse();
-        assertThat(calls.get()).isEqualTo(4);
-    }
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Iterator.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Iterator.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldRightSimpleList() {
-        assertThat(
-                Iterator.unfoldRight(10, x -> x == 0
-                                              ? Option.none()
-                                              : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
-
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Iterator.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldLeftSimpleList() {
-        assertThat(
-                Iterator.unfoldLeft(10, x -> x == 0
+        @Test
+        public void shouldUnfoldSimpleList() {
+            assertThat(
+                    Iterator.unfold(10, x -> x == 0
                                              ? Option.none()
                                              : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Iterator.unfold(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldSimpleList() {
-        assertThat(
-                Iterator.unfold(10, x -> x == 0
-                                         ? Option.none()
-                                         : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
     }
 
     // -- class initialization (see #1773)
@@ -915,38 +933,61 @@ public class IteratorTest extends AbstractTraversableTest {
         // iterators are intermediate objects and should not have an equals, hashCode or toString
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        }
 
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        @Test
+        public void shouldNotHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        }
+
+        @Test
+        public void shouldNotHaveSizedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();
+        }
+
+        @Test
+        public void shouldNotHaveDistinctSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+        }
+
+        @Test
+        public void shouldNotReturnSizeWhenSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
+        }
     }
 
-    @Test
-    public void shouldNotHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+    @Nested
+    class IssequentialTests {
+        @Test
+        public void shouldReturnTrueWhenIsSequentialCalled() {
+            assertThat(of(1, 2, 3).isSequential()).isTrue();
+        }
     }
 
-    @Test
-    public void shouldNotHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();
-    }
+    @Nested
+    class FindlastTests {
+        @Test
+        public void shouldFindLastNullElement() {
+            Option<Integer> result = Iterator.<Integer>of(null, 1, null).findLast(i -> i == null);
+            assertThat(result).isEqualTo(Option.some(null));
+        }
 
-    @Test
-    public void shouldNotHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
-    }
+        @Test
+        public void shouldFindLastNullWhenLastElementIsNull() {
+            Option<Integer> result = Iterator.<Integer>of(1, 2, null).findLast(i -> i == null);
+            assertThat(result).isEqualTo(Option.some(null));
+        }
 
-    @Test
-    public void shouldNotReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
-    }
-
-    // -- isSequential()
-
-    @Test
-    public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isTrue();
+        @Test
+        public void shouldReturnNoneWhenFindLastFindsNothing() {
+            Option<Integer> result = Iterator.of(1, 2, 3).findLast(i -> i > 5);
+            assertThat(result).isEqualTo(Option.none());
+        }
     }
 
     // -- findLast

@@ -810,6 +810,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     // -- orElse
+
     // DEV-Note: IntMultimap converts `other` to multimap
 
     @Override
