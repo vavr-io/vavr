@@ -91,7 +91,7 @@ public interface Foldable<T> {
      * <strong>Example:</strong>
      * <pre>{@code
      * // Result: 42
-     * List.of('4', '2').foldLeft(0, (acc, x) -> acc * 10 + x - '0');
+     * List.of('4', '2').foldLeft(0, (acc, x) -> acc * 10 + (x - '0'));
      * }</pre>
      *
      * @param <U>     the type of the accumulated result
