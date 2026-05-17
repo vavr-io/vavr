@@ -56,7 +56,7 @@ final class Maps {
         if (value.isDefined()) {
             final V newValue = remappingFunction.apply(key, value.get());
             final M newMap = (M) map.put(key, newValue);
-            return Tuple.of(Option.of(newValue), newMap);
+            return Tuple.of(Option.some(newValue), newMap);
         } else {
             return Tuple.of(Option.none(), map);
         }
