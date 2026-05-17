@@ -1342,6 +1342,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
     }
 
+    @Test
+    public void shouldComputeIfPresentWithNullResult() {
+        final Map<Integer, String> map = emptyIntString().put(1, "v");
+        assertThat(map.computeIfPresent(1, (k, v) -> null)).isEqualTo(Tuple.of(Option.some(null), emptyIntString().put(1, null)));
+    }
+
     // -- get with nulls
 
     @Test
