@@ -913,7 +913,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         if (isEmpty()) {
             return empty();
         } else {
-            return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
+            return new Queue<>(toList().flatMap(mapper), io.vavr.collection.List.empty());
         }
     }
 
