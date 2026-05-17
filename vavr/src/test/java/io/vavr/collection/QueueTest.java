@@ -468,6 +468,17 @@ public class QueueTest extends AbstractLinearSeqTest {
         assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapCorrectlyWhenRearIsNonEmpty() {
+        Queue<Integer> queue = Queue.of(1, 2).enqueue(3).enqueue(4);
+
+        Queue<Integer> result = queue.flatMap(x -> Queue.of(x, x * 10));
+
+        assertThat(result).isEqualTo(Queue.of(1, 10, 2, 20, 3, 30, 4, 40));
+    }
+
     // -- replace
 
     @Test
