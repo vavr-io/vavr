@@ -478,4 +478,15 @@ public class QueueTest extends AbstractLinearSeqTest {
 
         assertThat(result).isEqualTo(Queue.of(1, 10, 2, 20, 3, 30, 4, 40));
     }
+
+    // -- replace
+
+    @Test
+    public void shouldReplaceOnlyFirstOccurrenceWhenRearIsNonEmpty() {
+        Queue<Integer> queue = Queue.of(1, 2, 3).enqueue(3);
+
+        Queue<Integer> result = queue.replace(3, 42);
+
+        assertThat(result).isEqualTo(Queue.of(1, 2, 42, 3));
+    }
 }
