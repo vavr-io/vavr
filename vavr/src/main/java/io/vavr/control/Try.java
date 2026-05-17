@@ -1435,7 +1435,16 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Failure && Arrays.deepEquals(cause.getStackTrace(), ((Failure<?>) obj).cause.getStackTrace()));
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Failure)) {
+                return false;
+            }
+            Throwable other = ((Failure<?>) obj).cause;
+            return cause.getClass().equals(other.getClass())
+                    && Objects.equals(cause.getMessage(), other.getMessage())
+                    && Arrays.deepEquals(cause.getStackTrace(), other.getStackTrace());
         }
 
         @Override
@@ -1445,7 +1454,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(cause.getStackTrace());
+            return Objects.hash(cause.getClass(), cause.getMessage());
         }
 
         @Override

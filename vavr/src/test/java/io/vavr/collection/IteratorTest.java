@@ -990,4 +990,24 @@ public class IteratorTest extends AbstractTraversableTest {
         }
     }
 
+    // -- findLast
+
+    @Test
+    public void shouldFindLastNullElement() {
+        Option<Integer> result = Iterator.<Integer>of(null, 1, null).findLast(i -> i == null);
+        assertThat(result).isEqualTo(Option.some(null));
+    }
+
+    @Test
+    public void shouldFindLastNullWhenLastElementIsNull() {
+        Option<Integer> result = Iterator.<Integer>of(1, 2, null).findLast(i -> i == null);
+        assertThat(result).isEqualTo(Option.some(null));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenFindLastFindsNothing() {
+        Option<Integer> result = Iterator.of(1, 2, 3).findLast(i -> i > 5);
+        assertThat(result).isEqualTo(Option.none());
+    }
+
 }
