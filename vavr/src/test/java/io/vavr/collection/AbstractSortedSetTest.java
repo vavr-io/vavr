@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.TestComparators.toStringComparator;
@@ -91,7 +92,6 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
         assertThat(of(naturalOrder(), 1, 2, 3, 4).head()).isEqualTo(1);
     }
 
-
     @Test
     public void shouldReturnHeadOfNonEmptyHavingReversedOrder() {
         assertThat(of(reverseOrder(), 1, 2, 3, 4).head()).isEqualTo(4);
@@ -128,19 +128,19 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
         assertThat(of(naturalOrder(), 1, 2, 3, 4).tail()).isEqualTo(of(naturalOrder(), 2, 3, 4));
     }
 
-
     @Test
     public void shouldReturnTailOfNonEmptyHavingReversedOrder() {
         assertThat(of(reverseOrder(), 1, 2, 3, 4).tail()).isEqualTo(of(naturalOrder(), 1, 2, 3));
     }
 
-    // -- equals
-
-    @Test
-    public void shouldBeEqualWhenHavingSameElementsAndDifferentOrder() {
-        final SortedSet<Integer> set1 = of(naturalOrder(), 1, 2, 3);
-        final SortedSet<Integer> set2 = of(reverseOrder(), 3, 2, 1);
-        assertThat(set1).isEqualTo(set2);
+    @Nested
+    class EqualsTests {
+        @Test
+        public void shouldBeEqualWhenHavingSameElementsAndDifferentOrder() {
+            final SortedSet<Integer> set1 = of(naturalOrder(), 1, 2, 3);
+            final SortedSet<Integer> set2 = of(reverseOrder(), 3, 2, 1);
+            assertThat(set1).isEqualTo(set2);
+        }
     }
 
     // -- toSortedSet
@@ -152,23 +152,25 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
         assertThrows(ClassCastException.class, super::shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable);
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+        }
 
-    @Test
-    public void shouldHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+        @Test
+        public void shouldHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        }
     }
 
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
-    }
-
-    // -- isSequential()
-
-    @Test
-    public void shouldReturnFalseWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    @Nested
+    class IssequentialTests {
+        @Test
+        public void shouldReturnFalseWhenIsSequentialCalled() {
+            assertThat(of(1, 2, 3).isSequential()).isFalse();
+        }
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.TestComparators.toStringComparator;
@@ -174,177 +175,190 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         assertThat(source.isOrdered()).isTrue();
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowPriorityQueue() {
-        final PriorityQueue<Double> doubles = PriorityQueue.of(toStringComparator(), 1.0d);
-        final PriorityQueue<Number> numbers = PriorityQueue.narrow(doubles);
-        final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
-    }
-
-    // -- fill(int, Supplier)
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstantSupplier() {
-        assertThat(fill(17, () -> 7))
-                .hasSize(17)
-                .containsOnly(7);
-    }
-
-    // -- fill(int, T)
-
-    @Test
-    public void shouldReturnEmptyAfterFillWithZeroCount() {
-        assertThat(fill(0, 7)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReturnEmptyAfterFillWithNegativeCount() {
-        assertThat(fill(-1, 7)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstant() {
-        assertThat(fill(17, 7))
-                .hasSize(17)
-                .containsOnly(7);
-    }
-
-    // -- toList
-
-    @Test
-    public void toListIsSortedAccordingToComparator() {
-        final Comparator<Integer> comparator = composedComparator();
-        final PriorityQueue<Integer> queue = PriorityQueue.ofAll(comparator, values);
-        assertThat(queue.toList()).isEqualTo(values.sorted(comparator));
-    }
-
-    // -- merge
-
-    @Test
-    public void shouldMergeTwoPriorityQueues() {
-        final PriorityQueue<Integer> source = of(3, 1, 4, 1, 5);
-        final PriorityQueue<Integer> target = of(9, 2, 6, 5, 3);
-        assertThat(source.merge(target)).isEqualTo(of(3, 1, 4, 1, 5, 9, 2, 6, 5, 3));
-        assertThat(PriorityQueue.of(3).merge(PriorityQueue.of(1))).isEqualTo(of(3, 1));
-    }
-
-    // -- distinct
-
-    @Test
-    public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
-        final Comparator<String> comparator = comparingInt(o -> o.charAt(1));
-        assertThat(PriorityQueue.of(comparator, "5c", "1a", "3a", "1a", "2a", "4b", "3b").distinct().map(s -> s.substring(1))).isEqualTo(of("a", "b", "c"));
-    }
-
-    // -- removeAll
-
-    @Test
-    public void shouldRemoveAllElements() {
-        assertThat(of(3, 1, 4, 1, 5, 9, 2, 6).removeAll(of(1, 9, 1, 2))).isEqualTo(of(3, 4, 5, 6));
-    }
-
-    // -- enqueueAll
-
-    @Test
-    public void shouldEnqueueAllElements() {
-        assertThat(of(3, 1, 4).enqueueAll(of(1, 5, 9, 2))).isEqualTo(of(3, 1, 4, 1, 5, 9, 2));
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldFailPeekOfEmpty() {
-        assertThrows(NoSuchElementException.class, () -> empty().peek());
-    }
-
-    // -- dequeue
-
-    @Test
-    public void shouldDeque() {
-        assertThat(of(3, 1, 4, 1, 5).dequeue()).isEqualTo(Tuple.of(1, of(3, 4, 1, 5)));
-    }
-
-    @Test
-    public void shouldFailDequeueOfEmpty() {
-        assertThrows(NoSuchElementException.class, () -> empty().dequeue());
-    }
-
-    // -- toPriorityQueue
-
-    @Test
-    public void shouldKeepInstanceOfPriorityQueue() {
-        final PriorityQueue<Integer> queue = PriorityQueue.of(1, 3, 2);
-        assertThat(queue.toPriorityQueue()).isSameAs(queue);
-    }
-
-    // -- property based tests
-
-    @Test
-    public void shouldBehaveExactlyLikeAnotherPriorityQueue() {
-        for (int i = 0; i < 10; i++) {
-            final Random random = getRandom(987654321);
-
-            final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
-            PriorityQueue<Integer> functionalPriorityQueue = PriorityQueue.empty();
-
-            final int size = 100_000;
-            for (int j = 0; j < size; j++) {
-                /* Insert */
-                if (random.nextInt() % 3 == 0) {
-                    assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
-
-                    final int value = random.nextInt(size) - (size / 2);
-                    mutablePriorityQueue.add(value);
-                    functionalPriorityQueue = functionalPriorityQueue.enqueue(value);
-                }
-
-                assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
-
-                /* Delete */
-                if (random.nextInt() % 5 == 0) {
-                    if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
-                    if (!functionalPriorityQueue.isEmpty()) {
-                        functionalPriorityQueue = functionalPriorityQueue.tail();
-                    }
-
-                    assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
-                }
-            }
-
-            final Collection<Integer> oldValues = mutablePriorityQueue.stream().sorted().collect(toList());
-            final Collection<Integer> newValues = functionalPriorityQueue.toJavaList();
-            assertThat(oldValues).isEqualTo(newValues);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowPriorityQueue() {
+            final PriorityQueue<Double> doubles = PriorityQueue.of(toStringComparator(), 1.0d);
+            final PriorityQueue<Number> numbers = PriorityQueue.narrow(doubles);
+            final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
         }
     }
 
-    // -- spliterator
-
-    @Test
-    public void shouldHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+    @Nested
+    class FillIntSupplierTests {
+        @Test
+        public void shouldReturnManyAfterFillWithConstantSupplier() {
+            assertThat(fill(17, () -> 7))
+                    .hasSize(17)
+                    .containsOnly(7);
+        }
     }
 
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    @Nested
+    class FillIntTTests {
+        @Test
+        public void shouldReturnEmptyAfterFillWithZeroCount() {
+            assertThat(fill(0, 7)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldReturnEmptyAfterFillWithNegativeCount() {
+            assertThat(fill(-1, 7)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldReturnManyAfterFillWithConstant() {
+            assertThat(fill(17, 7))
+                    .hasSize(17)
+                    .containsOnly(7);
+        }
     }
 
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    @Nested
+    class TolistTests {
+        @Test
+        public void toListIsSortedAccordingToComparator() {
+            final Comparator<Integer> comparator = composedComparator();
+            final PriorityQueue<Integer> queue = PriorityQueue.ofAll(comparator, values);
+            assertThat(queue.toList()).isEqualTo(values.sorted(comparator));
+        }
     }
 
-    @Test
-    public void shouldNotHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+    @Nested
+    class MergeTests {
+        @Test
+        public void shouldMergeTwoPriorityQueues() {
+            final PriorityQueue<Integer> source = of(3, 1, 4, 1, 5);
+            final PriorityQueue<Integer> target = of(9, 2, 6, 5, 3);
+            assertThat(source.merge(target)).isEqualTo(of(3, 1, 4, 1, 5, 9, 2, 6, 5, 3));
+            assertThat(PriorityQueue.of(3).merge(PriorityQueue.of(1))).isEqualTo(of(3, 1));
+        }
     }
 
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    @Nested
+    class DistinctTests {
+        @Test
+        public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
+            final Comparator<String> comparator = comparingInt(o -> o.charAt(1));
+            assertThat(PriorityQueue.of(comparator, "5c", "1a", "3a", "1a", "2a", "4b", "3b").distinct().map(s -> s.substring(1))).isEqualTo(of("a", "b", "c"));
+        }
+    }
+
+    @Nested
+    class RemoveallTests {
+        @Test
+        public void shouldRemoveAllElements() {
+            assertThat(of(3, 1, 4, 1, 5, 9, 2, 6).removeAll(of(1, 9, 1, 2))).isEqualTo(of(3, 4, 5, 6));
+        }
+    }
+
+    @Nested
+    class EnqueueallTests {
+        @Test
+        public void shouldEnqueueAllElements() {
+            assertThat(of(3, 1, 4).enqueueAll(of(1, 5, 9, 2))).isEqualTo(of(3, 1, 4, 1, 5, 9, 2));
+        }
+    }
+
+    @Nested
+    class PeekTests {
+        @Test
+        public void shouldFailPeekOfEmpty() {
+            assertThrows(NoSuchElementException.class, () -> empty().peek());
+        }
+    }
+
+    @Nested
+    class DequeueTests {
+        @Test
+        public void shouldDeque() {
+            assertThat(of(3, 1, 4, 1, 5).dequeue()).isEqualTo(Tuple.of(1, of(3, 4, 1, 5)));
+        }
+
+        @Test
+        public void shouldFailDequeueOfEmpty() {
+            assertThrows(NoSuchElementException.class, () -> empty().dequeue());
+        }
+    }
+
+    @Nested
+    class TopriorityqueueTests {
+        @Test
+        public void shouldKeepInstanceOfPriorityQueue() {
+            final PriorityQueue<Integer> queue = PriorityQueue.of(1, 3, 2);
+            assertThat(queue.toPriorityQueue()).isSameAs(queue);
+        }
+    }
+
+    @Nested
+    class PropertyBasedTests {
+        @Test
+        public void shouldBehaveExactlyLikeAnotherPriorityQueue() {
+            for (int i = 0; i < 10; i++) {
+                final Random random = getRandom(987654321);
+
+                final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
+                PriorityQueue<Integer> functionalPriorityQueue = PriorityQueue.empty();
+
+                final int size = 100_000;
+                for (int j = 0; j < size; j++) {
+                    /* Insert */
+                    if (random.nextInt() % 3 == 0) {
+                        assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+
+                        final int value = random.nextInt(size) - (size / 2);
+                        mutablePriorityQueue.add(value);
+                        functionalPriorityQueue = functionalPriorityQueue.enqueue(value);
+                    }
+
+                    assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+
+                    /* Delete */
+                    if (random.nextInt() % 5 == 0) {
+                        if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
+                        if (!functionalPriorityQueue.isEmpty()) {
+                            functionalPriorityQueue = functionalPriorityQueue.tail();
+                        }
+
+                        assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+                    }
+                }
+
+                final Collection<Integer> oldValues = mutablePriorityQueue.stream().sorted().collect(toList());
+                final Collection<Integer> newValues = functionalPriorityQueue.toJavaList();
+                assertThat(oldValues).isEqualTo(newValues);
+            }
+        }
+    }
+
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+        }
+
+        @Test
+        public void shouldHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        }
+
+        @Test
+        public void shouldHaveSizedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+        }
+
+        @Test
+        public void shouldNotHaveDistinctSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+        }
+
+        @Test
+        public void shouldReturnSizeWhenSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        }
     }
 
     // -- isSequential()

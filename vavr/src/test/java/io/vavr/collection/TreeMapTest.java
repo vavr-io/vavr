@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.List;
@@ -157,13 +158,14 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- collector
-
-    @Test
-    public void shouldCollectFromJavaStream() {
-        final TreeMap<Integer, String> actual = java.util.stream.Stream.of(Tuple.of(1, "1"), Tuple.of(2, "2")).collect(TreeMap.collector(Comparators.naturalComparator()));
-        final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2");
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class CollectorTests {
+        @Test
+        public void shouldCollectFromJavaStream() {
+            final TreeMap<Integer, String> actual = java.util.stream.Stream.of(Tuple.of(1, "1"), Tuple.of(2, "2")).collect(TreeMap.collector(Comparators.naturalComparator()));
+            final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2");
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     // -- construct
@@ -270,66 +272,68 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual.toJavaMap()).isEqualTo(expected);
     }
 
-    // -- static factories
+    @Nested
+    class StaticFactoriesTests {
+        @Test
+        public void shouldCreateOfEntriesUsingNoComparator() {
+            final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+            final TreeMap<Integer, String> actual = TreeMap.ofEntries(expected);
+            assertThat(actual.toList()).isEqualTo(expected);
+        }
 
-    @Test
-    public void shouldCreateOfEntriesUsingNoComparator() {
-        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
-        final TreeMap<Integer, String> actual = TreeMap.ofEntries(expected);
-        assertThat(actual.toList()).isEqualTo(expected);
+        @Test
+        public void shouldCreateOfEntriesUsingNaturalComparator() {
+            final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+            final TreeMap<Integer, String> actual = TreeMap.ofEntries(Comparators.naturalComparator(), expected);
+            assertThat(actual.toList()).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldCreateOfEntriesUsingKeyComparator() {
+            final TreeMap<Integer, String> actual = TreeMap.ofEntries(Comparators.naturalComparator(), asJavaEntry(1, "a"), asJavaEntry(2, "b"));
+            final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+            assertThat(actual.toList()).isEqualTo(expected);
+        }
     }
 
-    @Test
-    public void shouldCreateOfEntriesUsingNaturalComparator() {
-        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
-        final TreeMap<Integer, String> actual = TreeMap.ofEntries(Comparators.naturalComparator(), expected);
-        assertThat(actual.toList()).isEqualTo(expected);
-    }
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowTreeMap() {
+            final TreeMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+            final TreeMap<Integer, Number> number2numberMap = TreeMap.narrow(int2doubleMap);
+            final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
 
-    @Test
-    public void shouldCreateOfEntriesUsingKeyComparator() {
-        final TreeMap<Integer, String> actual = TreeMap.ofEntries(Comparators.naturalComparator(), asJavaEntry(1, "a"), asJavaEntry(2, "b"));
-        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
-        assertThat(actual.toList()).isEqualTo(expected);
-    }
+        @Test
+        public void shouldScan() {
+            final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
+            final TreeMap<String, Integer> result = tm.scan(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+            assertThat(result).isEqualTo(TreeMap.ofEntries(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
+        }
 
-    // -- static narrow
+        @Test
+        public void shouldScanLeft() {
+            final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
+            final Seq<Tuple2<String, Integer>> result = tm.scanLeft(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+            assertThat(result).isEqualTo(List.of(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
+        }
 
-    @Test
-    public void shouldNarrowTreeMap() {
-        final TreeMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
-        final TreeMap<Integer, Number> number2numberMap = TreeMap.narrow(int2doubleMap);
-        final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
-        assertThat(actual).isEqualTo(3);
-    }
+        @Test
+        public void shouldScanRight() {
+            final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
+            final Seq<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
+            assertThat(result).isEqualTo(List.of("zowteno", "zowt", "z"));
+        }
 
-    @Test
-    public void shouldScan() {
-        final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
-        final TreeMap<String, Integer> result = tm.scan(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
-        assertThat(result).isEqualTo(TreeMap.ofEntries(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
-    }
-
-    @Test
-    public void shouldScanLeft() {
-        final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
-        final Seq<Tuple2<String, Integer>> result = tm.scanLeft(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
-        assertThat(result).isEqualTo(List.of(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
-    }
-
-    @Test
-    public void shouldScanRight() {
-        final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
-        final Seq<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
-        assertThat(result).isEqualTo(List.of("zowteno", "zowt", "z"));
-    }
-
-    @Test
-    public void shouldWrapMap() {
-        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
-        source.put(1, 2);
-        source.put(3, 4);
-        assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        @Test
+        public void shouldWrapMap() {
+            final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+            source.put(1, 2);
+            source.put(3, 4);
+            assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        }
     }
 
     // -- ofAll
@@ -348,50 +352,54 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- fill
-
-    @Test
-    public void shouldFillWithComparator() {
-        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
-        final Supplier<Tuple2<Long, Float>> supplier = () -> Tuple.of(ints.remove().longValue(), ints.remove().floatValue());
-        final TreeMap<Long, Float> actual = TreeMap.fill(Comparators.naturalComparator(), 3, supplier);
-        final TreeMap<Long, Float> expected = TreeMap.of(0l, 0f, 1l, 1f, 2l, 2f);
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class FillTests {
+        @Test
+        public void shouldFillWithComparator() {
+            final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
+            final Supplier<Tuple2<Long, Float>> supplier = () -> Tuple.of(ints.remove().longValue(), ints.remove().floatValue());
+            final TreeMap<Long, Float> actual = TreeMap.fill(Comparators.naturalComparator(), 3, supplier);
+            final TreeMap<Long, Float> expected = TreeMap.of(0l, 0f, 1l, 1f, 2l, 2f);
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
-    // -- flatMap
+    @Nested
+    class FlatmapTests {
+        @Test
+        public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
 
-    @Test
-    public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
+            final TreeMap<Integer, String> testee = TreeMap.of(Comparator.naturalOrder(), 1, "1", 2, "2");
+            assertThat(testee.head()).isEqualTo(Tuple(1, "1"));
 
-        final TreeMap<Integer, String> testee = TreeMap.of(Comparator.naturalOrder(), 1, "1", 2, "2");
-        assertThat(testee.head()).isEqualTo(Tuple(1, "1"));
+            final TreeMap<Integer, String> actual = testee.flatMap(Comparator.reverseOrder(), (k, v) -> List.empty());
+            assertThat(actual).isEmpty();
 
-        final TreeMap<Integer, String> actual = testee.flatMap(Comparator.reverseOrder(), (k, v) -> List.empty());
-        assertThat(actual).isEmpty();
-
-        final TreeMap<Integer, String> actualSorted = actual.put(1, "1").put(2, "2");
-        assertThat(actualSorted.head()).isEqualTo(Tuple(2, "2"));
+            final TreeMap<Integer, String> actualSorted = actual.put(1, "1").put(2, "2");
+            assertThat(actualSorted.head()).isEqualTo(Tuple(2, "2"));
+        }
     }
 
-    // -- map
-
-    @Test
-    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        final TreeMap<Integer, String> actual = TreeMap
-                .of(3, "3", 1, "1", 2, "2")
-                .mapKeys(Integer::toHexString).mapKeys(String::length);
-        final TreeMap<Integer, String> expected = TreeMap.of(1, "3");
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class MapTests {
+        @Test
+        public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
+            final TreeMap<Integer, String> actual = TreeMap
+                    .of(3, "3", 1, "1", 2, "2")
+                    .mapKeys(Integer::toHexString).mapKeys(String::length);
+            final TreeMap<Integer, String> expected = TreeMap.of(1, "3");
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
-    // -- tabulate
-
-    @Test
-    public void shouldTabulateWithComparator() {
-        final TreeMap<Integer, String> actual = TreeMap.tabulate(Comparators.naturalComparator(), 3, i -> Tuple.of(i, String.valueOf(i)));
-        final TreeMap<Integer, String> expected = TreeMap.of(0, "0", 1, "1", 2, "2");
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class TabulateTests {
+        @Test
+        public void shouldTabulateWithComparator() {
+            final TreeMap<Integer, String> actual = TreeMap.tabulate(Comparators.naturalComparator(), 3, i -> Tuple.of(i, String.valueOf(i)));
+            final TreeMap<Integer, String> expected = TreeMap.of(0, "0", 1, "1", 2, "2");
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     // -- obsolete tests

@@ -29,6 +29,7 @@ import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -129,42 +130,45 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     abstract protected <T> Traversable<T> fill(int n, T element);
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowSeq() {
-        final Seq<Double> doubles = of(1.0d);
-        final Seq<Number> numbers = Seq.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowSeq() {
+            final Seq<Double> doubles = of(1.0d);
+            final Seq<Number> numbers = Seq.narrow(doubles);
+            final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- fill(int, Supplier)
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstantSupplier() {
-        assertThat(fill(17, () -> 7))
-                .hasSize(17)
-                .containsOnly(7);
+    @Nested
+    class FillIntSupplierTests {
+        @Test
+        public void shouldReturnManyAfterFillWithConstantSupplier() {
+            assertThat(fill(17, () -> 7))
+                    .hasSize(17)
+                    .containsOnly(7);
+        }
     }
 
-    // -- fill(int, T)
+    @Nested
+    class FillIntTTests {
+        @Test
+        public void shouldReturnEmptyAfterFillWithZeroCount() {
+            assertThat(fill(0, 7)).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldReturnEmptyAfterFillWithZeroCount() {
-        assertThat(fill(0, 7)).isEqualTo(empty());
-    }
+        @Test
+        public void shouldReturnEmptyAfterFillWithNegativeCount() {
+            assertThat(fill(-1, 7)).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldReturnEmptyAfterFillWithNegativeCount() {
-        assertThat(fill(-1, 7)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReturnManyAfterFillWithConstant() {
-        assertThat(fill(17, 7))
-                .hasSize(17)
-                .containsOnly(7);
+        @Test
+        public void shouldReturnManyAfterFillWithConstant() {
+            assertThat(fill(17, 7))
+                    .hasSize(17)
+                    .containsOnly(7);
+        }
     }
 
     // -- append
@@ -262,235 +266,243 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
     }
 
-    // -- asPartialFunction
+    @Nested
+    class AspartialfunctionTests {
+        @Test
+        public void shouldUseSeqAsPartialFunction() {
+            assertThat(of(1, 2, 3).asPartialFunction().apply(1)).isEqualTo(2);
+        }
 
-    @Test
-    public void shouldUseSeqAsPartialFunction() {
-        assertThat(of(1, 2, 3).asPartialFunction().apply(1)).isEqualTo(2);
+        @Test
+        public void shouldNotBeDefinedAtNegativeIndexWhenEmpty() {
+            assertThat(empty().asPartialFunction().isDefinedAt(-1)).isFalse();
+        }
+
+        @Test
+        public void shouldNotBeDefinedAtNegativeIndexWhenNonEmpty() {
+            assertThat(of(1).asPartialFunction().isDefinedAt(-1)).isFalse();
+        }
+
+        @Test
+        public void shouldNotBeDefinedAtIndex0WhenEmpty() {
+            assertThat(empty().asPartialFunction().isDefinedAt(0)).isFalse();
+        }
+
+        @Test
+        public void shouldBeDefinedAtIndex0WhenNonEmpty() {
+            assertThat(of(1).asPartialFunction().isDefinedAt(0)).isTrue();
+        }
+
+        @Test
+        public void shouldBeDefinedAtLastIndexWhenNonEmpty() {
+            assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(2)).isTrue();
+        }
+
+        @Test
+        public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
+            assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(3)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldNotBeDefinedAtNegativeIndexWhenEmpty() {
-        assertThat(empty().asPartialFunction().isDefinedAt(-1)).isFalse();
+    @Nested
+    class CombinationsTests {
+        @Test
+        public void shouldComputeCombinationsOfEmptyList() {
+            assertThat(empty().combinations()).isEqualTo(of(empty()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldComputeCombinationsOfNonEmptyList() {
+            assertThat(of(1, 2, 3).combinations())
+                    .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
+        }
     }
 
-    @Test
-    public void shouldNotBeDefinedAtNegativeIndexWhenNonEmpty() {
-        assertThat(of(1).asPartialFunction().isDefinedAt(-1)).isFalse();
-    }
-
-    @Test
-    public void shouldNotBeDefinedAtIndex0WhenEmpty() {
-        assertThat(empty().asPartialFunction().isDefinedAt(0)).isFalse();
-    }
-
-    @Test
-    public void shouldBeDefinedAtIndex0WhenNonEmpty() {
-        assertThat(of(1).asPartialFunction().isDefinedAt(0)).isTrue();
-    }
-
-    @Test
-    public void shouldBeDefinedAtLastIndexWhenNonEmpty() {
-        assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(2)).isTrue();
-    }
-
-    @Test
-    public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
-        assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(3)).isFalse();
-    }
-
-    // -- combinations
-
-    @Test
-    public void shouldComputeCombinationsOfEmptyList() {
-        assertThat(empty().combinations()).isEqualTo(of(empty()));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(of(1, 2, 3).combinations())
-                .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
-    }
-
-    // -- asJavaMutable*
-
-    @Test
-    public void shouldConvertAsJava() {
-        final java.util.List<Integer> list = of(1, 2, 3).asJavaMutable();
-        list.add(4);
-        assertThat(list).isEqualTo(Arrays.asList(1, 2, 3, 4));
-    }
-
-    @Test
-    public void shouldConvertAsJavaWithConsumer() {
-        final Seq<Integer> seq = of(1, 2, 3).asJavaMutable(list -> {
-            assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+    @Nested
+    class AsjavamutableTests {
+        @Test
+        public void shouldConvertAsJava() {
+            final java.util.List<Integer> list = of(1, 2, 3).asJavaMutable();
             list.add(4);
-        });
-        assertThat(seq).isEqualTo(of(1, 2, 3, 4));
-    }
+            assertThat(list).isEqualTo(Arrays.asList(1, 2, 3, 4));
+        }
 
-    @Test
-    public void shouldConvertAsJavaAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> { throw new RuntimeException("test");}))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("test");
-    }
+        @Test
+        public void shouldConvertAsJavaWithConsumer() {
+            final Seq<Integer> seq = of(1, 2, 3).asJavaMutable(list -> {
+                assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+                list.add(4);
+            });
+            assertThat(seq).isEqualTo(of(1, 2, 3, 4));
+        }
 
-    @Test
-    public void shouldConvertAsJavaImmutable() {
-        final java.util.List<Integer> list = of(1, 2, 3).asJava();
-        assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
-        assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
-    }
+        @Test
+        public void shouldConvertAsJavaAndRethrowException() {
+            assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> { throw new RuntimeException("test");}))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("test");
+        }
 
-    @Test
-    public void shouldConvertAsJavaImmutableWithConsumer() {
-        final Seq<Integer> seq = of(1, 2, 3).asJava(list -> {
+        @Test
+        public void shouldConvertAsJavaImmutable() {
+            final java.util.List<Integer> list = of(1, 2, 3).asJava();
             assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
             assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
-        });
-        assertThat(seq).isEqualTo(of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldConvertAsJavaImmutableWithConsumer() {
+            final Seq<Integer> seq = of(1, 2, 3).asJava(list -> {
+                assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+                assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
+            });
+            assertThat(seq).isEqualTo(of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldConvertAsJavaImmutableAndRethrowException() {
+            assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("test");
+        }
     }
 
-    @Test
-    public void shouldConvertAsJavaImmutableAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("test");
+    @Nested
+    class CombinationsKTests {
+        @Test
+        public void shouldComputeKCombinationsOfEmptyList() {
+            assertThat(empty().combinations(1)).isEmpty();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldComputeKCombinationsOfNonEmptyList() {
+            assertThat(of(1, 2, 3).combinations(2)).isEqualTo(of(of(1, 2), of(1, 3), of(2, 3)));
+        }
+
+        @Test
+        public void shouldComputeKCombinationsOfNegativeK() {
+            assertThat(of(1).combinations(-1)).isEqualTo(of(empty()));
+        }
     }
 
-    // -- combinations(k)
+    @Nested
+    class ContainssliceTests {
+        @Test
+        public void shouldRecognizeNilNotContainsSlice() {
+            final boolean actual = empty().containsSlice(of(1, 2, 3));
+            assertThat(actual).isFalse();
+        }
 
-    @Test
-    public void shouldComputeKCombinationsOfEmptyList() {
-        assertThat(empty().combinations(1)).isEmpty();
+        @Test
+        public void shouldRecognizeNonNilDoesContainSlice() {
+            final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        public void shouldRecognizeNonNilDoesNotContainSlice() {
+            final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
+            assertThat(actual).isFalse();
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldComputeKCombinationsOfNonEmptyList() {
-        assertThat(of(1, 2, 3).combinations(2)).isEqualTo(of(of(1, 2), of(1, 3), of(2, 3)));
+    @Nested
+    class CrossproductTests {
+        @Test
+        public void shouldCalculateCrossProductOfNil() {
+            final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct();
+            assertThat(actual).isEmpty();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldCalculateCrossProductOfNonNil() {
+            final List<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct().toList();
+            final List<Tuple2<Integer, Integer>> expected = List.of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+                    Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
-    @Test
-    public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(of(1).combinations(-1)).isEqualTo(of(empty()));
+    @Nested
+    class CrossproductIntTests {
+        @Test
+        public void shouldCalculateCrossProductPower() {
+            assertThat(of(1, 2).crossProduct(0).toList()).isEqualTo(List.of(empty()));
+            assertThat(of(1, 2).crossProduct(1).toList()).isEqualTo(List.of(of(1), of(2)));
+            assertThat(of(1, 2).crossProduct(2).toList()).isEqualTo(List.of(of(1, 1), of(1, 2), of(2, 1), of(2, 2)));
+        }
+
+        @Test
+        public void shouldCrossProductPowerBeLazy() {
+            assertThat(range(0, 10).crossProduct(100).take(1).get()).isEqualTo(tabulate(100, i -> 0));
+        }
+
+        @Test
+        public void shouldCrossProductOfNegativePowerBeEmpty() {
+            assertThat(of(1, 2).crossProduct(-1).toList()).isEqualTo(List.empty());
+        }
     }
 
-    // -- containsSlice
+    @Nested
+    class CrossproductIterableTests {
+        @Test
+        public void shouldCalculateCrossProductOfNilAndNil() {
+            final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(empty());
+            assertThat(actual).isEmpty();
+        }
 
-    @Test
-    public void shouldRecognizeNilNotContainsSlice() {
-        final boolean actual = empty().containsSlice(of(1, 2, 3));
-        assertThat(actual).isFalse();
+        @Test
+        public void shouldCalculateCrossProductOfNilAndNonNil() {
+            final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        public void shouldCalculateCrossProductOfNonNilAndNil() {
+            final Iterator<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
+            assertThat(actual).isEmpty();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldCalculateCrossProductOfNonNilAndNonNil() {
+            final List<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b')).toList();
+            final List<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+                    Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b')).toList();
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldThrowWhenCalculatingCrossProductAndThatIsNull() {
+            assertThrows(NullPointerException.class, () -> empty().crossProduct(null));
+        }
     }
 
-    @Test
-    public void shouldRecognizeNonNilDoesContainSlice() {
-        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
-        assertThat(actual).isTrue();
-    }
+    @Nested
+    class DroprightuntilTests {
+        @Test
+        public void shouldDropRightUntilNoneOnNil() {
+            assertThat(empty().dropRightUntil(ignored -> true)).isSameAs(empty());
+        }
 
-    @Test
-    public void shouldRecognizeNonNilDoesNotContainSlice() {
-        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
-        assertThat(actual).isFalse();
-    }
+        @Test
+        public void shouldDropRightUntilNoneIfPredicateIsTrue() {
+            final Seq<Integer> values = of(1, 2, 3);
+            assertThat(values.dropRightUntil(ignored -> true)).isEqualTo(values);
+        }
 
-    // -- crossProduct()
+        @Test
+        public void shouldDropRightUntilAllIfPredicateIsFalse() {
+            assertThat(of(1, 2, 3).dropRightUntil(ignored -> false)).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldCalculateCrossProductOfNil() {
-        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct();
-        assertThat(actual).isEmpty();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldCalculateCrossProductOfNonNil() {
-        final List<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct().toList();
-        final List<Tuple2<Integer, Integer>> expected = List.of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
-                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    // -- crossProduct(int)
-
-    @Test
-    public void shouldCalculateCrossProductPower() {
-        assertThat(of(1, 2).crossProduct(0).toList()).isEqualTo(List.of(empty()));
-        assertThat(of(1, 2).crossProduct(1).toList()).isEqualTo(List.of(of(1), of(2)));
-        assertThat(of(1, 2).crossProduct(2).toList()).isEqualTo(List.of(of(1, 1), of(1, 2), of(2, 1), of(2, 2)));
-    }
-
-    @Test
-    public void shouldCrossProductPowerBeLazy() {
-        assertThat(range(0, 10).crossProduct(100).take(1).get()).isEqualTo(tabulate(100, i -> 0));
-    }
-
-    @Test
-    public void shouldCrossProductOfNegativePowerBeEmpty() {
-        assertThat(of(1, 2).crossProduct(-1).toList()).isEqualTo(List.empty());
-    }
-
-    // -- crossProduct(Iterable)
-
-    @Test
-    public void shouldCalculateCrossProductOfNilAndNil() {
-        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(empty());
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldCalculateCrossProductOfNilAndNonNil() {
-        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldCalculateCrossProductOfNonNilAndNil() {
-        final Iterator<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
-        assertThat(actual).isEmpty();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldCalculateCrossProductOfNonNilAndNonNil() {
-        final List<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b')).toList();
-        final List<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
-                Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b')).toList();
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldThrowWhenCalculatingCrossProductAndThatIsNull() {
-        assertThrows(NullPointerException.class, () -> empty().crossProduct(null));
-    }
-
-
-    // -- dropRightUntil
-
-    @Test
-    public void shouldDropRightUntilNoneOnNil() {
-        assertThat(empty().dropRightUntil(ignored -> true)).isSameAs(empty());
-    }
-
-    @Test
-    public void shouldDropRightUntilNoneIfPredicateIsTrue() {
-        final Seq<Integer> values = of(1, 2, 3);
-        assertThat(values.dropRightUntil(ignored -> true)).isEqualTo(values);
-    }
-
-    @Test
-    public void shouldDropRightUntilAllIfPredicateIsFalse() {
-        assertThat(of(1, 2, 3).dropRightUntil(ignored -> false)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldDropRightUntilCorrect() {
-        assertThat(of(1, 2, 3).dropRightUntil(i -> i <= 2)).isEqualTo(of(1, 2));
+        @Test
+        public void shouldDropRightUntilCorrect() {
+            assertThat(of(1, 2, 3).dropRightUntil(i -> i <= 2)).isEqualTo(of(1, 2));
+        }
     }
 
     // -- dropRightWhile
@@ -521,297 +533,306 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).dropRightWhile(i -> i % 2 == 1)).isEqualTo(of(1, 2));
     }
 
-    // -- get
+    @Nested
+    class GetTests {
+        @Test
+        public void shouldThrowWhenGetWithNegativeIndexOnNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().get(-1));
+        }
 
-    @Test
-    public void shouldThrowWhenGetWithNegativeIndexOnNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> empty().get(-1));
+        @Test
+        public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(-1));
+        }
+
+        @Test
+        public void shouldThrowWhenGetOnNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().get(0));
+        }
+
+        @Test
+        public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(1));
+        }
+
+        @Test
+        public void shouldGetFirstElement() {
+            assertThat(of(1, 2, 3).get(0)).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldGetLastElement() {
+            assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
+        }
     }
 
-    @Test
-    public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(-1));
+    @Nested
+    class IndexofTests {
+        @Test
+        public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
+            assertThat(empty().indexOf(1)).isEqualTo(-1);
+
+            assertThat(empty().indexOfOption(1)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldNotFindIndexOfElementWhenStartIsGreater() {
+            assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
+
+            assertThat(of(1, 2, 3, 4).indexOfOption(2, 2)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFindIndexOfFirstElement() {
+            assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
+
+            assertThat(of(1, 2, 3).indexOfOption(1)).isEqualTo(Option.some(0));
+        }
+
+        @Test
+        public void shouldFindIndexOfInnerElement() {
+            assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
+
+            assertThat(of(1, 2, 3).indexOfOption(2)).isEqualTo(Option.some(1));
+        }
+
+        @Test
+        public void shouldFindIndexOfLastElement() {
+            assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
+
+            assertThat(of(1, 2, 3).indexOfOption(3)).isEqualTo(Option.some(2));
+        }
     }
 
-    @Test
-    public void shouldThrowWhenGetOnNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> empty().get(0));
+    @Nested
+    class IndexofsliceTests {
+        @Test
+        public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
+            assertThat(empty().indexOfSlice(of(2, 3))).isEqualTo(-1);
+
+            assertThat(empty().indexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
+            assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
+
+            assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFindIndexOfFirstSlice() {
+            assertThat(of(1, 2, 3, 4).indexOfSlice(of(1, 2))).isEqualTo(0);
+
+            assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(1, 2))).isEqualTo(Option.some(0));
+        }
+
+        @Test
+        public void shouldFindIndexOfInnerSlice() {
+            assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3))).isEqualTo(1);
+
+            assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
+        }
+
+        @Test
+        public void shouldFindIndexOfLastSlice() {
+            assertThat(of(1, 2, 3).indexOfSlice(of(2, 3))).isEqualTo(1);
+
+            assertThat(of(1, 2, 3).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
+        }
     }
 
-    @Test
-    public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(1));
+    @Nested
+    class LastindexofTests {
+        @Test
+        public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
+            assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
+
+            assertThat(empty().lastIndexOfOption(1)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
+            assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
+
+            assertThat(of(1, 2, 3, 4).lastIndexOfOption(3, 1)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFindLastIndexOfElement() {
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1)).isEqualTo(Option.some(3));
+        }
+
+        @Test
+        public void shouldFindLastIndexOfElementWithEnd() {
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
+
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
+        }
     }
 
-    @Test
-    public void shouldGetFirstElement() {
-        assertThat(of(1, 2, 3).get(0)).isEqualTo(1);
+    @Nested
+    class LastindexofsliceTests {
+        @Test
+        public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
+            assertThat(empty().lastIndexOfSlice(of(2, 3))).isEqualTo(-1);
+
+            assertThat(empty().lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
+            assertThat(of(1, 2, 3, 4, 5).lastIndexOfSlice(of(3, 4), 1)).isEqualTo(-1);
+
+            assertThat(of(1, 2, 3, 4, 5).lastIndexOfSliceOption(of(3, 4), 1)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFindLastIndexOfSlice() {
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(empty())).isEqualTo(5);
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
+            assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3))).isEqualTo(4);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3))).isEqualTo(3);
+
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(empty())).isEqualTo(Option.some(5));
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(of(2))).isEqualTo(Option.some(4));
+            assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.some(4));
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3))).isEqualTo(Option.some(3));
+        }
+
+        @Test
+        public void shouldFindLastIndexOfSliceWithEnd() {
+            assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
+            assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), -1)).isEqualTo(-1);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
+            assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3), 2)).isEqualTo(0);
+
+            assertThat(empty().lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
+            assertThat(empty().lastIndexOfSliceOption(empty(), 0)).isEqualTo(Option.some(0));
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), 2)).isEqualTo(Option.some(2));
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), -1)).isEqualTo(Option.none());
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), 2)).isEqualTo(Option.some(1));
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
+            assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
+            assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3), 2)).isEqualTo(Option.some(0));
+        }
     }
 
-    @Test
-    public void shouldGetLastElement() {
-        assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
+    @Nested
+    class IndexwhereTests {
+        @Test
+        public void shouldCalculateIndexWhere() {
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0)).isEqualTo(0);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1)).isEqualTo(1);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2)).isEqualTo(2);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8)).isEqualTo(-1);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0, 3)).isEqualTo(4);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1, 3)).isEqualTo(5);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2, 3)).isEqualTo(6);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8, 3)).isEqualTo(-1);
+
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0)).isEqualTo(Option.some(0));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1)).isEqualTo(Option.some(1));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2)).isEqualTo(Option.some(2));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8)).isEqualTo(Option.none());
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(4));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(5));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(6));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFailIndexWhereNullPredicate() {
+            assertThrows(NullPointerException.class, () -> of(1).indexWhere(null));
+        }
+
+        @Test
+        public void shouldFailIndexWhereNullPredicateFrom() {
+            assertThrows(NullPointerException.class, () -> of(1).indexWhere(null, 0));
+        }
     }
 
-    // -- indexOf
+    @Nested
+    class LastindexwhereTests {
+        @Test
+        public void shouldCalculateLastIndexWhere() {
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0)).isEqualTo(4);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1)).isEqualTo(5);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2)).isEqualTo(6);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8)).isEqualTo(-1);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0, 3)).isEqualTo(0);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1, 3)).isEqualTo(1);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2, 3)).isEqualTo(2);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8, 3)).isEqualTo(-1);
 
-    @Test
-    public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().indexOf(1)).isEqualTo(-1);
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0)).isEqualTo(Option.some(4));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1)).isEqualTo(Option.some(5));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2)).isEqualTo(Option.some(6));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8)).isEqualTo(Option.none());
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(0));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(1));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(2));
+            assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
+        }
 
-        assertThat(empty().indexOfOption(1)).isEqualTo(Option.none());
+        @Test
+        public void shouldFailLastIndexWhereNullPredicate() {
+            assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null));
+        }
+
+        @Test
+        public void shouldFailLastIndexWhereNullPredicateFrom() {
+            assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null, 0));
+        }
     }
 
-    @Test
-    public void shouldNotFindIndexOfElementWhenStartIsGreater() {
-        assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
-
-        assertThat(of(1, 2, 3, 4).indexOfOption(2, 2)).isEqualTo(Option.none());
+    @Nested
+    class EndswithTests {
+        @Test
+        public void shouldTestEndsWith() {
+            assertThat(empty().endsWith(empty())).isTrue();
+            assertThat(empty().endsWith(of(1))).isFalse();
+            assertThat(of(1, 2, 3, 4).endsWith(empty())).isTrue();
+            assertThat(of(1, 2, 3, 4).endsWith(of(4))).isTrue();
+            assertThat(of(1, 2, 3, 4).endsWith(of(3, 4))).isTrue();
+            assertThat(of(1, 2, 3, 4).endsWith(of(1, 2, 3, 4))).isTrue();
+            assertThat(of(1, 2, 3, 4).endsWith(of(0, 1, 2, 3, 4))).isFalse();
+            assertThat(of(1, 2, 3, 4).endsWith(of(2, 3, 5))).isFalse();
+        }
     }
 
-    @Test
-    public void shouldFindIndexOfFirstElement() {
-        assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
+    @Nested
+    class EqualityTests {
+        @Test
+        public void shouldObeyEqualityConstraints() {
 
-        assertThat(of(1, 2, 3).indexOfOption(1)).isEqualTo(Option.some(0));
-    }
+            // sequential collections
+            assertThat(empty().equals(List.empty())).isTrue();
+            assertThat(of(1).equals(List.of(1))).isTrue();
+            assertThat(of(1, 2, 3).equals(List.of(1, 2, 3))).isTrue();
+            assertThat(of(1, 2, 3).equals(List.of(3, 2, 1))).isFalse();
 
-    @Test
-    public void shouldFindIndexOfInnerElement() {
-        assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
+            // other classes
+            assertThat(empty().equals(HashMap.empty())).isFalse();
+            assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(HashSet.empty())).isFalse();
 
-        assertThat(of(1, 2, 3).indexOfOption(2)).isEqualTo(Option.some(1));
-    }
+            assertThat(empty().equals(LinkedHashMap.empty())).isFalse();
+            assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
 
-    @Test
-    public void shouldFindIndexOfLastElement() {
-        assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
-
-        assertThat(of(1, 2, 3).indexOfOption(3)).isEqualTo(Option.some(2));
-    }
-
-    // -- indexOfSlice
-
-    @Test
-    public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().indexOfSlice(of(2, 3))).isEqualTo(-1);
-
-        assertThat(empty().indexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
-
-        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldFindIndexOfFirstSlice() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(1, 2))).isEqualTo(0);
-
-        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(1, 2))).isEqualTo(Option.some(0));
-    }
-
-    @Test
-    public void shouldFindIndexOfInnerSlice() {
-        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3))).isEqualTo(1);
-
-        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
-    }
-
-    @Test
-    public void shouldFindIndexOfLastSlice() {
-        assertThat(of(1, 2, 3).indexOfSlice(of(2, 3))).isEqualTo(1);
-
-        assertThat(of(1, 2, 3).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
-    }
-
-    // -- lastIndexOf
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
-
-        assertThat(empty().lastIndexOfOption(1)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
-        assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
-
-        assertThat(of(1, 2, 3, 4).lastIndexOfOption(3, 1)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElement() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
-
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1)).isEqualTo(Option.some(3));
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElementWithEnd() {
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
-
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
-    }
-
-    // -- lastIndexOfSlice
-
-    @Test
-    public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOfSlice(of(2, 3))).isEqualTo(-1);
-
-        assertThat(empty().lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
-        assertThat(of(1, 2, 3, 4, 5).lastIndexOfSlice(of(3, 4), 1)).isEqualTo(-1);
-
-        assertThat(of(1, 2, 3, 4, 5).lastIndexOfSliceOption(of(3, 4), 1)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldFindLastIndexOfSlice() {
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(empty())).isEqualTo(5);
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3))).isEqualTo(4);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3))).isEqualTo(3);
-
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(empty())).isEqualTo(Option.some(5));
-        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(of(2))).isEqualTo(Option.some(4));
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.some(4));
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3))).isEqualTo(Option.some(3));
-    }
-
-    @Test
-    public void shouldFindLastIndexOfSliceWithEnd() {
-        assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
-        assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), -1)).isEqualTo(-1);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3), 2)).isEqualTo(0);
-
-        assertThat(empty().lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
-        assertThat(empty().lastIndexOfSliceOption(empty(), 0)).isEqualTo(Option.some(0));
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), 2)).isEqualTo(Option.some(2));
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), -1)).isEqualTo(Option.none());
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), 2)).isEqualTo(Option.some(1));
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
-        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
-        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3), 2)).isEqualTo(Option.some(0));
-    }
-
-    // -- indexWhere
-
-    @Test
-    public void shouldCalculateIndexWhere() {
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0)).isEqualTo(0);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1)).isEqualTo(1);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2)).isEqualTo(2);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8)).isEqualTo(-1);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0, 3)).isEqualTo(4);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1, 3)).isEqualTo(5);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2, 3)).isEqualTo(6);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8, 3)).isEqualTo(-1);
-
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0)).isEqualTo(Option.some(0));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1)).isEqualTo(Option.some(1));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2)).isEqualTo(Option.some(2));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8)).isEqualTo(Option.none());
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(4));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(5));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(6));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldFailIndexWhereNullPredicate() {
-        assertThrows(NullPointerException.class, () -> of(1).indexWhere(null));
-    }
-
-    @Test
-    public void shouldFailIndexWhereNullPredicateFrom() {
-        assertThrows(NullPointerException.class, () -> of(1).indexWhere(null, 0));
-    }
-
-    // -- lastIndexWhere
-
-    @Test
-    public void shouldCalculateLastIndexWhere() {
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0)).isEqualTo(4);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1)).isEqualTo(5);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2)).isEqualTo(6);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8)).isEqualTo(-1);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0, 3)).isEqualTo(0);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1, 3)).isEqualTo(1);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2, 3)).isEqualTo(2);
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8, 3)).isEqualTo(-1);
-
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0)).isEqualTo(Option.some(4));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1)).isEqualTo(Option.some(5));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2)).isEqualTo(Option.some(6));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8)).isEqualTo(Option.none());
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(0));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(1));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(2));
-        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldFailLastIndexWhereNullPredicate() {
-        assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null));
-    }
-
-    @Test
-    public void shouldFailLastIndexWhereNullPredicateFrom() {
-        assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null, 0));
-    }
-
-    // -- endsWith
-
-    @Test
-    public void shouldTestEndsWith() {
-        assertThat(empty().endsWith(empty())).isTrue();
-        assertThat(empty().endsWith(of(1))).isFalse();
-        assertThat(of(1, 2, 3, 4).endsWith(empty())).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(of(4))).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(of(3, 4))).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(of(1, 2, 3, 4))).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(of(0, 1, 2, 3, 4))).isFalse();
-        assertThat(of(1, 2, 3, 4).endsWith(of(2, 3, 5))).isFalse();
-    }
-
-    // -- equality
-
-    @Test
-    public void shouldObeyEqualityConstraints() {
-
-        // sequential collections
-        assertThat(empty().equals(List.empty())).isTrue();
-        assertThat(of(1).equals(List.of(1))).isTrue();
-        assertThat(of(1, 2, 3).equals(List.of(1, 2, 3))).isTrue();
-        assertThat(of(1, 2, 3).equals(List.of(3, 2, 1))).isFalse();
-
-        // other classes
-        assertThat(empty().equals(HashMap.empty())).isFalse();
-        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(HashSet.empty())).isFalse();
-
-        assertThat(empty().equals(LinkedHashMap.empty())).isFalse();
-        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
-
-        assertThat(empty().equals(TreeMap.empty())).isFalse();
-        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
-        assertThat(empty().equals(TreeSet.empty())).isFalse();
+            assertThat(empty().equals(TreeMap.empty())).isFalse();
+            assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+            assertThat(empty().equals(TreeSet.empty())).isFalse();
+        }
     }
 
     // -- insert
@@ -944,172 +965,178 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
     }
 
-    // -- isSequential()
-
-    @Test
-    public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isTrue();
-    }
-
-    // -- iterator(int)
-
-    @Test
-    public void shouldThrowWhenNilIteratorStartingAtIndex() {
-        assertThrows(IndexOutOfBoundsException.class, () -> empty().iterator(1));
-    }
-
-    @Test
-    public void shouldIterateFirstElementOfNonNilStartingAtIndex() {
-        assertThat(of(1, 2, 3).iterator(1).next()).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldFullyIterateNonNilStartingAtIndex() {
-        int actual = -1;
-        for (Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
-            actual = iter.next();
+    @Nested
+    class IssequentialTests {
+        @Test
+        public void shouldReturnTrueWhenIsSequentialCalled() {
+            assertThat(of(1, 2, 3).isSequential()).isTrue();
         }
-        assertThat(actual).isEqualTo(3);
     }
 
-    // -- padTo
+    @Nested
+    class IteratorIntTests {
+        @Test
+        public void shouldThrowWhenNilIteratorStartingAtIndex() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().iterator(1));
+        }
 
-    @Test
-    public void shouldPadEmptyToEmpty() {
-        assertThat(empty().padTo(0, 1)).isSameAs(empty());
+        @Test
+        public void shouldIterateFirstElementOfNonNilStartingAtIndex() {
+            assertThat(of(1, 2, 3).iterator(1).next()).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldFullyIterateNonNilStartingAtIndex() {
+            int actual = -1;
+            for (Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
+                actual = iter.next();
+            }
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    @Test
-    public void shouldPadEmptyToNonEmpty() {
-        assertThat(empty().padTo(2, 1)).isEqualTo(of(1, 1));
+    @Nested
+    class PadtoTests {
+        @Test
+        public void shouldPadEmptyToEmpty() {
+            assertThat(empty().padTo(0, 1)).isSameAs(empty());
+        }
+
+        @Test
+        public void shouldPadEmptyToNonEmpty() {
+            assertThat(empty().padTo(2, 1)).isEqualTo(of(1, 1));
+        }
+
+        @Test
+        public void shouldPadNonEmptyZeroLen() {
+            final Seq<Integer> seq = of(1);
+            assertThat(seq.padTo(0, 2)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldPadNonEmpty() {
+            assertThat(of(1).padTo(2, 1)).isEqualTo(of(1, 1));
+            assertThat(of(1).padTo(2, 2)).isEqualTo(of(1, 2));
+            assertThat(of(1).padTo(3, 2)).isEqualTo(of(1, 2, 2));
+        }
     }
 
-    @Test
-    public void shouldPadNonEmptyZeroLen() {
-        final Seq<Integer> seq = of(1);
-        assertThat(seq.padTo(0, 2)).isSameAs(seq);
+    @Nested
+    class LeftpadtoTests {
+        @Test
+        public void shouldLeftPadEmptyToEmpty() {
+            assertThat(empty().leftPadTo(0, 1)).isSameAs(empty());
+        }
+
+        @Test
+        public void shouldLeftPadEmptyToNonEmpty() {
+            assertThat(empty().leftPadTo(2, 1)).isEqualTo(of(1, 1));
+        }
+
+        @Test
+        public void shouldLeftPadNonEmptyZeroLen() {
+            final Seq<Integer> seq = of(1);
+            assertThat(seq.leftPadTo(0, 2)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldLeftPadNonEmpty() {
+            assertThat(of(1).leftPadTo(2, 1)).isEqualTo(of(1, 1));
+            assertThat(of(1).leftPadTo(2, 2)).isEqualTo(of(2, 1));
+            assertThat(of(1).leftPadTo(3, 2)).isEqualTo(of(2, 2, 1));
+        }
     }
 
-    @Test
-    public void shouldPadNonEmpty() {
-        assertThat(of(1).padTo(2, 1)).isEqualTo(of(1, 1));
-        assertThat(of(1).padTo(2, 2)).isEqualTo(of(1, 2));
-        assertThat(of(1).padTo(3, 2)).isEqualTo(of(1, 2, 2));
+    @Nested
+    class PatchTests {
+        @Test
+        public void shouldPatchEmptyByEmpty() {
+            assertThat(empty().patch(0, empty(), 0)).isEmpty();
+            assertThat(empty().patch(-1, empty(), -1)).isEmpty();
+            assertThat(empty().patch(-1, empty(), 1)).isEmpty();
+            assertThat(empty().patch(1, empty(), -1)).isEmpty();
+            assertThat(empty().patch(1, empty(), 1)).isEmpty();
+        }
+
+        @Test
+        public void shouldPatchEmptyByNonEmpty() {
+            final Seq<Character> s = of('1', '2', '3');
+            assertThat(empty().patch(0, s, 0)).isEqualTo(s);
+            assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
+            assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
+            assertThat(empty().patch(1, s, -1)).isEqualTo(s);
+            assertThat(empty().patch(1, s, 1)).isEqualTo(s);
+        }
+
+        @Test
+        public void shouldPatchNonEmptyByEmpty() {
+            final Seq<Character> s = of('1', '2', '3');
+            assertThat(s.patch(-1, empty(), -1)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(-1, empty(), 0)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(-1, empty(), 1)).isEqualTo(of('2', '3'));
+            assertThat(s.patch(-1, empty(), 3)).isEmpty();
+            assertThat(s.patch(0, empty(), -1)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(0, empty(), 0)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(0, empty(), 1)).isEqualTo(of('2', '3'));
+            assertThat(s.patch(0, empty(), 3)).isEmpty();
+            assertThat(s.patch(1, empty(), -1)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(1, empty(), 0)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(1, empty(), 1)).isEqualTo(of('1', '3'));
+            assertThat(s.patch(1, empty(), 3)).isEqualTo(of('1'));
+            assertThat(s.patch(4, empty(), -1)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(4, empty(), 0)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(4, empty(), 1)).isEqualTo(of('1', '2', '3'));
+            assertThat(s.patch(4, empty(), 3)).isEqualTo(of('1', '2', '3'));
+        }
+
+        @Test
+        public void shouldPatchNonEmptyByNonEmpty() {
+            final Seq<Character> s = of('1', '2', '3');
+            final Seq<Character> d = of('4', '5', '6');
+            assertThat(s.patch(-1, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+            assertThat(s.patch(-1, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+            assertThat(s.patch(-1, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
+            assertThat(s.patch(-1, d, 3)).isEqualTo(of('4', '5', '6'));
+            assertThat(s.patch(0, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+            assertThat(s.patch(0, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+            assertThat(s.patch(0, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
+            assertThat(s.patch(0, d, 3)).isEqualTo(of('4', '5', '6'));
+            assertThat(s.patch(1, d, -1)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
+            assertThat(s.patch(1, d, 0)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
+            assertThat(s.patch(1, d, 1)).isEqualTo(of('1', '4', '5', '6', '3'));
+            assertThat(s.patch(1, d, 3)).isEqualTo(of('1', '4', '5', '6'));
+            assertThat(s.patch(4, d, -1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+            assertThat(s.patch(4, d, 0)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+            assertThat(s.patch(4, d, 1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+            assertThat(s.patch(4, d, 3)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+        }
     }
 
-    // -- leftPadTo
+    @Nested
+    class PermutationsTests {
+        @Test
+        public void shouldComputePermutationsOfEmptySeq() {
+            assertThat(empty().permutations()).isEmpty();
+        }
 
-    @Test
-    public void shouldLeftPadEmptyToEmpty() {
-        assertThat(empty().leftPadTo(0, 1)).isSameAs(empty());
-    }
+        @Test
+        public void shouldComputePermutationsOfSingleton() {
+            assertThat(of(1).permutations()).isEqualTo(of(of(1)));
+        }
 
-    @Test
-    public void shouldLeftPadEmptyToNonEmpty() {
-        assertThat(empty().leftPadTo(2, 1)).isEqualTo(of(1, 1));
-    }
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldComputePermutationsOfRepeatedElements() {
+            assertThat(of(1, 1).permutations()).isEqualTo(of(of(1, 1)));
+            assertThat(of(1, 2, 2).permutations()).isEqualTo(of(of(1, 2, 2), of(2, 1, 2), of(2, 2, 1)));
+        }
 
-    @Test
-    public void shouldLeftPadNonEmptyZeroLen() {
-        final Seq<Integer> seq = of(1);
-        assertThat(seq.leftPadTo(0, 2)).isSameAs(seq);
-    }
-
-    @Test
-    public void shouldLeftPadNonEmpty() {
-        assertThat(of(1).leftPadTo(2, 1)).isEqualTo(of(1, 1));
-        assertThat(of(1).leftPadTo(2, 2)).isEqualTo(of(2, 1));
-        assertThat(of(1).leftPadTo(3, 2)).isEqualTo(of(2, 2, 1));
-    }
-
-    // -- patch
-
-    @Test
-    public void shouldPatchEmptyByEmpty() {
-        assertThat(empty().patch(0, empty(), 0)).isEmpty();
-        assertThat(empty().patch(-1, empty(), -1)).isEmpty();
-        assertThat(empty().patch(-1, empty(), 1)).isEmpty();
-        assertThat(empty().patch(1, empty(), -1)).isEmpty();
-        assertThat(empty().patch(1, empty(), 1)).isEmpty();
-    }
-
-    @Test
-    public void shouldPatchEmptyByNonEmpty() {
-        final Seq<Character> s = of('1', '2', '3');
-        assertThat(empty().patch(0, s, 0)).isEqualTo(s);
-        assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
-        assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
-        assertThat(empty().patch(1, s, -1)).isEqualTo(s);
-        assertThat(empty().patch(1, s, 1)).isEqualTo(s);
-    }
-
-    @Test
-    public void shouldPatchNonEmptyByEmpty() {
-        final Seq<Character> s = of('1', '2', '3');
-        assertThat(s.patch(-1, empty(), -1)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 0)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 1)).isEqualTo(of('2', '3'));
-        assertThat(s.patch(-1, empty(), 3)).isEmpty();
-        assertThat(s.patch(0, empty(), -1)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 0)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 1)).isEqualTo(of('2', '3'));
-        assertThat(s.patch(0, empty(), 3)).isEmpty();
-        assertThat(s.patch(1, empty(), -1)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 0)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 1)).isEqualTo(of('1', '3'));
-        assertThat(s.patch(1, empty(), 3)).isEqualTo(of('1'));
-        assertThat(s.patch(4, empty(), -1)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 0)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 1)).isEqualTo(of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 3)).isEqualTo(of('1', '2', '3'));
-    }
-
-    @Test
-    public void shouldPatchNonEmptyByNonEmpty() {
-        final Seq<Character> s = of('1', '2', '3');
-        final Seq<Character> d = of('4', '5', '6');
-        assertThat(s.patch(-1, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
-        assertThat(s.patch(-1, d, 3)).isEqualTo(of('4', '5', '6'));
-        assertThat(s.patch(0, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
-        assertThat(s.patch(0, d, 3)).isEqualTo(of('4', '5', '6'));
-        assertThat(s.patch(1, d, -1)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 0)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 1)).isEqualTo(of('1', '4', '5', '6', '3'));
-        assertThat(s.patch(1, d, 3)).isEqualTo(of('1', '4', '5', '6'));
-        assertThat(s.patch(4, d, -1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 0)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 3)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
-    }
-
-    // -- permutations
-
-    @Test
-    public void shouldComputePermutationsOfEmptySeq() {
-        assertThat(empty().permutations()).isEmpty();
-    }
-
-    @Test
-    public void shouldComputePermutationsOfSingleton() {
-        assertThat(of(1).permutations()).isEqualTo(of(of(1)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldComputePermutationsOfRepeatedElements() {
-        assertThat(of(1, 1).permutations()).isEqualTo(of(of(1, 1)));
-        assertThat(of(1, 2, 2).permutations()).isEqualTo(of(of(1, 2, 2), of(2, 1, 2), of(2, 2, 1)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldComputePermutationsOfNonEmptySeq() {
-        assertThat(of(1, 2, 3).permutations())
-                .isEqualTo(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1)));
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldComputePermutationsOfNonEmptySeq() {
+            assertThat(of(1, 2, 3).permutations())
+                    .isEqualTo(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1)));
+        }
     }
 
     // -- map
@@ -1122,35 +1149,37 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(3, 1, 4, 1, 5, 9, 2).sorted().distinct().drop(1).init().remove(5).map(mapper).tail()).isEqualTo(of(4, 5));
     }
 
-    // -- prefixLength
+    @Nested
+    class PrefixlengthTests {
+        @Test
+        public void shouldCalculatePrefixLength() {
+            assertThat(of(1, 3, 5, 6).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
+            assertThat(of(1, 3, 5).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
+            assertThat(of(2).prefixLength(i -> (i & 1) > 0)).isEqualTo(0);
+            assertThat(empty().prefixLength(i -> true)).isEqualTo(0);
+        }
 
-    @Test
-    public void shouldCalculatePrefixLength() {
-        assertThat(of(1, 3, 5, 6).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
-        assertThat(of(1, 3, 5).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
-        assertThat(of(2).prefixLength(i -> (i & 1) > 0)).isEqualTo(0);
-        assertThat(empty().prefixLength(i -> true)).isEqualTo(0);
+        @Test
+        public void shouldThrowPrefixLengthNullPredicate() {
+            assertThrows(NullPointerException.class, () -> of(1).prefixLength(null));
+        }
     }
 
-    @Test
-    public void shouldThrowPrefixLengthNullPredicate() {
-        assertThrows(NullPointerException.class, () -> of(1).prefixLength(null));
-    }
+    @Nested
+    class SegmentlengthTests {
+        @Test
+        public void shouldCalculateSegmentLength() {
+            assertThat(of(1, 3, 5, 6).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
+            assertThat(of(1, 3, 5).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
+            assertThat(of(2, 2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
+            assertThat(of(2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
+            assertThat(empty().segmentLength(i -> true, 1)).isEqualTo(0);
+        }
 
-    // -- segmentLength
-
-    @Test
-    public void shouldCalculateSegmentLength() {
-        assertThat(of(1, 3, 5, 6).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
-        assertThat(of(1, 3, 5).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
-        assertThat(of(2, 2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
-        assertThat(of(2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
-        assertThat(empty().segmentLength(i -> true, 1)).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldThrowSegmentLengthNullPredicate() {
-        assertThrows(NullPointerException.class, () -> of(1).segmentLength(null, 0));
+        @Test
+        public void shouldThrowSegmentLengthNullPredicate() {
+            assertThrows(NullPointerException.class, () -> of(1).segmentLength(null, 0));
+        }
     }
 
     // -- prepend
@@ -1435,53 +1464,55 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(seq.removeAll((Integer) null)).isEqualTo(of(1, 2, 3));
     }
 
-    // -- removeAt(index)
+    @Nested
+    class RemoveatIndexTests {
+        @Test
+        public void shouldRemoveIndexAtNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> assertThat(empty().removeAt(1)).isEmpty());
+        }
 
-    @Test
-    public void shouldRemoveIndexAtNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(empty().removeAt(1)).isEmpty());
+        @Test
+        public void shouldRemoveIndexAtNonNil() {
+            assertThat(of(1, 2, 3).removeAt(1)).isEqualTo(of(1, 3));
+        }
+
+        @Test
+        public void shouldRemoveIndexAtBegin() {
+            assertThat(of(1, 2, 3).removeAt(0)).isEqualTo(of(2, 3));
+        }
+
+        @Test
+        public void shouldRemoveIndexAtEnd() {
+            assertThat(of(1, 2, 3).removeAt(2)).isEqualTo(of(1, 2));
+        }
+
+        @Test
+        public void shouldRemoveMultipleTimes() {
+            assertThat(of(3, 1, 4, 1, 5, 9, 2).removeAt(0).removeAt(0).removeAt(4).removeAt(3).removeAt(1)).isEqualTo(of(4, 5));
+        }
+
+        @Test
+        public void shouldRemoveIndexOutOfBoundsLeft() {
+            assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(-1)).isEqualTo(of(1, 2, 3)));
+        }
+
+        @Test
+        public void shouldRemoveIndexOutOfBoundsRight() {
+            assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3)));
+        }
     }
 
-    @Test
-    public void shouldRemoveIndexAtNonNil() {
-        assertThat(of(1, 2, 3).removeAt(1)).isEqualTo(of(1, 3));
-    }
+    @Nested
+    class ReverseTests {
+        @Test
+        public void shouldReverseNil() {
+            assertThat(empty().reverse()).isEmpty();
+        }
 
-    @Test
-    public void shouldRemoveIndexAtBegin() {
-        assertThat(of(1, 2, 3).removeAt(0)).isEqualTo(of(2, 3));
-    }
-
-    @Test
-    public void shouldRemoveIndexAtEnd() {
-        assertThat(of(1, 2, 3).removeAt(2)).isEqualTo(of(1, 2));
-    }
-
-    @Test
-    public void shouldRemoveMultipleTimes() {
-        assertThat(of(3, 1, 4, 1, 5, 9, 2).removeAt(0).removeAt(0).removeAt(4).removeAt(3).removeAt(1)).isEqualTo(of(4, 5));
-    }
-
-    @Test
-    public void shouldRemoveIndexOutOfBoundsLeft() {
-        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(-1)).isEqualTo(of(1, 2, 3)));
-    }
-
-    @Test
-    public void shouldRemoveIndexOutOfBoundsRight() {
-        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3)));
-    }
-
-    // -- reverse
-
-    @Test
-    public void shouldReverseNil() {
-        assertThat(empty().reverse()).isEmpty();
-    }
-
-    @Test
-    public void shouldReverseNonNil() {
-        assertThat(of(1, 2, 3).reverse()).isEqualTo(of(3, 2, 1));
+        @Test
+        public void shouldReverseNonNil() {
+            assertThat(of(1, 2, 3).reverse()).isEqualTo(of(3, 2, 1));
+        }
     }
 
     // -- reverseIterator
@@ -1501,195 +1532,202 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
     }
 
-    // -- todo rotateLeft
+    @Nested
+    class TodoRotateleftTests {
+        @Test
+        public void shouldRotateLeftOnEmpty() {
+            assertThat(empty().rotateLeft(1)).isSameAs(empty());
+        }
 
-    @Test
-    public void shouldRotateLeftOnEmpty() {
-        assertThat(empty().rotateLeft(1)).isSameAs(empty());
+        @Test
+        public void shouldRotateLeftOnSingle() {
+            Seq<Integer> seq = of(1);
+            assertThat(seq.rotateLeft(1)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldRotateLeftForZero() {
+            Seq<Integer> seq = of(1, 2, 3, 4, 5);
+            assertThat(seq.rotateLeft(0)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldRotateLeftForNegativeLessThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(-2)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateLeftForPositiveLessThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateLeftForPositiveGreaterThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(5 + 2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateLeftForPositiveModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4, 5);
+            assertThat(seq.rotateLeft(seq.length() * 3)).isSameAs(seq);
+        }
     }
 
-    @Test
-    public void shouldRotateLeftOnSingle() {
-        Seq<Integer> seq = of(1);
-        assertThat(seq.rotateLeft(1)).isSameAs(seq);
+    @Nested
+    class RotaterightTests {
+        @Test
+        public void shouldRotateRightOnEmpty() {
+            assertThat(empty().rotateRight(1)).isSameAs(empty());
+        }
+
+        @Test
+        public void shouldRotateRightOnSingle() {
+            Seq<Integer> seq = of(1);
+            assertThat(seq.rotateRight(1)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldRotateRightForZero() {
+            Seq<Integer> seq = of(1, 2, 3, 4, 5);
+            assertThat(seq.rotateRight(0)).isSameAs(seq);
+        }
+
+        @Test
+        public void shouldRotateRightForNegativeLessThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateRightForPositiveLessThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(2)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateRightForPositiveGreaterThatLen() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(5 + 2)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateRightForPositiveModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4, 5);
+            assertThat(seq.rotateRight(seq.length() * 3)).isSameAs(seq);
+        }
     }
 
-    @Test
-    public void shouldRotateLeftForZero() {
-        Seq<Integer> seq = of(1, 2, 3, 4, 5);
-        assertThat(seq.rotateLeft(0)).isSameAs(seq);
+    @Nested
+    class ShuffleTests {
+        @Test
+        public void shouldShuffleEmpty() {
+            assertThat(empty().shuffle().isEmpty());
+        }
+
+        @Test
+        public void shouldShuffleHaveSameLength() {
+            assertThat(of(1, 2, 3).shuffle().size()).isEqualTo(of(1, 2, 3).size());
+        }
+
+        @Test
+        public void shouldShuffleHaveSameElements() {
+            final Seq<Integer> shuffled = of(1, 2, 3).shuffle();
+            assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
+            assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
+            assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
+            assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+        }
     }
 
-    @Test
-    public void shouldRotateLeftForNegativeLessThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateLeft(-2)).isEqualTo(of(4, 5, 1, 2, 3));
+    @Nested
+    class TakerightuntilTests {
+        @Test
+        public void shouldTakeRightUntilNoneOnNil() {
+            assertThat(empty().takeRightUntil(x -> true)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldTakeRightUntilAllOnFalseCondition() {
+            assertThat(of(1, 2, 3).takeRightUntil(x -> false)).isEqualTo(of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldTakeRightUntilAllOnTrueCondition() {
+            assertThat(of(1, 2, 3).takeRightUntil(x -> true)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldTakeRightUntilAsExpected() {
+            assertThat(of(2, 3, 4, 6).takeRightUntil(x -> x % 2 != 0)).isEqualTo(of(4, 6));
+        }
     }
 
-    @Test
-    public void shouldRotateLeftForPositiveLessThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
+    @Nested
+    class TakerightwhileTests {
+        @Test
+        public void shouldTakeRightWhileNoneOnNil() {
+            assertThat(empty().takeRightWhile(x -> true)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldTakeRightWhileAllOnFalseCondition() {
+            assertThat(of(1, 2, 3).takeRightWhile(x -> false)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldTakeRightWhileAllOnTrueCondition() {
+            assertThat(of(1, 2, 3).takeRightWhile(x -> true)).isEqualTo(of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldTakeRightWhileAsExpected() {
+            assertThat(of(2, 3, 4, 6).takeRightWhile(x -> x % 2 == 0)).isEqualTo(of(4, 6));
+        }
     }
 
-    @Test
-    public void shouldRotateLeftForPositiveGreaterThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateLeft(5 + 2)).isEqualTo(of(3, 4, 5, 1, 2));
+    @Nested
+    class UpdateTests {
+        @Test
+        public void shouldThrowWhenUpdatedWithNegativeIndexOnNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().update(-1, (Integer) null));
+        }
+
+        @Test
+        public void shouldThrowWhenUpdatedWithNegativeIndexOnNonNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(-1, 2));
+        }
+
+        @Test
+        public void shouldThrowWhenUpdatedOnNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().update(0, (Integer) null));
+        }
+
+        @Test
+        public void shouldThrowWhenUpdatedWithIndexExceedingByOneOnNonNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(1, 2));
+        }
+
+        @Test
+        public void shouldThrowWhenUpdatedWithIndexExceedingByTwoOnNonNil() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(2, 2));
+        }
+
+        @Test
+        public void shouldUpdateFirstElement() {
+            assertThat(of(1, 2, 3).update(0, 4)).isEqualTo(of(4, 2, 3));
+        }
+
+        @Test
+        public void shouldUpdateLastElement() {
+            assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
+        }
     }
 
-    @Test
-    public void shouldRotateLeftForPositiveModuloLen() {
-        Seq<Integer> seq = of(1, 2, 3, 4, 5);
-        assertThat(seq.rotateLeft(seq.length() * 3)).isSameAs(seq);
-    }
-
-    // -- rotateRight
-
-    @Test
-    public void shouldRotateRightOnEmpty() {
-        assertThat(empty().rotateRight(1)).isSameAs(empty());
-    }
-
-    @Test
-    public void shouldRotateRightOnSingle() {
-        Seq<Integer> seq = of(1);
-        assertThat(seq.rotateRight(1)).isSameAs(seq);
-    }
-
-    @Test
-    public void shouldRotateRightForZero() {
-        Seq<Integer> seq = of(1, 2, 3, 4, 5);
-        assertThat(seq.rotateRight(0)).isSameAs(seq);
-    }
-
-    @Test
-    public void shouldRotateRightForNegativeLessThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
-    }
-
-    @Test
-    public void shouldRotateRightForPositiveLessThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateRight(2)).isEqualTo(of(4, 5, 1, 2, 3));
-    }
-
-    @Test
-    public void shouldRotateRightForPositiveGreaterThatLen() {
-        assertThat(of(1, 2, 3, 4, 5).rotateRight(5 + 2)).isEqualTo(of(4, 5, 1, 2, 3));
-    }
-
-    @Test
-    public void shouldRotateRightForPositiveModuloLen() {
-        Seq<Integer> seq = of(1, 2, 3, 4, 5);
-        assertThat(seq.rotateRight(seq.length() * 3)).isSameAs(seq);
-    }
-
-    // -- shuffle
-
-    @Test
-    public void shouldShuffleEmpty() {
-        assertThat(empty().shuffle().isEmpty());
-    }
-
-    @Test
-    public void shouldShuffleHaveSameLength() {
-        assertThat(of(1, 2, 3).shuffle().size()).isEqualTo(of(1, 2, 3).size());
-    }
-
-    @Test
-    public void shouldShuffleHaveSameElements() {
-        final Seq<Integer> shuffled = of(1, 2, 3).shuffle();
-        assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(4)).isEqualTo(-1);
-    }
-
-    // -- takeRightUntil
-
-    @Test
-    public void shouldTakeRightUntilNoneOnNil() {
-        assertThat(empty().takeRightUntil(x -> true)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTakeRightUntilAllOnFalseCondition() {
-        assertThat(of(1, 2, 3).takeRightUntil(x -> false)).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldTakeRightUntilAllOnTrueCondition() {
-        assertThat(of(1, 2, 3).takeRightUntil(x -> true)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTakeRightUntilAsExpected() {
-        assertThat(of(2, 3, 4, 6).takeRightUntil(x -> x % 2 != 0)).isEqualTo(of(4, 6));
-    }
-
-    // -- takeRightWhile
-
-    @Test
-    public void shouldTakeRightWhileNoneOnNil() {
-        assertThat(empty().takeRightWhile(x -> true)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTakeRightWhileAllOnFalseCondition() {
-        assertThat(of(1, 2, 3).takeRightWhile(x -> false)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTakeRightWhileAllOnTrueCondition() {
-        assertThat(of(1, 2, 3).takeRightWhile(x -> true)).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldTakeRightWhileAsExpected() {
-        assertThat(of(2, 3, 4, 6).takeRightWhile(x -> x % 2 == 0)).isEqualTo(of(4, 6));
-    }
-
-    // -- update
-
-    @Test
-    public void shouldThrowWhenUpdatedWithNegativeIndexOnNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> empty().update(-1, (Integer) null));
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatedWithNegativeIndexOnNonNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(-1, 2));
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatedOnNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> empty().update(0, (Integer) null));
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatedWithIndexExceedingByOneOnNonNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(1, 2));
-    }
-
-    @Test
-    public void shouldThrowWhenUpdatedWithIndexExceedingByTwoOnNonNil() {
-        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(2, 2));
-    }
-
-    @Test
-    public void shouldUpdateFirstElement() {
-        assertThat(of(1, 2, 3).update(0, 4)).isEqualTo(of(4, 2, 3));
-    }
-
-    @Test
-    public void shouldUpdateLastElement() {
-        assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
-    }
-
-    // -- higher order update
-
-    @Test
-    public void shouldUpdateViaFunction() throws Exception {
-        final Seq<Character> actual = ofAll("hello".toCharArray()).update(0, Character::toUpperCase);
-        final Seq<Character> expected = ofAll("Hello".toCharArray());
-        assertThat(actual).isEqualTo(expected);
+    @Nested
+    class HigherOrderUpdateTests {
+        @Test
+        public void shouldUpdateViaFunction() throws Exception {
+            final Seq<Character> actual = ofAll("hello".toCharArray()).update(0, Character::toUpperCase);
+            final Seq<Character> expected = ofAll("Hello".toCharArray());
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     // -- slice(beginIndex, endIndex)
@@ -1770,16 +1808,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).slice(-10, 10)).isEqualTo(of(1, 2, 3));
     }
 
-    // -- sorted()
+    @Nested
+    class SortedTests {
+        @Test
+        public void shouldSortNil() {
+            assertThat(empty().sorted()).isEmpty();
+        }
 
-    @Test
-    public void shouldSortNil() {
-        assertThat(empty().sorted()).isEmpty();
-    }
-
-    @Test
-    public void shouldSortNonNil() {
-        assertThat(of(3, 4, 1, 2).sorted()).isEqualTo(of(1, 2, 3, 4));
+        @Test
+        public void shouldSortNonNil() {
+            assertThat(of(3, 4, 1, 2).sorted()).isEqualTo(of(1, 2, 3, 4));
+        }
     }
 
     // -- sorted(Comparator)
@@ -1835,178 +1874,183 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- splitAt(index)
+    @Nested
+    class SplitatIndexTests {
+        @Test
+        public void shouldSplitAtNil() {
+            assertThat(empty().splitAt(1)).isEqualTo(Tuple.of(empty(), empty()));
+        }
 
-    @Test
-    public void shouldSplitAtNil() {
-        assertThat(empty().splitAt(1)).isEqualTo(Tuple.of(empty(), empty()));
+        @Test
+        public void shouldSplitAtNonNil() {
+            assertThat(of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+        }
+
+        @Test
+        public void shouldSplitAtBegin() {
+            assertThat(of(1, 2, 3).splitAt(0)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+        }
+
+        @Test
+        public void shouldSplitAtEnd() {
+            assertThat(of(1, 2, 3).splitAt(3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        }
+
+        @Test
+        public void shouldSplitAtOutOfBounds() {
+            assertThat(of(1, 2, 3).splitAt(5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+            assertThat(of(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+        }
     }
 
-    @Test
-    public void shouldSplitAtNonNil() {
-        assertThat(of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+    @Nested
+    class SplitatPredicateTests {
+        @Test
+        public void shouldSplitPredicateAtNil() {
+            assertThat(empty().splitAt(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+        }
+
+        @Test
+        public void shouldSplitPredicateAtNonNil() {
+            assertThat(of(1, 2, 3).splitAt(e -> e == 2)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+        }
+
+        @Test
+        public void shouldSplitAtPredicateBegin() {
+            assertThat(of(1, 2, 3).splitAt(e -> e == 1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+        }
+
+        @Test
+        public void shouldSplitAtPredicateEnd() {
+            assertThat(of(1, 2, 3).splitAt(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2), of(3)));
+        }
+
+        @Test
+        public void shouldSplitAtPredicateNotFound() {
+            assertThat(of(1, 2, 3).splitAt(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        }
     }
 
-    @Test
-    public void shouldSplitAtBegin() {
-        assertThat(of(1, 2, 3).splitAt(0)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
+    @Nested
+    class SplitatinclusivePredicateTests {
+        @Test
+        public void shouldSplitInclusivePredicateAtNil() {
+            assertThat(empty().splitAtInclusive(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+        }
+
+        @Test
+        public void shouldSplitInclusivePredicateAtNonNil() {
+            assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 2)).isEqualTo(Tuple.of(of(1, 2), of(3)));
+        }
+
+        @Test
+        public void shouldSplitAtInclusivePredicateBegin() {
+            assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
+        }
+
+        @Test
+        public void shouldSplitAtInclusivePredicateEnd() {
+            assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        }
+
+        @Test
+        public void shouldSplitAtInclusivePredicateNotFound() {
+            assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        }
     }
 
-    @Test
-    public void shouldSplitAtEnd() {
-        assertThat(of(1, 2, 3).splitAt(3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldNotHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        }
+
+        @Test
+        public void shouldHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+        }
+
+        @Test
+        public void shouldNotHaveDistinctSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldSplitAtOutOfBounds() {
-        assertThat(of(1, 2, 3).splitAt(5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
-        assertThat(of(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
-    }
+    @Nested
+    class StartswithTests {
+        @Test
+        public void shouldStartsNilOfNilCalculate() {
+            assertThat(empty().startsWith(empty())).isTrue();
+        }
 
-    // -- splitAt(predicate)
+        @Test
+        public void shouldStartsNilOfNonNilCalculate() {
+            assertThat(empty().startsWith(of(1))).isFalse();
+        }
 
-    @Test
-    public void shouldSplitPredicateAtNil() {
-        assertThat(empty().splitAt(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
-    }
+        @Test
+        public void shouldStartsNilOfNilWithOffsetCalculate() {
+            assertThat(empty().startsWith(empty(), 1)).isTrue();
+        }
 
-    @Test
-    public void shouldSplitPredicateAtNonNil() {
-        assertThat(of(1, 2, 3).splitAt(e -> e == 2)).isEqualTo(Tuple.of(of(1), of(2, 3)));
-    }
+        @Test
+        public void shouldStartsNilOfNonNilWithOffsetCalculate() {
+            assertThat(empty().startsWith(of(1), 1)).isFalse();
+        }
 
-    @Test
-    public void shouldSplitAtPredicateBegin() {
-        assertThat(of(1, 2, 3).splitAt(e -> e == 1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
-    }
+        @Test
+        public void shouldStartsNonNilOfNilCalculate() {
+            assertThat(of(1, 2, 3).startsWith(empty())).isTrue();
+        }
 
-    @Test
-    public void shouldSplitAtPredicateEnd() {
-        assertThat(of(1, 2, 3).splitAt(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2), of(3)));
-    }
+        @Test
+        public void shouldStartsNonNilOfNonNilCalculate() {
+            assertThat(of(1, 2, 3).startsWith(of(1, 2))).isTrue();
+            assertThat(of(1, 2, 3).startsWith(of(1, 2, 3))).isTrue();
+            assertThat(of(1, 2, 3).startsWith(of(1, 2, 3, 4))).isFalse();
+            assertThat(of(1, 2, 3).startsWith(of(1, 3))).isFalse();
+        }
 
-    @Test
-    public void shouldSplitAtPredicateNotFound() {
-        assertThat(of(1, 2, 3).splitAt(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
-    }
+        @Test
+        public void shouldStartsNonNilOfNilWithOffsetCalculate() {
+            assertThat(of(1, 2, 3).startsWith(empty(), 1)).isTrue();
+        }
 
-    // -- splitAtInclusive(predicate)
+        @Test
+        public void shouldNotStartsNonNilOfNonNilWithNegativeOffsetCalculate() {
+            assertThat(of(1, 2, 3).startsWith(of(1), -1)).isFalse();
+        }
 
-    @Test
-    public void shouldSplitInclusivePredicateAtNil() {
-        assertThat(empty().splitAtInclusive(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
-    }
+        @Test
+        public void shouldNotStartsNonNilOfNonNilWithOffsetEqualLengthCalculate() {
+            assertThat(of(1, 2, 3).startsWith(of(3), 3)).isFalse();
+        }
 
-    @Test
-    public void shouldSplitInclusivePredicateAtNonNil() {
-        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 2)).isEqualTo(Tuple.of(of(1, 2), of(3)));
-    }
+        @Test
+        public void shouldNotStartsNonNilOfNonNilWithOffsetEndCalculate() {
+            assertThat(of(1, 2, 3).startsWith(of(3), 2)).isTrue();
+        }
 
-    @Test
-    public void shouldSplitAtInclusivePredicateBegin() {
-        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
-    }
+        @Test
+        public void shouldStartsNonNilOfNonNilWithOffsetAtStartCalculate() {
+            assertThat(of(1, 2, 3).startsWith(of(1), 0)).isTrue();
+        }
 
-    @Test
-    public void shouldSplitAtInclusivePredicateEnd() {
-        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
-    }
+        @Test
+        public void shouldStartsNonNilOfNonNilWithOffsetCalculate1() {
+            assertThat(of(1, 2, 3).startsWith(of(2, 3), 1)).isTrue();
+        }
 
-    @Test
-    public void shouldSplitAtInclusivePredicateNotFound() {
-        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
-    }
+        @Test
+        public void shouldStartsNonNilOfNonNilWithOffsetCalculate2() {
+            assertThat(of(1, 2, 3).startsWith(of(2, 3, 4), 1)).isFalse();
+        }
 
-    // -- spliterator
-
-    @Test
-    public void shouldNotHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
-    }
-
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
-    }
-
-    @Test
-    public void shouldNotHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
-    }
-
-    // -- startsWith
-
-    @Test
-    public void shouldStartsNilOfNilCalculate() {
-        assertThat(empty().startsWith(empty())).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNilOfNonNilCalculate() {
-        assertThat(empty().startsWith(of(1))).isFalse();
-    }
-
-    @Test
-    public void shouldStartsNilOfNilWithOffsetCalculate() {
-        assertThat(empty().startsWith(empty(), 1)).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNilOfNonNilWithOffsetCalculate() {
-        assertThat(empty().startsWith(of(1), 1)).isFalse();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNilCalculate() {
-        assertThat(of(1, 2, 3).startsWith(empty())).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNonNilCalculate() {
-        assertThat(of(1, 2, 3).startsWith(of(1, 2))).isTrue();
-        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3))).isTrue();
-        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3, 4))).isFalse();
-        assertThat(of(1, 2, 3).startsWith(of(1, 3))).isFalse();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNilWithOffsetCalculate() {
-        assertThat(of(1, 2, 3).startsWith(empty(), 1)).isTrue();
-    }
-
-    @Test
-    public void shouldNotStartsNonNilOfNonNilWithNegativeOffsetCalculate() {
-        assertThat(of(1, 2, 3).startsWith(of(1), -1)).isFalse();
-    }
-
-    @Test
-    public void shouldNotStartsNonNilOfNonNilWithOffsetEqualLengthCalculate() {
-        assertThat(of(1, 2, 3).startsWith(of(3), 3)).isFalse();
-    }
-
-    @Test
-    public void shouldNotStartsNonNilOfNonNilWithOffsetEndCalculate() {
-        assertThat(of(1, 2, 3).startsWith(of(3), 2)).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNonNilWithOffsetAtStartCalculate() {
-        assertThat(of(1, 2, 3).startsWith(of(1), 0)).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNonNilWithOffsetCalculate1() {
-        assertThat(of(1, 2, 3).startsWith(of(2, 3), 1)).isTrue();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNonNilWithOffsetCalculate2() {
-        assertThat(of(1, 2, 3).startsWith(of(2, 3, 4), 1)).isFalse();
-    }
-
-    @Test
-    public void shouldStartsNonNilOfNonNilWithOffsetCalculate3() {
-        assertThat(of(1, 2, 3).startsWith(of(2, 4), 1)).isFalse();
+        @Test
+        public void shouldStartsNonNilOfNonNilWithOffsetCalculate3() {
+            assertThat(of(1, 2, 3).startsWith(of(2, 4), 1)).isFalse();
+        }
     }
 
     // -- subSequence(beginIndex)
@@ -2141,17 +2185,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(seq.subSequence(0, 3)).isSameAs(seq);
     }
 
-    // -- search(element)
+    @Nested
+    class SearchElementTests {
+        @Test
+        public void shouldSearchIndexForPresentElements() {
+            assertThat(of(1, 2, 3, 4, 5, 6).search(3)).isEqualTo(2);
+        }
 
-    @Test
-    public void shouldSearchIndexForPresentElements() {
-        assertThat(of(1, 2, 3, 4, 5, 6).search(3)).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldSearchNegatedInsertionPointMinusOneForAbsentElements() {
-        assertThat(empty().search(42)).isEqualTo(-1);
-        assertThat(of(10, 20, 30).search(25)).isEqualTo(-3);
+        @Test
+        public void shouldSearchNegatedInsertionPointMinusOneForAbsentElements() {
+            assertThat(empty().search(42)).isEqualTo(-1);
+            assertThat(of(10, 20, 30).search(25)).isEqualTo(-3);
+        }
     }
 
     // -- search(element,comparator)
@@ -2167,126 +2212,128 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(10, 20, 30).search(25, Integer::compareTo)).isEqualTo(-3);
     }
 
-    // -- transpose()
+    @Nested
+    class TransposeTests {
+        @Test
+        public void shouldTransposeIfEmpty() {
+            final Seq<Seq<Integer>> actual = empty();
+            assertThat(transpose(actual)).isSameAs(actual);
+        }
 
-    @Test
-    public void shouldTransposeIfEmpty() {
-        final Seq<Seq<Integer>> actual = empty();
-        assertThat(transpose(actual)).isSameAs(actual);
-    }
+        @Test
+        public void shouldTransposeIfIs1x0() {
+            final Seq<Seq<Integer>> actual = of(empty());
+            assertThat(transpose(actual)).isSameAs(actual);
+        }
 
-    @Test
-    public void shouldTransposeIfIs1x0() {
-        final Seq<Seq<Integer>> actual = of(empty());
-        assertThat(transpose(actual)).isSameAs(actual);
-    }
+        @Test
+        public void shouldTransposeIfIs1x1() {
+            final Seq<Seq<Integer>> actual = of(of(1));
+            assertThat(transpose(actual)).isSameAs(actual);
+        }
 
-    @Test
-    public void shouldTransposeIfIs1x1() {
-        final Seq<Seq<Integer>> actual = of(of(1));
-        assertThat(transpose(actual)).isSameAs(actual);
-    }
+        @Test
+        public void shouldTransposeIfSingleValued() {
+            final Seq<Seq<Integer>> actual = of(of(0));
+            final Seq<Seq<Integer>> expected = of(of(0));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
 
-    @Test
-    public void shouldTransposeIfSingleValued() {
-        final Seq<Seq<Integer>> actual = of(of(0));
-        final Seq<Seq<Integer>> expected = of(of(0));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldTransposeIfMultiValuedColumn() {
+            final Seq<Seq<Integer>> actual = of(of(0, 1, 2));
+            final Seq<Seq<Integer>> expected = of(of(0), of(1), of(2));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldTransposeIfMultiValuedColumn() {
-        final Seq<Seq<Integer>> actual = of(of(0, 1, 2));
-        final Seq<Seq<Integer>> expected = of(of(0), of(1), of(2));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldTransposeIfMultiValuedRow() {
+            final Seq<Seq<Integer>> actual = of(of(0), of(1), of(2));
+            final Seq<Seq<Integer>> expected = of(of(0, 1, 2));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldTransposeIfMultiValuedRow() {
-        final Seq<Seq<Integer>> actual = of(of(0), of(1), of(2));
-        final Seq<Seq<Integer>> expected = of(of(0, 1, 2));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldTransposeIfMultiValuedIfSymmetric() {
-        final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6),
-                of(7, 8, 9));
-        final Seq<Seq<Integer>> expected = of(
-                of(1, 4, 7),
-                of(2, 5, 8),
-                of(3, 6, 9));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldTransposeIfMultiValuedWithMoreColumnsThanRows() {
-        final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6));
-        final Seq<Seq<Integer>> expected = of(
-                of(1, 4),
-                of(2, 5),
-                of(3, 6));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldTransposeIfMultiValuedWithMoreRowsThanColumns() {
-        final Seq<Seq<Integer>> actual = of(
-                of(1, 2),
-                of(3, 4),
-                of(5, 6));
-        final Seq<Seq<Integer>> expected = of(
-                of(1, 3, 5),
-                of(2, 4, 6));
-        assertThat(transpose(actual)).isEqualTo(expected);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldBeEqualIfTransposedTwice() {
-        final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6));
-        final Seq<? extends Seq<Integer>> transposed = transpose(actual);
-        assertThat(transpose(transposed)).isEqualTo(actual);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldNotTransposeForMissingOrEmptyValues() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldTransposeIfMultiValuedIfSymmetric() {
             final Seq<Seq<Integer>> actual = of(
-              of(),
-              of(0, 1),
-              of(2, 3, 4, 5),
-              of(),
-              of(6, 7, 8));
-            transpose(actual);
-        });
+                    of(1, 2, 3),
+                    of(4, 5, 6),
+                    of(7, 8, 9));
+            final Seq<Seq<Integer>> expected = of(
+                    of(1, 4, 7),
+                    of(2, 5, 8),
+                    of(3, 6, 9));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldTransposeIfMultiValuedWithMoreColumnsThanRows() {
+            final Seq<Seq<Integer>> actual = of(
+                    of(1, 2, 3),
+                    of(4, 5, 6));
+            final Seq<Seq<Integer>> expected = of(
+                    of(1, 4),
+                    of(2, 5),
+                    of(3, 6));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldTransposeIfMultiValuedWithMoreRowsThanColumns() {
+            final Seq<Seq<Integer>> actual = of(
+                    of(1, 2),
+                    of(3, 4),
+                    of(5, 6));
+            final Seq<Seq<Integer>> expected = of(
+                    of(1, 3, 5),
+                    of(2, 4, 6));
+            assertThat(transpose(actual)).isEqualTo(expected);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldBeEqualIfTransposedTwice() {
+            final Seq<Seq<Integer>> actual = of(
+                    of(1, 2, 3),
+                    of(4, 5, 6));
+            final Seq<? extends Seq<Integer>> transposed = transpose(actual);
+            assertThat(transpose(transposed)).isEqualTo(actual);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        public void shouldNotTransposeForMissingOrEmptyValues() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                final Seq<Seq<Integer>> actual = of(
+                  of(),
+                  of(0, 1),
+                  of(2, 3, 4, 5),
+                  of(),
+                  of(6, 7, 8));
+                transpose(actual);
+            });
+        }
     }
 
-    // -- IndexedSeq special cases
+    @Nested
+    class IndexedseqSpecialCasesTests {
+        @Test
+        public void shouldTestIndexedSeqStartsWithNonIndexedSeq() {
+            assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
+            assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
+            assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
+        }
 
-    @Test
-    public void shouldTestIndexedSeqStartsWithNonIndexedSeq() {
-        assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
-        assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
-        assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
-    }
-
-    @Test
-    public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
-        assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
+        @Test
+        public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
+            assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
+            assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
+        }
     }
 
     // -- distinctByKeepLast(Comparator)

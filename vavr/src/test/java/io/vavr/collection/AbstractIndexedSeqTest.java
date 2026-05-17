@@ -20,6 +20,7 @@ package io.vavr.collection;
 
 import java.math.BigDecimal;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
@@ -27,25 +28,27 @@ public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
     @Override
     abstract protected <T> IndexedSeq<T> of(T element);
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowIndexedSeq() {
-        final IndexedSeq<Double> doubles = of(1.0d);
-        final IndexedSeq<Number> numbers = IndexedSeq.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowIndexedSeq() {
+            final IndexedSeq<Double> doubles = of(1.0d);
+            final IndexedSeq<Number> numbers = IndexedSeq.narrow(doubles);
+            final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldHaveSizedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+        }
 
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
-    }
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        @Test
+        public void shouldReturnSizeWhenSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        }
     }
 }

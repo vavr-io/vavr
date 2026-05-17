@@ -213,81 +213,86 @@ public class QueueTest extends AbstractLinearSeqTest {
         return false;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowQueue() {
-        final Queue<Double> doubles = of(1.0d);
-        final Queue<Number> numbers = Queue.narrow(doubles);
-        final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowQueue() {
+            final Queue<Double> doubles = of(1.0d);
+            final Queue<Number> numbers = Queue.narrow(doubles);
+            final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- static ofAll
+    @Nested
+    class StaticOfallTests {
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfQueue() {
+            final Queue<Integer> source = ofAll(1, 2, 3);
+            final Queue<Integer> target = Queue.ofAll(source);
+            assertThat(target).isSameAs(source);
+        }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfQueue() {
-        final Queue<Integer> source = ofAll(1, 2, 3);
-        final Queue<Integer> target = Queue.ofAll(source);
-        assertThat(target).isSameAs(source);
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+            final JavaConverters.ListView<Integer, Queue<Integer>> source = JavaConverters
+              .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+            final Queue<Integer> target = Queue.ofAll(source);
+            assertThat(target).isSameAs(source.getDelegate());
+        }
     }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final JavaConverters.ListView<Integer, Queue<Integer>> source = JavaConverters
-          .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
-        final Queue<Integer> target = Queue.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartitionInOneIteration() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Tuple2<Queue<Integer>, Queue<Integer>> results = of(1, 2, 3).partition(i -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(of(1, 2, 3));
+            assertThat(results._2).isEqualTo(of());
+            assertThat(count.get()).isEqualTo(3);
+        }
     }
 
-    // -- partition
+    @Nested
+    class PeekTests {
+        @Test
+        public void shouldFailPeekOfEmpty() {
+            assertThrows(NoSuchElementException.class, () -> Queue.empty().peek());
+        }
 
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<Queue<Integer>, Queue<Integer>> results = of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(3);
+        @Test
+        public void shouldReturnPeekOfNonEmpty() {
+            assertThat(Queue.of(1).peek()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldReturnPeekOption() {
+            assertThat(Queue.empty().peekOption()).isEqualTo(Option.none());
+            assertThat(Queue.of(1).peekOption()).isEqualTo(Option.of(1));
+        }
     }
 
-    // -- peek
+    @Nested
+    class DequeueTests {
+        @Test
+        public void shouldFailDequeueOfEmpty() {
+            assertThrows(NoSuchElementException.class, () -> Queue.empty().dequeue());
+        }
 
-    @Test
-    public void shouldFailPeekOfEmpty() {
-        assertThrows(NoSuchElementException.class, () -> Queue.empty().peek());
-    }
+        @Test
+        public void shouldDequeueOfNonEmpty() {
+            assertThat(Queue.of(1, 2, 3).dequeue()).isEqualTo(Tuple.of(1, Queue.of(2, 3)));
+        }
 
-    @Test
-    public void shouldReturnPeekOfNonEmpty() {
-        assertThat(Queue.of(1).peek()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldReturnPeekOption() {
-        assertThat(Queue.empty().peekOption()).isEqualTo(Option.none());
-        assertThat(Queue.of(1).peekOption()).isEqualTo(Option.of(1));
-    }
-
-    // -- dequeue
-
-    @Test
-    public void shouldFailDequeueOfEmpty() {
-        assertThrows(NoSuchElementException.class, () -> Queue.empty().dequeue());
-    }
-
-    @Test
-    public void shouldDequeueOfNonEmpty() {
-        assertThat(Queue.of(1, 2, 3).dequeue()).isEqualTo(Tuple.of(1, Queue.of(2, 3)));
-    }
-
-    @Test
-    public void shouldDequeueOption() {
-        assertThat(Queue.empty().dequeueOption()).isEqualTo(Option.none());
-        assertThat(Queue.of(1, 2, 3).dequeueOption()).isEqualTo(Option.of(Tuple.of(1, Queue.of(2, 3))));
+        @Test
+        public void shouldDequeueOption() {
+            assertThat(Queue.empty().dequeueOption()).isEqualTo(Option.none());
+            assertThat(Queue.of(1, 2, 3).dequeueOption()).isEqualTo(Option.of(Tuple.of(1, Queue.of(2, 3))));
+        }
     }
 
     // -- special cases
@@ -296,101 +301,108 @@ public class QueueTest extends AbstractLinearSeqTest {
         return Queue.of(1).enqueue(2, 3, 1, 5, 6);
     }
 
-    // -- get
+    @Nested
+    class GetTests {
+        @Test
+        public void shouldGetFrontEnc() {
+            assertThat(enqueued().get(0)).isEqualTo(1);
+        }
 
-    @Test
-    public void shouldGetFrontEnc() {
-        assertThat(enqueued().get(0)).isEqualTo(1);
+        @Test
+        public void shouldGetRearEnc() {
+            assertThat(enqueued().get(1)).isEqualTo(2);
+        }
     }
 
-    @Test
-    public void shouldGetRearEnc() {
-        assertThat(enqueued().get(1)).isEqualTo(2);
+    @Nested
+    class TakeTests {
+        @Test
+        public void shouldTakeFrontEnc() {
+            assertThat(enqueued().take(1)).isEqualTo(of(1));
+        }
     }
 
-    // -- take
-
-    @Test
-    public void shouldTakeFrontEnc() {
-        assertThat(enqueued().take(1)).isEqualTo(of(1));
+    @Nested
+    class InsertallTests {
+        @Test
+        public void shouldInsertAllEnc() {
+            assertThat(enqueued().insertAll(0, List.of(91, 92))).isEqualTo(of(91, 92, 1, 2, 3, 1, 5, 6));
+            assertThat(enqueued().insertAll(1, List.of(91, 92))).isEqualTo(of(1, 91, 92, 2, 3, 1, 5, 6));
+            assertThat(enqueued().insertAll(2, List.of(91, 92))).isEqualTo(of(1, 2, 91, 92, 3, 1, 5, 6));
+            assertThat(enqueued().insertAll(6, List.of(91, 92))).isEqualTo(of(1, 2, 3, 1, 5, 6, 91, 92));
+        }
     }
 
-    // -- insertAll
-
-    @Test
-    public void shouldInsertAllEnc() {
-        assertThat(enqueued().insertAll(0, List.of(91, 92))).isEqualTo(of(91, 92, 1, 2, 3, 1, 5, 6));
-        assertThat(enqueued().insertAll(1, List.of(91, 92))).isEqualTo(of(1, 91, 92, 2, 3, 1, 5, 6));
-        assertThat(enqueued().insertAll(2, List.of(91, 92))).isEqualTo(of(1, 2, 91, 92, 3, 1, 5, 6));
-        assertThat(enqueued().insertAll(6, List.of(91, 92))).isEqualTo(of(1, 2, 3, 1, 5, 6, 91, 92));
+    @Nested
+    class InsertTests {
+        @Test
+        public void shouldInsertEnc() {
+            assertThat(enqueued().insert(0, 9)).isEqualTo(of(9, 1, 2, 3, 1, 5, 6));
+            assertThat(enqueued().insert(1, 9)).isEqualTo(of(1, 9, 2, 3, 1, 5, 6));
+            assertThat(enqueued().insert(2, 9)).isEqualTo(of(1, 2, 9, 3, 1, 5, 6));
+            assertThat(enqueued().insert(6, 9)).isEqualTo(of(1, 2, 3, 1, 5, 6, 9));
+        }
     }
 
-    // -- insert
-
-    @Test
-    public void shouldInsertEnc() {
-        assertThat(enqueued().insert(0, 9)).isEqualTo(of(9, 1, 2, 3, 1, 5, 6));
-        assertThat(enqueued().insert(1, 9)).isEqualTo(of(1, 9, 2, 3, 1, 5, 6));
-        assertThat(enqueued().insert(2, 9)).isEqualTo(of(1, 2, 9, 3, 1, 5, 6));
-        assertThat(enqueued().insert(6, 9)).isEqualTo(of(1, 2, 3, 1, 5, 6, 9));
+    @Nested
+    class IntersperseTests {
+        @Test
+        public void shouldIntersperseEnc() {
+            assertThat(enqueued().intersperse(9)).isEqualTo(of(1, 9, 2, 9, 3, 9, 1, 9, 5, 9, 6));
+        }
     }
 
-    // -- intersperse
+    @Nested
+    class IndexofTests {
+        @Test
+        public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
+            assertThat(enqueued().indexOf(2, 2)).isEqualTo(-1);
 
-    @Test
-    public void shouldIntersperseEnc() {
-        assertThat(enqueued().intersperse(9)).isEqualTo(of(1, 9, 2, 9, 3, 9, 1, 9, 5, 9, 6));
+            assertThat(enqueued().indexOfOption(2, 2)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldFindIndexOfFirstElementEnc() {
+            assertThat(enqueued().indexOf(1)).isEqualTo(0);
+
+            assertThat(enqueued().indexOfOption(1)).isEqualTo(Option.some(0));
+        }
+
+        @Test
+        public void shouldFindIndexOfInnerElementEnc() {
+            assertThat(enqueued().indexOf(2)).isEqualTo(1);
+
+            assertThat(enqueued().indexOfOption(2)).isEqualTo(Option.some(1));
+        }
+
+        @Test
+        public void shouldFindIndexOfLastElementEnc() {
+            assertThat(enqueued().indexOf(3)).isEqualTo(2);
+
+            assertThat(enqueued().indexOfOption(3)).isEqualTo(Option.some(2));
+        }
     }
 
-    // -- indexOf
+    @Nested
+    class LastindexofTests {
+        @Test
+        public void shouldNotFindLastIndexOfElementWhenEndIdLessEnc() {
+            assertThat(enqueued().lastIndexOf(3, 1)).isEqualTo(-1);
 
-    @Test
-    public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
-        assertThat(enqueued().indexOf(2, 2)).isEqualTo(-1);
+            assertThat(enqueued().lastIndexOfOption(3, 1)).isEqualTo((Option.none()));
+        }
 
-        assertThat(enqueued().indexOfOption(2, 2)).isEqualTo(Option.none());
-    }
+        @Test
+        public void shouldFindLastIndexOfElementEnc() {
+            assertThat(enqueued().lastIndexOf(1)).isEqualTo(3);
+        }
 
-    @Test
-    public void shouldFindIndexOfFirstElementEnc() {
-        assertThat(enqueued().indexOf(1)).isEqualTo(0);
+        @Test
+        public void shouldFindLastIndexOfElementWithEndEnc() {
+            assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
 
-        assertThat(enqueued().indexOfOption(1)).isEqualTo(Option.some(0));
-    }
-
-    @Test
-    public void shouldFindIndexOfInnerElementEnc() {
-        assertThat(enqueued().indexOf(2)).isEqualTo(1);
-
-        assertThat(enqueued().indexOfOption(2)).isEqualTo(Option.some(1));
-    }
-
-    @Test
-    public void shouldFindIndexOfLastElementEnc() {
-        assertThat(enqueued().indexOf(3)).isEqualTo(2);
-
-        assertThat(enqueued().indexOfOption(3)).isEqualTo(Option.some(2));
-    }
-
-    // -- lastIndexOf
-
-    @Test
-    public void shouldNotFindLastIndexOfElementWhenEndIdLessEnc() {
-        assertThat(enqueued().lastIndexOf(3, 1)).isEqualTo(-1);
-
-        assertThat(enqueued().lastIndexOfOption(3, 1)).isEqualTo((Option.none()));
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElementEnc() {
-        assertThat(enqueued().lastIndexOf(1)).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldFindLastIndexOfElementWithEndEnc() {
-        assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
-
-        assertThat(enqueued().lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
+            assertThat(enqueued().lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
+        }
     }
 
     @Nested
@@ -403,90 +415,96 @@ public class QueueTest extends AbstractLinearSeqTest {
         }
     }
 
-    // -- unfold
+    @Nested
+    class UnfoldTests {
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Queue.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Queue.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        @Test
+        public void shouldUnfoldRightSimpleQueue() {
+            assertThat(Queue.unfoldRight(10, x ->
+              x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1)))
+            ).isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
+
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Queue.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldLeftSimpleQueue() {
+            assertThat(Queue.unfoldLeft(10, x ->
+              x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+            ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
+
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Queue.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldSimpleQueue() {
+            assertThat(Queue.unfold(10, x ->
+              x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+            ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
     }
 
-    @Test
-    public void shouldUnfoldRightSimpleQueue() {
-        assertThat(Queue.unfoldRight(10, x ->
-          x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1)))
-        ).isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    @Nested
+    class EqualsTests {
+        @Test
+        public void shouldCheckHashCodeWhenComparing() {
+            assertThat(Queue.of(0, null).equals(Queue.of(0, 0))).isFalse();
+        }
     }
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Queue.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    @Nested
+    class ToqueueTests {
+        @Test
+        public void shouldReturnSelfOnConvertToQueue() {
+            final Value<Integer> value = of(1, 2, 3);
+            assertThat(value.toQueue()).isSameAs(value);
+        }
     }
 
-    @Test
-    public void shouldUnfoldLeftSimpleQueue() {
-        assertThat(Queue.unfoldLeft(10, x ->
-          x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
-        ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldHaveSizedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+        }
+
+        @Test
+        public void shouldReturnSizeWhenSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        }
     }
 
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Queue.unfold(0, x -> Option.none())).isEqualTo(empty());
+    @Nested
+    class FlatmapTests {
+        @Test
+        public void shouldFlatMapCorrectlyWhenRearIsNonEmpty() {
+            Queue<Integer> queue = Queue.of(1, 2).enqueue(3).enqueue(4);
+
+            Queue<Integer> result = queue.flatMap(x -> Queue.of(x, x * 10));
+
+            assertThat(result).isEqualTo(Queue.of(1, 10, 2, 20, 3, 30, 4, 40));
+        }
     }
 
-    @Test
-    public void shouldUnfoldSimpleQueue() {
-        assertThat(Queue.unfold(10, x ->
-          x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
-        ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
+    @Nested
+    class ReplaceTests {
+        @Test
+        public void shouldReplaceOnlyFirstOccurrenceWhenRearIsNonEmpty() {
+            Queue<Integer> queue = Queue.of(1, 2, 3).enqueue(3);
 
-    // -- equals
+            Queue<Integer> result = queue.replace(3, 42);
 
-    @Test
-    public void shouldCheckHashCodeWhenComparing() {
-        assertThat(Queue.of(0, null).equals(Queue.of(0, 0))).isFalse();
-    }
-
-    // -- toQueue
-
-    @Test
-    public void shouldReturnSelfOnConvertToQueue() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toQueue()).isSameAs(value);
-    }
-
-    // -- spliterator
-
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
-    }
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
-    }
-
-    // -- flatMap
-
-    @Test
-    public void shouldFlatMapCorrectlyWhenRearIsNonEmpty() {
-        Queue<Integer> queue = Queue.of(1, 2).enqueue(3).enqueue(4);
-
-        Queue<Integer> result = queue.flatMap(x -> Queue.of(x, x * 10));
-
-        assertThat(result).isEqualTo(Queue.of(1, 10, 2, 20, 3, 30, 4, 40));
-    }
-
-    // -- replace
-
-    @Test
-    public void shouldReplaceOnlyFirstOccurrenceWhenRearIsNonEmpty() {
-        Queue<Integer> queue = Queue.of(1, 2, 3).enqueue(3);
-
-        Queue<Integer> result = queue.replace(3, 42);
-
-        assertThat(result).isEqualTo(Queue.of(1, 2, 42, 3));
+            assertThat(result).isEqualTo(Queue.of(1, 2, 42, 3));
+        }
     }
 }

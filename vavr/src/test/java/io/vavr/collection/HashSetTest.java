@@ -192,23 +192,26 @@ public class HashSetTest extends AbstractSetTest {
         return 1;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowHashSet() {
-        final HashSet<Double> doubles = of(1.0d);
-        final HashSet<Number> numbers = HashSet.narrow(doubles);
-        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowHashSet() {
+            final HashSet<Double> doubles = of(1.0d);
+            final HashSet<Number> numbers = HashSet.narrow(doubles);
+            final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
     // -- slideBy is not expected to work for larger subsequences, due to unspecified iteration order
+
     @Test
     public void shouldSlideNonNilBySomeClassifier() {
         // ignore
     }
 
     // TODO move to traversable
+
     // -- zip
 
     @Test
@@ -256,6 +259,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     // TODO move to traversable
+
     // -- zipAll
 
     @Test
@@ -302,6 +306,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     // TODO move to traversable
+
     // -- zipWithIndex
 
     @Test
@@ -478,30 +483,33 @@ public class HashSetTest extends AbstractSetTest {
         return HashSet.rangeClosedBy(from, toInclusive, step);
     }
 
-    // -- toSet
-
-    @Test
-    public void shouldReturnSelfOnConvertToSet() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toSet()).isSameAs(value);
+    @Nested
+    class TosetTests {
+        @Test
+        public void shouldReturnSelfOnConvertToSet() {
+            final Value<Integer> value = of(1, 2, 3);
+            assertThat(value.toSet()).isSameAs(value);
+        }
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldNotHaveSortedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        }
 
-    @Test
-    public void shouldNotHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+        @Test
+        public void shouldNotHaveOrderedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
+        }
     }
 
-    @Test
-    public void shouldNotHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
-    }
-
-    // -- isSequential()
-
-    @Test
-    public void shouldReturnFalseWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    @Nested
+    class IssequentialTests {
+        @Test
+        public void shouldReturnFalseWhenIsSequentialCalled() {
+            assertThat(of(1, 2, 3).isSequential()).isFalse();
+        }
     }
 }

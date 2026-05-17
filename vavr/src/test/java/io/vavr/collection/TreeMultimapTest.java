@@ -217,8 +217,9 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         }
     }
     
+
     // -- toJavaMap
-    
+
     @TestTemplate
     public void shouldReturnJavaMapSortedUsingSameComparator() {
         final TreeMultimap<String, String> vavrMap = TreeMultimap.withSeq().of(Comparator.comparing(String::length), "aa", "aa", "b", "b");

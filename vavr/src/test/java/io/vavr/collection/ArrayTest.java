@@ -209,54 +209,58 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         return false;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowArray() {
-        final Array<Double> doubles = of(1.0d);
-        final Array<Number> numbers = Array.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowArray() {
+            final Array<Double> doubles = of(1.0d);
+            final Array<Number> numbers = Array.narrow(doubles);
+            final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    // -- static ofAll
+    @Nested
+    class StaticOfallTests {
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfArray() {
+            final Array<Integer> source = ofAll(1, 2, 3);
+            final Array<Integer> target = Array.ofAll(source);
+            assertThat(target).isSameAs(source);
+        }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfArray() {
-        final Array<Integer> source = ofAll(1, 2, 3);
-        final Array<Integer> target = Array.ofAll(source);
-        assertThat(target).isSameAs(source);
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+            final ListView<Integer, Array<Integer>> source = JavaConverters
+                    .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
+            final Array<Integer> target = Array.ofAll(source);
+            assertThat(target).isSameAs(source.getDelegate());
+        }
     }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final ListView<Integer, Array<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
-        final Array<Integer> target = Array.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
+    @Nested
+    class GetTests {
+        @Test
+        public void shouldThrowExceptionWhenGetIndexEqualToLength() {
+            final Array<Integer> array = of(1);
+            Assertions.assertThatThrownBy(() -> array.get(1))
+                .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
+        }
     }
 
-    // -- get()
-
-    @Test
-    public void shouldThrowExceptionWhenGetIndexEqualToLength() {
-        final Array<Integer> array = of(1);
-        Assertions.assertThatThrownBy(() -> array.get(1))
-            .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
-    }
-
-    // -- partition
-
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(3);
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartitionInOneIteration() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(of(1, 2, 3));
+            assertThat(results._2).isEqualTo(of());
+            assertThat(count.get()).isEqualTo(3);
+        }
     }
 
     @Nested
@@ -269,67 +273,70 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         }
     }
 
-    // -- unfold
+    @Nested
+    class UnfoldTests {
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldRightSimpleArray() {
+            assertThat(
+                    Array.unfoldRight(10, x -> x == 0
+                                               ? Option.none()
+                                               : Option.of(new Tuple2<>(x, x - 1))))
+                    .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
 
-    @Test
-    public void shouldUnfoldRightSimpleArray() {
-        assertThat(
-                Array.unfoldRight(10, x -> x == 0
-                                           ? Option.none()
-                                           : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldLeftSimpleArray() {
+            assertThat(
+                    Array.unfoldLeft(10, x -> x == 0
+                                              ? Option.none()
+                                              : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
 
-    @Test
-    public void shouldUnfoldLeftSimpleArray() {
-        assertThat(
-                Array.unfoldLeft(10, x -> x == 0
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldSimpleArray() {
+            assertThat(
+                    Array.unfold(10, x -> x == 0
                                           ? Option.none()
                                           : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
     }
 
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+    @Nested
+    class TostringTests {
+        @Test
+        public void shouldStringifyNil() {
+            assertThat(empty().toString()).isEqualTo("Array()");
+        }
+
+        @Test
+        public void shouldStringifyNonNil() {
+            assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
+        }
     }
 
-    @Test
-    public void shouldUnfoldSimpleArray() {
-        assertThat(
-                Array.unfold(10, x -> x == 0
-                                      ? Option.none()
-                                      : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    // -- toString
-
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("Array()");
-    }
-
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
-    }
-
-    // -- toArray
-
-    @Test
-    public void shouldReturnSelfOnConvertToArray() {
-        Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toArray()).isSameAs(value);
+    @Nested
+    class ToarrayTests {
+        @Test
+        public void shouldReturnSelfOnConvertToArray() {
+            Value<Integer> value = of(1, 2, 3);
+            assertThat(value.toArray()).isSameAs(value);
+        }
     }
 }

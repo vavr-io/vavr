@@ -266,242 +266,261 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(seq.removeAll(4)).isEqualTo(seq).isNotSameAs(seq);
     }
 
-    // -- static concat()
+    @Nested
+    class StaticConcatTests {
+        @Test
+        public void shouldConcatEmptyIterableIterable() {
+            final Iterable<Iterable<Integer>> empty = List.empty();
+            assertThat(concat(empty)).isSameAs(empty());
+        }
 
-    @Test
-    public void shouldConcatEmptyIterableIterable() {
-        final Iterable<Iterable<Integer>> empty = List.empty();
-        assertThat(concat(empty)).isSameAs(empty());
+        @Test
+        public void shouldConcatNonEmptyIterableIterable() {
+            final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
+            assertThat(concat(itIt)).isEqualTo(of(1, 2, 3));
+        }
+
+        @Test
+        public void shouldConcatEmptyArrayIterable() {
+            assertThat(concat()).isSameAs(empty());
+        }
+
+        @Test
+        public void shouldConcatNonEmptyArrayIterable() {
+            assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(of(1, 2, 3));
+        }
     }
 
-    @Test
-    public void shouldConcatNonEmptyIterableIterable() {
-        final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
-        assertThat(concat(itIt)).isEqualTo(of(1, 2, 3));
+    @Nested
+    class StaticFromIntTests {
+        @Test
+        public void shouldGenerateIntStream() {
+            assertThat(Stream.from(-1).take(3)).isEqualTo(Stream.of(-1, 0, 1));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingIntStream() {
+            //noinspection NumericOverflow
+            assertThat(Stream.from(Integer.MAX_VALUE).take(2))
+                    .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+        }
     }
 
-    @Test
-    public void shouldConcatEmptyArrayIterable() {
-        assertThat(concat()).isSameAs(empty());
+    @Nested
+    class StaticFromIntIntTests {
+        @Test
+        public void shouldGenerateIntStreamWithStep() {
+            assertThat(Stream.from(-1, 6).take(3)).isEqualTo(Stream.of(-1, 5, 11));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingIntStreamWithStep() {
+            //noinspection NumericOverflow
+            assertThat(Stream.from(Integer.MAX_VALUE, 2).take(2))
+                    .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
+        }
     }
 
-    @Test
-    public void shouldConcatNonEmptyArrayIterable() {
-        assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(of(1, 2, 3));
+    @Nested
+    class StaticFromLongTests {
+        @Test
+        public void shouldGenerateLongStream() {
+            assertThat(Stream.from(-1L).take(3)).isEqualTo(Stream.of(-1L, 0L, 1L));
+        }
+
+        @Test
+        public void shouldGenerateOverflowingLongStream() {
+            //noinspection NumericOverflow
+            assertThat(Stream.from(Long.MAX_VALUE).take(2))
+                    .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        }
     }
 
-    // -- static from(int)
+    @Nested
+    class StaticFromLongLongTests {
+        @Test
+        public void shouldGenerateLongStreamWithStep() {
+            assertThat(Stream.from(-1L, 5L).take(3)).isEqualTo(Stream.of(-1L, 4L, 9L));
+        }
 
-    @Test
-    public void shouldGenerateIntStream() {
-        assertThat(Stream.from(-1).take(3)).isEqualTo(Stream.of(-1, 0, 1));
+        @Test
+        public void shouldGenerateOverflowingLongStreamWithStep() {
+            //noinspection NumericOverflow
+            assertThat(Stream.from(Long.MAX_VALUE, 2).take(2))
+                    .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
+        }
     }
 
-    @Test
-    public void shouldGenerateOverflowingIntStream() {
-        //noinspection NumericOverflow
-        assertThat(Stream.from(Integer.MAX_VALUE).take(2))
-                .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+    @Nested
+    class StaticContinuallySupplierTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnSupplier() {
+            assertThat(Stream.continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        }
     }
 
-    // -- static from(int, int)
-
-    @Test
-    public void shouldGenerateIntStreamWithStep() {
-        assertThat(Stream.from(-1, 6).take(3)).isEqualTo(Stream.of(-1, 5, 11));
+    @Nested
+    class StaticIterateTFunctionTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
+            assertThat(Stream.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        }
     }
 
-    @Test
-    public void shouldGenerateOverflowingIntStreamWithStep() {
-        //noinspection NumericOverflow
-        assertThat(Stream.from(Integer.MAX_VALUE, 2).take(2))
-                .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
+    @Nested
+    class StaticIterateSupplierOptionTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnOptionSupplier() {
+            assertThat(Stream.iterate(() -> Option.of(1)).take(5).reduce((i, j) -> i + j)).isEqualTo(5);
+        }
     }
 
-    // -- static from(long)
-
-    @Test
-    public void shouldGenerateLongStream() {
-        assertThat(Stream.from(-1L).take(3)).isEqualTo(Stream.of(-1L, 0L, 1L));
+    @Nested
+    class StaticContinuallyTTests {
+        @Test
+        public void shouldGenerateInfiniteStreamBasedOnRepeatedElement() {
+            assertThat(Stream.continually(2).take(3).reduce((i, j) -> i + j)).isEqualTo(6);
+        }
     }
 
-    @Test
-    public void shouldGenerateOverflowingLongStream() {
-        //noinspection NumericOverflow
-        assertThat(Stream.from(Long.MAX_VALUE).take(2))
-                .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+    @Nested
+    class StaticConsTSupplierTests {
+        @Test
+        public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
+            assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::empty))).isEqualTo(Stream.of(1, 2));
+        }
     }
 
-    // -- static from(long, long)
-
-    @Test
-    public void shouldGenerateLongStreamWithStep() {
-        assertThat(Stream.from(-1L, 5L).take(3)).isEqualTo(Stream.of(-1L, 4L, 9L));
+    @Nested
+    class StaticNarrowTests {
+        @Test
+        public void shouldNarrowStream() {
+            final Stream<Double> doubles = of(1.0d);
+            final Stream<Number> numbers = Stream.narrow(doubles);
+            final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+            assertThat(actual).isEqualTo(3);
+        }
     }
 
-    @Test
-    public void shouldGenerateOverflowingLongStreamWithStep() {
-        //noinspection NumericOverflow
-        assertThat(Stream.from(Long.MAX_VALUE, 2).take(2))
-                .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
-    }
-    // -- static continually(Supplier)
+    @Nested
+    class StaticOfallTests {
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfStream() {
+            final Stream<Integer> source = ofAll(1, 2, 3);
+            final Stream<Integer> target = Stream.ofAll(source);
+            assertThat(target).isSameAs(source);
+        }
 
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnSupplier() {
-        assertThat(Stream.continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
-    }
-
-    // -- static iterate(T, Function)
-
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
-        assertThat(Stream.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        @Test
+        public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+            final JavaConverters.ListView<Integer, Stream<Integer>> source = JavaConverters
+                    .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+            final Stream<Integer> target = Stream.ofAll(source);
+            assertThat(target).isSameAs(source.getDelegate());
+        }
     }
 
-    // -- static iterate(Supplier<Option>)
-
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnOptionSupplier() {
-        assertThat(Stream.iterate(() -> Option.of(1)).take(5).reduce((i, j) -> i + j)).isEqualTo(5);
+    @Nested
+    class AppendTests {
+        @Test
+        public void shouldAppendMillionTimes() {
+            final int bigNum = 1_000_000;
+            assertThat(Stream.range(0, bigNum).foldLeft(Stream.empty(), Stream::append).length()).isEqualTo(bigNum);
+        }
     }
 
-    // -- static continually (T)
+    @Nested
+    class AppendallTests {
+        @Test
+        public void shouldAppendAll() {
+            assertThat(of(1, 2, 3).appendAll(of(4, 5, 6))).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        }
 
-    @Test
-    public void shouldGenerateInfiniteStreamBasedOnRepeatedElement() {
-        assertThat(Stream.continually(2).take(3).reduce((i, j) -> i + j)).isEqualTo(6);
+        @Test
+        public void shouldAppendAllIfThisIsEmpty() {
+            assertThat(empty().appendAll(of(4, 5, 6))).isEqualTo(of(4, 5, 6));
+        }
+
+        @Test
+        public void shouldAppendAllIfThatIsInfinite() {
+            assertThat(of(1, 2, 3).appendAll(Stream.from(4)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        }
+
+        @Test
+        public void shouldAppendAllToInfiniteStream() {
+            assertThat(Stream.from(1).appendAll(Stream.continually(() -> -1)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        }
     }
 
-    // -- static cons(T, Supplier)
+    @Nested
+    class CombinationsTests {
+        @Test
+        public void shouldComputeCombinationsOfEmptyStream() {
+            assertThat(Stream.empty().combinations()).isEqualTo(Stream.of(Stream.empty()));
+        }
 
-    @Test
-    public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
-        assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::empty))).isEqualTo(Stream.of(1, 2));
+        @Test
+        public void shouldComputeCombinationsOfNonEmptyStream() {
+            assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.empty(), Stream.of(1), Stream.of(2),
+                    Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
+        }
     }
 
-    // -- static narrow
+    @Nested
+    class CombinationsKTests {
+        @Test
+        public void shouldComputeKCombinationsOfEmptyStream() {
+            assertThat(Stream.empty().combinations(1)).isEqualTo(Stream.empty());
+        }
 
-    @Test
-    public void shouldNarrowStream() {
-        final Stream<Double> doubles = of(1.0d);
-        final Stream<Number> numbers = Stream.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+        @Test
+        public void shouldComputeKCombinationsOfNonEmptyStream() {
+            assertThat(Stream.of(1, 2, 3).combinations(2))
+                    .isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
+        }
     }
 
-    // -- static ofAll
-
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfStream() {
-        final Stream<Integer> source = ofAll(1, 2, 3);
-        final Stream<Integer> target = Stream.ofAll(source);
-        assertThat(target).isSameAs(source);
+    @Nested
+    class FlatmapTests {
+        @Test
+        public void shouldFlatMapInfiniteTraversable() {
+            assertThat(Stream.iterate(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
+                    .isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
+        }
     }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final JavaConverters.ListView<Integer, Stream<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
-        final Stream<Integer> target = Stream.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
-    }
+    @Nested
+    class PartitionTests {
+        @Test
+        public void shouldPartitionInTwoIterations() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Tuple2<Stream<Integer>, Stream<Integer>> results = Stream.of(1, 2, 3).partition(i -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(of(1, 2, 3));
+            assertThat(results._2).isEqualTo(of());
+            assertThat(count.get()).isEqualTo(6);
+        }
 
-    // -- append
+        @Test
+        public void shouldPartitionLazily() {
+            final java.util.Set<Integer> itemsCalled = new java.util.HashSet<>();
 
-    @Test
-    public void shouldAppendMillionTimes() {
-        final int bigNum = 1_000_000;
-        assertThat(Stream.range(0, bigNum).foldLeft(Stream.empty(), Stream::append).length()).isEqualTo(bigNum);
-    }
+            final Stream<Integer> infiniteStream = Stream.iterate(0, i -> i + 1);
+            assertThat(itemsCalled).isEmpty();
 
-    // -- appendAll
-
-    @Test
-    public void shouldAppendAll() {
-        assertThat(of(1, 2, 3).appendAll(of(4, 5, 6))).isEqualTo(of(1, 2, 3, 4, 5, 6));
-    }
-
-    @Test
-    public void shouldAppendAllIfThisIsEmpty() {
-        assertThat(empty().appendAll(of(4, 5, 6))).isEqualTo(of(4, 5, 6));
-    }
-
-    @Test
-    public void shouldAppendAllIfThatIsInfinite() {
-        assertThat(of(1, 2, 3).appendAll(Stream.from(4)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
-    }
-
-    @Test
-    public void shouldAppendAllToInfiniteStream() {
-        assertThat(Stream.from(1).appendAll(Stream.continually(() -> -1)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
-    }
-
-    // -- combinations
-
-    @Test
-    public void shouldComputeCombinationsOfEmptyStream() {
-        assertThat(Stream.empty().combinations()).isEqualTo(Stream.of(Stream.empty()));
-    }
-
-    @Test
-    public void shouldComputeCombinationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.empty(), Stream.of(1), Stream.of(2),
-                Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
-    }
-
-    // -- combinations(k)
-
-    @Test
-    public void shouldComputeKCombinationsOfEmptyStream() {
-        assertThat(Stream.empty().combinations(1)).isEqualTo(Stream.empty());
-    }
-
-    @Test
-    public void shouldComputeKCombinationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).combinations(2))
-                .isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
-    }
-
-    // -- flatMap
-
-    @Test
-    public void shouldFlatMapInfiniteTraversable() {
-        assertThat(Stream.iterate(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
-                .isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
-    }
-
-    // -- partition
-
-    @Test
-    public void shouldPartitionInTwoIterations() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<Stream<Integer>, Stream<Integer>> results = Stream.of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldPartitionLazily() {
-        final java.util.Set<Integer> itemsCalled = new java.util.HashSet<>();
-
-        final Stream<Integer> infiniteStream = Stream.iterate(0, i -> i + 1);
-        assertThat(itemsCalled).isEmpty();
-
-        final Tuple2<Stream<Integer>, Stream<Integer>> results = infiniteStream.partition(i -> {
-            itemsCalled.add(i);
-            return i % 2 == 0;
-        });
-        assertThat(itemsCalled).containsExactly(0, 1);
-        assertThat(results._1.head()).isEqualTo(0);
-        assertThat(results._2.head()).isEqualTo(1);
-        assertThat(results._1.take(3)).isEqualTo(of(0, 2, 4));
-        assertThat(results._2.take(3)).isEqualTo(of(1, 3, 5));
-        assertThat(itemsCalled).containsExactly(0, 1, 2, 3, 4, 5);
+            final Tuple2<Stream<Integer>, Stream<Integer>> results = infiniteStream.partition(i -> {
+                itemsCalled.add(i);
+                return i % 2 == 0;
+            });
+            assertThat(itemsCalled).containsExactly(0, 1);
+            assertThat(results._1.head()).isEqualTo(0);
+            assertThat(results._2.head()).isEqualTo(1);
+            assertThat(results._1.take(3)).isEqualTo(of(0, 2, 4));
+            assertThat(results._2.take(3)).isEqualTo(of(1, 3, 5));
+            assertThat(itemsCalled).containsExactly(0, 1, 2, 3, 4, 5);
+        }
     }
 
     // -- peek
@@ -511,156 +530,165 @@ public class StreamTest extends AbstractLinearSeqTest {
         return 3;
     }
 
-    // -- permutations
+    @Nested
+    class PermutationsTests {
+        @Test
+        public void shouldComputePermutationsOfEmptyStream() {
+            assertThat(Stream.empty().permutations()).isEqualTo(Stream.empty());
+        }
 
-    @Test
-    public void shouldComputePermutationsOfEmptyStream() {
-        assertThat(Stream.empty().permutations()).isEqualTo(Stream.empty());
+        @Test
+        public void shouldComputePermutationsOfNonEmptyStream() {
+            assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3),
+                    Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
+        }
     }
 
-    @Test
-    public void shouldComputePermutationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3),
-                Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
+    @Nested
+    class AppendselfTests {
+        @Test
+        public void shouldRecurrentlyCalculateFibonacci() {
+            assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10))
+                    .isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
+        }
+
+        @Test
+        public void shouldRecurrentlyCalculatePrimes() {
+            assertThat(Stream
+                    .of(2)
+                    .appendSelf(self -> Stream
+                            .iterate(3, i -> i + 2)
+                            .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0)))
+                    .take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
+        }
+
+        @Test
+        public void shouldDoNothingOnNil() {
+            assertThat(Stream.empty().appendSelf(self -> self)).isEqualTo(Stream.empty());
+        }
+
+        @Test
+        public void shouldRecurrentlyCalculateArithmeticProgression() {
+            assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t + 1)).take(4)).isEqualTo(Stream.of(1, 2, 3, 4));
+        }
+
+        @Test
+        public void shouldRecurrentlyCalculateGeometricProgression() {
+            assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
+        }
     }
 
-    // -- appendSelf
-
-    @Test
-    public void shouldRecurrentlyCalculateFibonacci() {
-        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10))
-                .isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
+    @Nested
+    class ContainssliceTests {
+        @Test
+        public void shouldRecognizeInfiniteDoesContainSlice() {
+            final boolean actual = Stream.iterate(1, i -> i + 1).containsSlice(of(12, 13, 14));
+            assertThat(actual).isTrue();
+        }
     }
 
-    @Test
-    public void shouldRecurrentlyCalculatePrimes() {
-        assertThat(Stream
-                .of(2)
-                .appendSelf(self -> Stream
-                        .iterate(3, i -> i + 2)
-                        .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0)))
-                .take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
+    @Nested
+    class CycleTests {
+        @Test
+        public void shouldCycleEmptyStream() {
+            assertThat(empty().cycle()).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldCycleNonEmptyStream() {
+            assertThat(of(1, 2, 3).cycle().take(9)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
+        }
     }
 
-    @Test
-    public void shouldDoNothingOnNil() {
-        assertThat(Stream.empty().appendSelf(self -> self)).isEqualTo(Stream.empty());
+    @Nested
+    class CycleIntTests {
+        @Test
+        public void shouldCycleTimesEmptyStream() {
+            assertThat(empty().cycle(3)).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldCycleTimesNonEmptyStream() {
+            assertThat(of(1, 2, 3).cycle(-1)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).cycle(0)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).cycle(1)).isEqualTo(of(1, 2, 3));
+            assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
+        }
     }
 
-    @Test
-    public void shouldRecurrentlyCalculateArithmeticProgression() {
-        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t + 1)).take(4)).isEqualTo(Stream.of(1, 2, 3, 4));
+    @Nested
+    class DropuntilTests {
+        @Test
+        public void shouldDropInfiniteStreamUntilPredicate() {
+            final Stream<Integer> naturalNumbers = Stream.iterate(0, i -> i + 1);
+            final Stream<Integer> naturalNumbersBiggerThanTen = naturalNumbers.dropUntil(i -> i > 10);
+            final Integer firstNaturalNumberBiggerThanTen = naturalNumbersBiggerThanTen.head();
+            assertThat(firstNaturalNumberBiggerThanTen).isEqualTo(11);
+        }
     }
 
-    @Test
-    public void shouldRecurrentlyCalculateGeometricProgression() {
-        assertThat(Stream.of(1).appendSelf(self -> self.map(t -> t * 2)).take(4)).isEqualTo(Stream.of(1, 2, 4, 8));
+    @Nested
+    class DroprightTests {
+        @Test
+        public void shouldLazyDropRight() {
+            assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
+        }
     }
 
-    // -- containsSlice
+    @Nested
+    class ExtendTests {
+        @Test
+        public void shouldExtendStreamWithConstantValue() {
+            assertThat(Stream.of(1, 2, 3).extend(42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
+        }
 
-    @Test
-    public void shouldRecognizeInfiniteDoesContainSlice() {
-        final boolean actual = Stream.iterate(1, i -> i + 1).containsSlice(of(12, 13, 14));
-        assertThat(actual).isTrue();
+        @Test
+        public void shouldExtendStreamWithSupplier() {
+            assertThat(Stream.of(1, 2, 3).extend(() -> 42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
+        }
+
+        @Test
+        public void shouldExtendStreamWithFunction() {
+            assertThat(Stream.of(1, 2, 3).extend(i -> i + 1).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        }
+
+        @Test
+        public void shouldExtendEmptyStreamWithConstantValue() {
+            assertThat(Stream.of().extend(42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
+        }
+
+        @Test
+        public void shouldExtendEmptyStreamWithSupplier() {
+            assertThat(Stream.of().extend(() -> 42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
+        }
+
+        @Test
+        public void shouldReturnAnEmptyStreamWhenExtendingAnEmptyStreamWithFunction() {
+            assertThat(Stream.<Integer> of().extend(i -> i + 1)).isEqualTo(of());
+        }
+
+        @Test
+        public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithConstantValue() {
+            assertThat(Stream.continually(1).extend(42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        }
+
+        @Test
+        public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithSupplier() {
+            assertThat(Stream.continually(1).extend(() -> 42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        }
+
+        @Test
+        public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithFunction() {
+            assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        }
     }
 
-    // -- cycle
-
-    @Test
-    public void shouldCycleEmptyStream() {
-        assertThat(empty().cycle()).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldCycleNonEmptyStream() {
-        assertThat(of(1, 2, 3).cycle().take(9)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
-    }
-
-    // -- cycle(int)
-
-    @Test
-    public void shouldCycleTimesEmptyStream() {
-        assertThat(empty().cycle(3)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldCycleTimesNonEmptyStream() {
-        assertThat(of(1, 2, 3).cycle(-1)).isEqualTo(empty());
-        assertThat(of(1, 2, 3).cycle(0)).isEqualTo(empty());
-        assertThat(of(1, 2, 3).cycle(1)).isEqualTo(of(1, 2, 3));
-        assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
-    }
-
-    // -- dropUntil
-
-    @Test
-    public void shouldDropInfiniteStreamUntilPredicate() {
-        final Stream<Integer> naturalNumbers = Stream.iterate(0, i -> i + 1);
-        final Stream<Integer> naturalNumbersBiggerThanTen = naturalNumbers.dropUntil(i -> i > 10);
-        final Integer firstNaturalNumberBiggerThanTen = naturalNumbersBiggerThanTen.head();
-        assertThat(firstNaturalNumberBiggerThanTen).isEqualTo(11);
-    }
-
-    // -- dropRight
-
-    @Test
-    public void shouldLazyDropRight() {
-        assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
-    }
-
-    // -- extend
-
-    @Test
-    public void shouldExtendStreamWithConstantValue() {
-        assertThat(Stream.of(1, 2, 3).extend(42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
-    }
-
-    @Test
-    public void shouldExtendStreamWithSupplier() {
-        assertThat(Stream.of(1, 2, 3).extend(() -> 42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
-    }
-
-    @Test
-    public void shouldExtendStreamWithFunction() {
-        assertThat(Stream.of(1, 2, 3).extend(i -> i + 1).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
-    }
-
-    @Test
-    public void shouldExtendEmptyStreamWithConstantValue() {
-        assertThat(Stream.of().extend(42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
-    }
-
-    @Test
-    public void shouldExtendEmptyStreamWithSupplier() {
-        assertThat(Stream.of().extend(() -> 42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
-    }
-
-    @Test
-    public void shouldReturnAnEmptyStreamWhenExtendingAnEmptyStreamWithFunction() {
-        assertThat(Stream.<Integer> of().extend(i -> i + 1)).isEqualTo(of());
-    }
-
-    @Test
-    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithConstantValue() {
-        assertThat(Stream.continually(1).extend(42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
-    }
-
-    @Test
-    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithSupplier() {
-        assertThat(Stream.continually(1).extend(() -> 42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
-    }
-
-    @Test
-    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithFunction() {
-        assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
-    }
-
-    // -- isDefinedAt
-
-    @Test
-    public void shouldBeDefinedAtNonNegativeIndexWhenInfinitelyLong() {
-        assertThat(Stream.continually(1).asPartialFunction().isDefinedAt(1)).isTrue();
+    @Nested
+    class IsdefinedatTests {
+        @Test
+        public void shouldBeDefinedAtNonNegativeIndexWhenInfinitelyLong() {
+            assertThat(Stream.continually(1).asPartialFunction().isDefinedAt(1)).isTrue();
+        }
     }
 
     // -- isLazy
@@ -681,58 +709,59 @@ public class StreamTest extends AbstractLinearSeqTest {
         // Stream is lazy
     }
 
-    // -- tail
+    @Nested
+    class TailTests {
+        @Test
+        public void shouldEvaluateTailAtMostOnce() {
+            final int[] counter = { 0 };
+            final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
+            // this test ensures that the `tail.append(100)` does not modify the tail elements
+            final Stream<Integer> tail = stream.tail().append(100);
+            final String expected = stream.drop(1).take(3).mkString(",");
+            final String actual = tail.take(3).mkString(",");
+            assertThat(expected).isEqualTo("1,2,3");
+            assertThat(actual).isEqualTo(expected);
+        }
 
-    @Test
-    public void shouldEvaluateTailAtMostOnce() {
-        final int[] counter = { 0 };
-        final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
-        // this test ensures that the `tail.append(100)` does not modify the tail elements
-        final Stream<Integer> tail = stream.tail().append(100);
-        final String expected = stream.drop(1).take(3).mkString(",");
-        final String actual = tail.take(3).mkString(",");
-        assertThat(expected).isEqualTo("1,2,3");
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        public void shouldNotProduceStackOverflow() {
+            Stream.range(0, 1_000_000)
+                    .map(String::valueOf)
+                    .foldLeft(Stream.<String> empty(), Stream::append)
+                    .mkString();
+        }
 
-    @Test
-    public void shouldNotProduceStackOverflow() {
-        Stream.range(0, 1_000_000)
-                .map(String::valueOf)
-                .foldLeft(Stream.<String> empty(), Stream::append)
-                .mkString();
-    }
+        @Test // See #327, #594
+        public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
 
-    @Test // See #327, #594
-    public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
+            final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-        final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            final CheckedFunction2<StringBuilder, Integer, Void> doStuff = (builder, i) -> {
+                builder.append(i);
+                if (i == 5) {
+                    throw new Exception("Some error !!!");
+                } else {
+                    return null;
+                }
+            };
 
-        final CheckedFunction2<StringBuilder, Integer, Void> doStuff = (builder, i) -> {
-            builder.append(i);
-            if (i == 5) {
-                throw new Exception("Some error !!!");
-            } else {
-                return null;
-            }
-        };
+            final StringBuilder actual = new StringBuilder();
+            final CheckedFunction1<Integer, Void> consumer1 = doStuff.apply(actual);
+            Stream.of(vals)
+                    .map(v -> Try.run(() -> consumer1.apply(v)))
+                    .find(Try::isFailure)
+                    .getOrElse(() -> Try.success(null));
 
-        final StringBuilder actual = new StringBuilder();
-        final CheckedFunction1<Integer, Void> consumer1 = doStuff.apply(actual);
-        Stream.of(vals)
-                .map(v -> Try.run(() -> consumer1.apply(v)))
-                .find(Try::isFailure)
-                .getOrElse(() -> Try.success(null));
+            final StringBuilder expected = new StringBuilder();
+            final CheckedFunction1<Integer, Void> consumer2 = doStuff.apply(expected);
+            java.util.stream.Stream.of(vals)
+                    .map(v -> Try.run(() -> consumer2.apply(v)))
+                    .filter(Try::isFailure)
+                    .findFirst()
+                    .orElseGet(() -> Try.success(null));
 
-        final StringBuilder expected = new StringBuilder();
-        final CheckedFunction1<Integer, Void> consumer2 = doStuff.apply(expected);
-        java.util.stream.Stream.of(vals)
-                .map(v -> Try.run(() -> consumer2.apply(v)))
-                .filter(Try::isFailure)
-                .findFirst()
-                .orElseGet(() -> Try.success(null));
-
-        assertThat(actual.toString()).isEqualTo(expected.toString());
+            assertThat(actual.toString()).isEqualTo(expected.toString());
+        }
     }
 
     // -- take
@@ -768,12 +797,13 @@ public class StreamTest extends AbstractLinearSeqTest {
         // the size of a possibly infinite stream is unknown
     }
 
-    // -- toStream
-
-    @Test
-    public void shouldReturnSelfOnConvertToStream() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toStream()).isSameAs(value);
+    @Nested
+    class TostreamTests {
+        @Test
+        public void shouldReturnSelfOnConvertToStream() {
+            final Value<Integer> value = of(1, 2, 3);
+            assertThat(value.toStream()).isSameAs(value);
+        }
     }
 
     // -- toString
@@ -812,105 +842,107 @@ public class StreamTest extends AbstractLinearSeqTest {
         }
     }
 
-    // -- unfold
+    @Nested
+    class UnfoldTests {
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Stream.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Stream.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldRightSimpleStream() {
+            assertThat(
+                    Stream.unfoldRight(10, x -> x == 0
+                                                ? Option.none()
+                                                : Option.of(new Tuple2<>(x, x - 1))))
+                    .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
 
-    @Test
-    public void shouldUnfoldRightSimpleStream() {
-        assertThat(
-                Stream.unfoldRight(10, x -> x == 0
-                                            ? Option.none()
-                                            : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Stream.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Stream.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
+        @Test
+        public void shouldUnfoldLeftSimpleStream() {
+            assertThat(
+                    Stream.unfoldLeft(10, x -> x == 0
+                                               ? Option.none()
+                                               : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
 
-    @Test
-    public void shouldUnfoldLeftSimpleStream() {
-        assertThat(
-                Stream.unfoldLeft(10, x -> x == 0
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Stream.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldSimpleStream() {
+            assertThat(
+                    Stream.unfold(10, x -> x == 0
                                            ? Option.none()
                                            : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
     }
 
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Stream.unfold(0, x -> Option.none())).isEqualTo(empty());
-    }
+    @Nested
+    class SerializableTests {
+        @Test
+        public void shouldNotSerializeEnclosingClassOfCons() {
+            assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(Stream.cons(1, Stream::empty)));
 
-    @Test
-    public void shouldUnfoldSimpleStream() {
-        assertThat(
-                Stream.unfold(10, x -> x == 0
-                                       ? Option.none()
-                                       : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
+        }
 
-    // -- Serializable
-
-    @Test
-    public void shouldNotSerializeEnclosingClassOfCons() {
-        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(Stream.cons(1, Stream::empty)));
-
-    }
-
-    @Test
-    public void shouldNotDeserializeStreamWithSizeLessThanOne() {
-        assertThrows(InvalidObjectException.class, () -> {
-            try {
-                /*
-                 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-                 * of Stream elements is gathered dynamically.
-                 */
-                final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
-                final byte[] listWithTwoElements = Serializables.serialize(Stream.of(0, 0));
-                int index = -1;
-                for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                    final byte b1 = listWithOneElement[i];
-                    final byte b2 = listWithTwoElements[i];
-                    if (b1 != b2) {
-                        if (b1 != 1 || b2 != 2) {
-                            throw new IllegalStateException("Difference does not indicate number of elements.");
-                        } else {
-                            index = i;
+        @Test
+        public void shouldNotDeserializeStreamWithSizeLessThanOne() {
+            assertThrows(InvalidObjectException.class, () -> {
+                try {
+                    /*
+                     * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+                     * of Stream elements is gathered dynamically.
+                     */
+                    final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
+                    final byte[] listWithTwoElements = Serializables.serialize(Stream.of(0, 0));
+                    int index = -1;
+                    for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                        final byte b1 = listWithOneElement[i];
+                        final byte b2 = listWithTwoElements[i];
+                        if (b1 != b2) {
+                            if (b1 != 1 || b2 != 2) {
+                                throw new IllegalStateException("Difference does not indicate number of elements.");
+                            } else {
+                                index = i;
+                            }
                         }
                     }
+                    if (index == -1) {
+                        throw new IllegalStateException("Hack incomplete - index not found");
+                    }
+                    /*
+                     * Hack the serialized data and fake zero elements.
+                     */
+                    listWithOneElement[index] = 0;
+                    Serializables.deserialize(listWithOneElement);
+                } catch (IllegalStateException x) {
+                    throw (x.getCause() != null) ? x.getCause() : x;
                 }
-                if (index == -1) {
-                    throw new IllegalStateException("Hack incomplete - index not found");
-                }
-                /*
-                 * Hack the serialized data and fake zero elements.
-                 */
-                listWithOneElement[index] = 0;
-                Serializables.deserialize(listWithOneElement);
-            } catch (IllegalStateException x) {
-                throw (x.getCause() != null) ? x.getCause() : x;
-            }
-        });
+            });
+        }
     }
 
-    // -- spliterator
+    @Nested
+    class SpliteratorTests {
+        @Test
+        public void shouldNotHaveSizedSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();
+        }
 
-    @Test
-    public void shouldNotHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();
-    }
-
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
+        @Test
+        public void shouldReturnSizeWhenSpliterator() {
+            assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
+        }
     }
 
 }
