@@ -273,17 +273,28 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (!isCompleted()) {
+            final Queue<Thread> waiters;
             lock.lock();
             try {
                 if (!isCompleted()) {
                     if (mayInterruptIfRunning && this.thread != null) {
                         this.thread.interrupt();
                     }
-                    this.cancelled = tryComplete(Try.failure(new CancellationException()));
-                    return this.cancelled;
+                    this.cancelled = true;
+                    this.value = Option.some(Try.failure(new CancellationException()));
+                    this.actions = null;
+                    waiters = this.waiters;
+                    this.waiters = null;
+                    this.thread = null;
+                } else {
+                    waiters = null;
                 }
             } finally {
                 lock.unlock();
+            }
+            if (waiters != null) {
+                waiters.forEach(this::unlock);
+                return true;
             }
         }
         return false;
@@ -343,12 +354,16 @@ final class FutureImpl<T> implements Future<T> {
     public Future<T> onComplete(@NonNull Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
         if (isCompleted()) {
-            perform(action);
+            if (!isCancelled()) {
+                perform(action);
+            }
         } else {
             lock.lock();
             try {
                 if (isCompleted()) {
-                    perform(action);
+                    if (!isCancelled()) {
+                        perform(action);
+                    }
                 } else {
                     actions = actions.enqueue((Consumer<Try<T>>) action);
                 }
