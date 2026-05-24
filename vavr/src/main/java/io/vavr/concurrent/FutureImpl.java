@@ -273,7 +273,9 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (!isCompleted()) {
+            final Queue<Consumer<Try<T>>> actions;
             final Queue<Thread> waiters;
+            final boolean cancelledNow;
             lock.lock();
             try {
                 if (!isCompleted()) {
@@ -282,18 +284,27 @@ final class FutureImpl<T> implements Future<T> {
                     }
                     this.cancelled = true;
                     this.value = Option.some(Try.failure(new CancellationException()));
-                    this.actions = null;
+                    actions = this.actions;
                     waiters = this.waiters;
+                    this.actions = null;
                     this.waiters = null;
                     this.thread = null;
+                    cancelledNow = true;
                 } else {
+                    actions = null;
                     waiters = null;
+                    cancelledNow = false;
                 }
             } finally {
                 lock.unlock();
             }
-            if (waiters != null) {
-                waiters.forEach(this::unlock);
+            if (cancelledNow) {
+                if (waiters != null) {
+                    waiters.forEach(this::unlock);
+                }
+                if (actions != null) {
+                    actions.forEach(this::perform);
+                }
                 return true;
             }
         }
@@ -354,16 +365,12 @@ final class FutureImpl<T> implements Future<T> {
     public Future<T> onComplete(@NonNull Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
         if (isCompleted()) {
-            if (!isCancelled()) {
-                perform(action);
-            }
+            perform(action);
         } else {
             lock.lock();
             try {
                 if (isCompleted()) {
-                    if (!isCancelled()) {
-                        perform(action);
-                    }
+                    perform(action);
                 } else {
                     actions = actions.enqueue((Consumer<Try<T>>) action);
                 }

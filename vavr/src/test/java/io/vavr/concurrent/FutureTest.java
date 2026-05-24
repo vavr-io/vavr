@@ -685,20 +685,21 @@ public class FutureTest extends AbstractValueTest {
         }
 
         @Test
-        public void shouldNotRunCompletionCallbacksAfterCancellation() {
+        public void shouldRunCompletionCallbacksAfterCancellation() {
             final AtomicReference<Task.Complete<Void>> completeRef = new AtomicReference<>();
-            final AtomicBoolean callbackExecuted = new AtomicBoolean(false);
+            final AtomicReference<Try<Void>> callbackResult = new AtomicReference<>();
             final Future<Void> future = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
 
-            future.onComplete(ignored -> callbackExecuted.set(true));
+            future.onComplete(callbackResult::set);
 
             assertThat(completeRef.get()).isNotNull();
             assertThat(future.cancel()).isTrue();
-            future.onComplete(ignored -> callbackExecuted.set(true));
 
             assertThat(future.isCancelled()).isTrue();
             assertThatThrownBy(future::get).isInstanceOf(CancellationException.class);
-            assertThat(callbackExecuted.get()).isFalse();
+            assertThat(callbackResult.get()).isNotNull();
+            assertThat(callbackResult.get().isFailure()).isTrue();
+            assertThat(callbackResult.get().getCause()).isInstanceOf(CancellationException.class);
         }
 
         @Test

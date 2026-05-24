@@ -864,7 +864,7 @@ public interface Future<T> extends Value<T> {
     /**
      * Returns the value of this {@code Future}.
      *
-     * @return {@code None} if the {@code Future} is not yet completed or was cancelled; otherwise, {@code Some(Try)} containing the result or failure
+     * @return {@code None} if the {@code Future} is not yet completed; otherwise, {@code Some(Try)} containing the result, failure, or cancellation failure
      */
     Option<Try<T>> getValue();
 
