@@ -710,6 +710,190 @@ public class FutureTest extends AbstractValueTest {
             assertThat(f1Executed.get()).isFalse();
             assertThat(f2Executed.get()).isFalse();
         }
+
+        @Test
+        void shouldFireOnCompleteWithCancellationException() {
+            final AtomicReference<Task.Complete<Void>> completeRef = new AtomicReference<>();
+            final AtomicReference<Try<Void>> callbackResult = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Void> future = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+
+            future.onComplete(callbackResult::set);
+            assertThat(future.cancel()).isTrue();
+
+            assertThat(future.isCancelled()).isTrue();
+            assertThat(callbackResult.get()).isNotNull();
+            assertThat(callbackResult.get().isFailure()).isTrue();
+            assertThat(callbackResult.get().getCause()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldFireOnCompleteRegisteredAfterCancellation() {
+            @SuppressWarnings("deprecation")
+            final Future<Void> future = Future.run(TRIVIAL_EXECUTOR, complete -> {});
+
+            assertThat(future.cancel()).isTrue();
+
+            final AtomicReference<Try<Void>> callbackResult = new AtomicReference<>();
+            future.onComplete(callbackResult::set);
+
+            assertThat(callbackResult.get()).isNotNull();
+            assertThat(callbackResult.get().isFailure()).isTrue();
+            assertThat(callbackResult.get().getCause()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldFireOnFailureAfterCancellation() {
+            final AtomicReference<Task.Complete<Void>> completeRef = new AtomicReference<>();
+            final AtomicReference<Throwable> failureResult = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Void> future = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+
+            future.onFailure(failureResult::set);
+            assertThat(future.cancel()).isTrue();
+
+            assertThat(future.isCancelled()).isTrue();
+            assertThat(failureResult.get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughMap() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<String> mapped = source.map(Object::toString);
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(mapped.isCompleted()).isTrue();
+            assertThat(mapped.isFailure()).isTrue();
+            assertThat(mapped.getCause().get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughFlatMap() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<String> flatMapped = source.flatMap(i -> Future.successful(TRIVIAL_EXECUTOR, i.toString()));
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(flatMapped.isCompleted()).isTrue();
+            assertThat(flatMapped.isFailure()).isTrue();
+            assertThat(flatMapped.getCause().get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughFilter() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Integer> filtered = source.filter(i -> i > 0);
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(filtered.isCompleted()).isTrue();
+            assertThat(filtered.isFailure()).isTrue();
+            assertThat(filtered.getCause().get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughTransformValue() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<String> transformed = source.transformValue(t -> t.map(Object::toString));
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(transformed.isCompleted()).isTrue();
+            assertThat(transformed.isFailure()).isTrue();
+            assertThat(transformed.getCause().get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughRecoverWith() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Integer> recovered = source.recoverWith(ex -> Future.successful(TRIVIAL_EXECUTOR, -1));
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(recovered.isCompleted()).isTrue();
+            assertThat(recovered.isSuccess()).isTrue();
+            assertThat(recovered.get()).isEqualTo(-1);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughFailed() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Throwable> failed = source.failed();
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(failed.isCompleted()).isTrue();
+            assertThat(failed.isSuccess()).isTrue();
+            assertThat(failed.get()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughFallbackTo() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Integer> fallback = source.fallbackTo(Future.successful(TRIVIAL_EXECUTOR, 99));
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(fallback.isCompleted()).isTrue();
+            assertThat(fallback.isSuccess()).isTrue();
+            assertThat(fallback.get()).isEqualTo(99);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughOrElse() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Integer> orElse = source.orElse(() -> Future.successful(TRIVIAL_EXECUTOR, 99));
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(orElse.isCompleted()).isTrue();
+            assertThat(orElse.isSuccess()).isTrue();
+            assertThat(orElse.get()).isEqualTo(99);
+        }
+
+        @Test
+        void shouldConvertCancelledFutureToCompletableFuture() {
+            @SuppressWarnings("deprecation")
+            final Future<Integer> future = Future.run(TRIVIAL_EXECUTOR, complete -> {});
+            final CompletableFuture<Integer> completableFuture = future.toCompletableFuture();
+
+            assertThat(future.cancel()).isTrue();
+
+            assertThat(completableFuture.isDone()).isTrue();
+            assertThat(completableFuture.isCompletedExceptionally()).isTrue();
+            assertThatThrownBy(completableFuture::get).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        void shouldPropagateCancellationThroughAndThen() {
+            final AtomicReference<Task.Complete<Integer>> completeRef = new AtomicReference<>();
+            @SuppressWarnings("deprecation")
+            final Future<Integer> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Integer> chained = source.andThen(ignored -> {});
+
+            assertThat(source.cancel()).isTrue();
+
+            assertThat(chained.isCompleted()).isTrue();
+            assertThat(chained.isFailure()).isTrue();
+            assertThat(chained.getCause().get()).isInstanceOf(CancellationException.class);
+        }
     }
 
     @Nested
