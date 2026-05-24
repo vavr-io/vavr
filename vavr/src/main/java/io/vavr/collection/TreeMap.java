@@ -115,7 +115,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     public static <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
       @NonNull Function<? super T, ? extends K> keyMapper,
       @NonNull Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "key comparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createCollector(EntryComparator.natural(), keyMapper, valueMapper);
@@ -135,7 +134,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     public static <K, V, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
       @NonNull Comparator<? super K> keyComparator,
       @NonNull Function<? super T, ? extends K> keyMapper) {
-        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         return createCollector(EntryComparator.of(keyComparator), keyMapper, v -> v);
     }
@@ -155,7 +154,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     public static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
       @NonNull Comparator<? super K> keyComparator,
       @NonNull Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createCollector(EntryComparator.of(keyComparator), keyMapper, valueMapper);
