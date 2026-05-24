@@ -450,6 +450,18 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(testee.distinct()).isEqualTo(testee);
     }
 
+    // -- isDistinct
+
+    @TestTemplate
+    public void shouldReturnCorrectIsDistinctBasedOnContainerType() {
+        final Multimap<Integer, Object> testee = this.<Integer, Object>emptyMap().put(1, 1);
+        if (containerType == Multimap.ContainerType.SEQ) {
+            assertThat(testee.isDistinct()).isFalse();
+        } else {
+            assertThat(testee.isDistinct()).isTrue();
+        }
+    }
+
     // -- equality
 
     @TestTemplate
@@ -1020,7 +1032,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @TestTemplate
     public void shouldHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT))
+                .isEqualTo(containerType != Multimap.ContainerType.SEQ);
     }
 
     @TestTemplate

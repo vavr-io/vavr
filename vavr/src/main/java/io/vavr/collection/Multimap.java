@@ -364,7 +364,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @Override
     default boolean isDistinct() {
-        return true;
+        return getContainerType() != ContainerType.SEQ;
     }
 
     @Override
