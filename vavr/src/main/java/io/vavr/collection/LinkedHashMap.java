@@ -21,8 +21,6 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.jspecify.annotations.NonNull;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
