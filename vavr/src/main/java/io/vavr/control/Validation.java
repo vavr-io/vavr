@@ -701,6 +701,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     @Override
     default Validation<E, T> peek(@NonNull Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isValid()) {
             action.accept(get());
         }
