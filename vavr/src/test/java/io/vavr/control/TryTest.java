@@ -133,6 +133,17 @@ public class TryTest extends AbstractValueTest {
         assertThat(result.isFailure());
     }
 
+    @Test
+    public void shouldPreserveOriginalFailureWhenRunnableAlsoThrows() {
+        final IllegalStateException original = new IllegalStateException("original");
+        final IllegalArgumentException finallyEx = new IllegalArgumentException("finally");
+        final Try<Object> result = Try.<Object>failure(original)
+          .andFinallyTry(() -> { throw finallyEx; });
+        assertThat(result.isFailure()).isTrue();
+        assertThat(result.getCause()).isSameAs(original);
+        assertThat(result.getCause().getSuppressed()).containsExactly(finallyEx);
+    }
+
     // -- collect
 
     @Test
