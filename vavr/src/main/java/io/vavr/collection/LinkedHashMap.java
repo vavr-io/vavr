@@ -21,13 +21,21 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
 
 /**
  * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
@@ -707,6 +715,40 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public @NonNull Iterator<Tuple2<K, V>> iterator() {
         return list.iterator();
+    }
+
+    @Override
+    public Iterator<K> keysIterator() {
+        return new Iterator<>() {
+            private final Iterator<Tuple2<K, V>> it = list.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public K next() {
+                return it.next()._1;
+            }
+        };
+    }
+
+    @Override
+    public Iterator<V> valuesIterator() {
+        return new Iterator<>() {
+            private final Iterator<Tuple2<K, V>> it = list.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public V next() {
+                return it.next()._2;
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")
