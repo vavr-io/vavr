@@ -664,12 +664,14 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> andThen(@NonNull Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
-        return run(executor(), complete ->
-                onComplete(t -> {
-                    Try.run(() -> action.accept(t));
-                    complete.with(t);
-                })
-        );
+        final FutureImpl<T> result = FutureImpl.of(executor());
+        onComplete(t -> {
+            if (!result.isCancelled()) {
+                Try.run(() -> action.accept(t));
+                result.tryComplete(t);
+            }
+        });
+        return result;
     }
 
     /**
@@ -862,7 +864,7 @@ public interface Future<T> extends Value<T> {
     /**
      * Returns the value of this {@code Future}.
      *
-     * @return {@code None} if the {@code Future} is not yet completed or was cancelled; otherwise, {@code Some(Try)} containing the result or failure
+     * @return {@code None} if the {@code Future} is not yet completed; otherwise, {@code Some(Try)} containing the result, failure, or cancellation failure
      */
     Option<Try<T>> getValue();
 

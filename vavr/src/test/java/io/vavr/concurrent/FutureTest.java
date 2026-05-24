@@ -685,6 +685,40 @@ public class FutureTest extends AbstractValueTest {
         }
 
         @Test
+        public void shouldRunCompletionCallbacksAfterCancellation() {
+            final AtomicReference<Task.Complete<Void>> completeRef = new AtomicReference<>();
+            final AtomicReference<Try<Void>> callbackResult = new AtomicReference<>();
+            final Future<Void> future = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+
+            future.onComplete(callbackResult::set);
+
+            assertThat(completeRef.get()).isNotNull();
+            assertThat(future.cancel()).isTrue();
+
+            assertThat(future.isCancelled()).isTrue();
+            assertThatThrownBy(future::get).isInstanceOf(CancellationException.class);
+            assertThat(callbackResult.get()).isNotNull();
+            assertThat(callbackResult.get().isFailure()).isTrue();
+            assertThat(callbackResult.get().getCause()).isInstanceOf(CancellationException.class);
+        }
+
+        @Test
+        public void shouldNotRunAndThenActionAfterCancellingChainedFuture() {
+            final AtomicReference<Task.Complete<Void>> completeRef = new AtomicReference<>();
+            final AtomicBoolean actionExecuted = new AtomicBoolean(false);
+            final Future<Void> source = Future.run(TRIVIAL_EXECUTOR, completeRef::set);
+            final Future<Void> chained = source.andThen(ignored -> actionExecuted.set(true));
+
+            assertThat(completeRef.get()).isNotNull();
+            assertThat(chained.cancel()).isTrue();
+            completeRef.get().with(Try.success(null));
+
+            assertThat(chained.isCancelled()).isTrue();
+            assertThatThrownBy(chained::get).isInstanceOf(CancellationException.class);
+            assertThat(actionExecuted.get()).isFalse();
+        }
+
+        @Test
         void shouldNotRunCancelledFuture() {
             ExecutorService es = Executors.newSingleThreadExecutor();
 
