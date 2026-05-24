@@ -890,6 +890,13 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @TestTemplate
+    public void shouldNotReplaceEntityWhenValueDoesNotMatch() {
+        final Multimap<Integer, Object> map = emptyInt().put(1, "a").put(1, "b");
+        final Multimap<Integer, Object> actual = map.replace(Tuple.of(1, "x"), Tuple.of(1, "c"));
+        assertThat(actual).isSameAs(map);
+    }
+
     // -- removeAll
 
     @TestTemplate

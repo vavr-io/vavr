@@ -1431,6 +1431,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         }
 
         @Test
+        public void shouldNotReplaceTupleWhenValueDoesNotMatch() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+            final Map<Integer, String> actual = map.replace(Tuple.of(2, "x"), Tuple.of(2, "c"));
+            assertThat(actual).isSameAs(map);
+        }
+
+        @Test
         public void shouldReplaceAllValuesWithFunctionResult() {
             final Map<Integer, String> map = mapOf(1, "a", 2, "b");
             final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);

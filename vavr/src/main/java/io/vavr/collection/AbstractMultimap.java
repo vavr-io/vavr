@@ -509,7 +509,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     public M replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return (M) (containsKey(currentElement._1) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
+        return (M) (contains(currentElement) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
     }
 
     @Override
