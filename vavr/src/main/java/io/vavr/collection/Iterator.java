@@ -2029,7 +2029,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                         final Object key = classifier.apply(source.touch());
                         final java.util.List<T> acc = new ArrayList<>();
                         acc.add(source.next());
-                        while (source.hasNext() && key.equals(classifier.apply(source.touch()))) {
+                        while (source.hasNext() && Objects.equals(key, classifier.apply(source.touch()))) {
                             acc.add(source.getNext());
                         }
                         next = Stream.ofAll(acc);
