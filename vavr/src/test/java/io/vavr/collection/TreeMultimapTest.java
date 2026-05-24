@@ -256,6 +256,33 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
     }
 
+    // -- comparator preservation
+
+    @TestTemplate
+    public void shouldPreserveComparatorOnFilter() {
+        final Comparator<String> comparator = Comparator.comparing(String::length);
+        final TreeMultimap<String, String> map = TreeMultimap.withSeq().of(comparator, "aa", "v1", "b", "v2", "ccc", "v3");
+        final TreeMultimap<String, String> filtered = (TreeMultimap<String, String>) map.filter((k, v) -> k.length() <= 2);
+        assertThat(filtered.comparator()).isSameAs(comparator);
+        Assertions.assertThat(filtered.keySet().toList()).containsExactly("b", "aa");
+    }
+
+    @TestTemplate
+    public void shouldPreserveComparatorOnDrop() {
+        final Comparator<String> comparator = Comparator.comparing(String::length);
+        final TreeMultimap<String, String> map = TreeMultimap.withSeq().of(comparator, "aa", "v1", "b", "v2", "ccc", "v3");
+        final TreeMultimap<String, String> dropped = (TreeMultimap<String, String>) map.drop(1);
+        assertThat(dropped.comparator()).isSameAs(comparator);
+    }
+
+    @TestTemplate
+    public void shouldPreserveComparatorOnTake() {
+        final Comparator<String> comparator = Comparator.comparing(String::length);
+        final TreeMultimap<String, String> map = TreeMultimap.withSeq().of(comparator, "aa", "v1", "b", "v2", "ccc", "v3");
+        final TreeMultimap<String, String> taken = (TreeMultimap<String, String>) map.take(2);
+        assertThat(taken.comparator()).isSameAs(comparator);
+    }
+
     // -- isSequential()
 
     @TestTemplate
