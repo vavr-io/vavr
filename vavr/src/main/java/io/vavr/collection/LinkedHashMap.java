@@ -1043,7 +1043,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map with given key order
      */
     private static <K, V> LinkedHashMap<K, V> wrapNonUnique(@NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list.reverse().distinctBy(Tuple2::_1).reverse().toQueue(), map);
+        if (list.isEmpty()) {
+            return empty();
+        }
+        if (list.size() == map.size()) {
+            return new LinkedHashMap<>(list, map);
+        }
+        return new LinkedHashMap<>(list.reverse().distinctBy(Tuple2::_1).reverse().toQueue(), map);
     }
 
     // We need this method to narrow the argument of `ofEntries`.
