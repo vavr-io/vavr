@@ -782,6 +782,33 @@ public class ValidationTest extends AbstractValueTest {
     }
 
     @Nested
+    class PeekTests {
+        @Test
+        public void shouldPeekValid() {
+            java.util.List<String> accumulator = new ArrayList<>();
+            Validation.valid("hello").peek(accumulator::add);
+            assertThat(accumulator).containsExactly("hello");
+        }
+
+        @Test
+        public void shouldNotPeekInvalid() {
+            java.util.List<String> accumulator = new ArrayList<>();
+            Validation.<String, String>invalid("error").peek(accumulator::add);
+            assertThat(accumulator).isEmpty();
+        }
+
+        @Test
+        public void shouldThrowOnNullActionWhenValid() {
+            assertThrows(NullPointerException.class, () -> Validation.valid("hello").peek(null));
+        }
+
+        @Test
+        public void shouldThrowOnNullActionWhenInvalid() {
+            assertThrows(NullPointerException.class, () -> Validation.invalid("error").peek(null));
+        }
+    }
+
+    @Nested
     class SpliteratorTests {
         @Test
         public void shouldHaveSizedSpliterator() {
