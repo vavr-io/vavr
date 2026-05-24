@@ -1122,6 +1122,40 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
+    public Iterator<K> keysIterator() {
+        return new Iterator<K>() {
+            private final Iterator<Tuple2<K, V>> it = entries.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public K next() {
+                return it.next()._1;
+            }
+        };
+    }
+
+    @Override
+    public Iterator<V> valuesIterator() {
+        return new Iterator<V>() {
+            private final Iterator<Tuple2<K, V>> it = entries.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public V next() {
+                return it.next()._2;
+            }
+        };
+    }
+
+    @Override
     public SortedSet<K> keySet() {
         return TreeSet.ofAll(comparator(), iterator().map(Tuple2::_1));
     }
