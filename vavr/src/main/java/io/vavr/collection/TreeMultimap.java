@@ -961,9 +961,10 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         super(back, containerType, emptyContainer);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
-        return TreeMap.empty(Comparators.naturalComparator());
+        return TreeMap.empty((Comparator<K2>) comparator());
     }
 
     @SuppressWarnings("unchecked")
