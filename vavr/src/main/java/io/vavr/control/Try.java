@@ -23,7 +23,6 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -1457,8 +1456,7 @@ public interface Try<T> extends Value<T>, Serializable {
             }
             Throwable other = ((Failure<?>) obj).cause;
             return cause.getClass().equals(other.getClass())
-                    && Objects.equals(cause.getMessage(), other.getMessage())
-                    && Arrays.deepEquals(cause.getStackTrace(), other.getStackTrace());
+                    && Objects.equals(cause.getMessage(), other.getMessage());
         }
 
         @Override
