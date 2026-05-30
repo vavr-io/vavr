@@ -113,7 +113,7 @@ final class FutureImpl<T> implements Future<T> {
                             try {
                                 task.run(this::tryComplete);
                             } catch (Throwable x) {
-                                tryComplete(Try.failure(x));
+                                completeWithFailure(x);
                             }
                         }
                     });
@@ -433,6 +433,22 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     private void handleUncaughtException(Throwable x) {
-        tryComplete(Try.failure(x));
+        completeWithFailure(x);
+    }
+
+    private boolean completeWithFailure(Throwable cause) {
+        if (cause instanceof InterruptedException) {
+            lock.lock();
+            try {
+                if (!isCompleted()) {
+                    this.cancelled = true;
+                    return tryComplete(Try.failure(new CancellationException()));
+                }
+                return false;
+            } finally {
+                lock.unlock();
+            }
+        }
+        return tryComplete(Try.failure(cause));
     }
 }
