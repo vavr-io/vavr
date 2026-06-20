@@ -1077,6 +1077,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public @NonNull Iterator<T> iterator() {
+        return front.iterator().concat(rear.reverseIterator());
+    }
+
+    @Override
     public T last() {
         return rear.isEmpty() ? front.last() : rear.head();
     }
