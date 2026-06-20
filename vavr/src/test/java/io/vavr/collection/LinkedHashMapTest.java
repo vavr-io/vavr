@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class LinkedHashMapTest extends AbstractMapTest {
@@ -177,20 +178,36 @@ public class LinkedHashMapTest extends AbstractMapTest {
     
     // -- put
 
-    @Test
-    public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.put(1, "d");
-        final Map<Integer, String> expected = mapOf(1, "d", 2, "b", 3, "c");
-        assertThat(actual.toList()).isEqualTo(expected.toList());
-    }
+    @Nested
+    class PutTests {
+        @Test
+        public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.put(1, "d");
+            final Map<Integer, String> expected = mapOf(1, "d", 2, "b", 3, "c");
+            assertThat(actual.toList()).isEqualTo(expected.toList());
+        }
 
-    @Test
-    public void shouldKeepOrderWhenPuttingAnExistingKeyAndExistingValue() {
-        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
-        final Map<Integer, String> actual = map.put(1, "a");
-        final Map<Integer, String> expected = mapOf(1, "a", 2, "b", 3, "c");
-        assertThat(actual.toList()).isEqualTo(expected.toList());
+        @Test
+        public void shouldKeepOrderWhenPuttingAnExistingKeyAndExistingValue() {
+            final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+            final Map<Integer, String> actual = map.put(1, "a");
+            final Map<Integer, String> expected = mapOf(1, "a", 2, "b", 3, "c");
+            assertThat(actual.toList()).isEqualTo(expected.toList());
+        }
+
+        @Test
+        public void shouldReuseOrderStructureWhenOverwritingAnExistingKey() throws Exception {
+            final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+            final LinkedHashMap<Integer, String> actual = map.put(2, "B");
+            assertThat(orderStructureOf(actual)).isSameAs(orderStructureOf(map));
+        }
+
+        private Object orderStructureOf(LinkedHashMap<?, ?> map) throws Exception {
+            final java.lang.reflect.Field list = LinkedHashMap.class.getDeclaredField("list");
+            list.setAccessible(true);
+            return list.get(map);
+        }
     }
 
     // -- replace
