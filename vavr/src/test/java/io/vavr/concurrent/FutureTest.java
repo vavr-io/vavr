@@ -543,14 +543,14 @@ public class FutureTest extends AbstractValueTest {
         }
 
         @Test
-        public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
-            // the Future should never be completed as long as the InterruptedException is rethrown by the Try...
+        public void shouldCompleteAsCancelledWhenComputationIsInterrupted() {
+            // an interrupted computation must complete the Future as cancelled rather than hang until the timeout
             final Future<Void> future = Future.run(() -> {throw new InterruptedException();});
-            // ...therefore the timeout will occur
             future.await(100, TimeUnit.MILLISECONDS);
+            assertThat(future.isCompleted()).isTrue();
+            assertThat(future.isCancelled()).isTrue();
             assertThat(future.isFailure()).isTrue();
-            assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
-            assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
+            assertThat(future.getCause().get()).isInstanceOf(CancellationException.class);
         }
     }
 
@@ -743,6 +743,26 @@ public class FutureTest extends AbstractValueTest {
             assertThatThrownBy(f2::get).isInstanceOf(CancellationException.class);
             assertThat(f1Executed.get()).isFalse();
             assertThat(f2Executed.get()).isFalse();
+        }
+
+        @Test
+        void shouldCompleteAsCancelledWhenWorkerIsInterruptedByShutdownNow() {
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final AtomicBoolean running = new AtomicBoolean(false);
+            final Future<String> future = Future.of(executor, () -> {
+                running.set(true);
+                Thread.sleep(60000);
+                return "never reached";
+            });
+
+            waitUntil(running::get);
+            executor.shutdownNow();
+
+            future.await(5, TimeUnit.SECONDS);
+
+            assertThat(future.isCompleted()).isTrue();
+            assertThat(future.isCancelled()).isTrue();
+            assertThatThrownBy(future::get).isInstanceOf(CancellationException.class);
         }
 
         @Test
