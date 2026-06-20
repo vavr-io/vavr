@@ -392,7 +392,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class StaticNarrowTests {
+    class StreamStaticNarrowTests {
         @Test
         public void shouldNarrowStream() {
             final Stream<Double> doubles = of(1.0d);
@@ -453,7 +453,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class CombinationsTests {
+    class StreamCombinationsTests {
         @Test
         public void shouldComputeCombinationsOfEmptyStream() {
             assertThat(Stream.empty().combinations()).isEqualTo(Stream.of(Stream.empty()));
@@ -467,7 +467,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class CombinationsKTests {
+    class StreamCombinationsKTests {
         @Test
         public void shouldComputeKCombinationsOfEmptyStream() {
             assertThat(Stream.empty().combinations(1)).isEqualTo(Stream.empty());
@@ -531,7 +531,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class PermutationsTests {
+    class StreamPermutationsTests {
         @Test
         public void shouldComputePermutationsOfEmptyStream() {
             assertThat(Stream.empty().permutations()).isEqualTo(Stream.empty());
@@ -579,7 +579,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class ContainssliceTests {
+    class StreamContainssliceTests {
         @Test
         public void shouldRecognizeInfiniteDoesContainSlice() {
             final boolean actual = Stream.iterate(1, i -> i + 1).containsSlice(of(12, 13, 14));
@@ -933,7 +933,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class StreamSpliteratorTests {
         @Test
         public void shouldNotHaveSizedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();

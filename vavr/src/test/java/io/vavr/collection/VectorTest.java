@@ -213,7 +213,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
     }
 
     @Nested
-    class StaticNarrowTests {
+    class VectorStaticNarrowTests {
         @Test
         public void shouldNarrowVector() {
             final Vector<Double> doubles = of(1.0d);

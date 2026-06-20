@@ -214,7 +214,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class StaticNarrowTests {
+    class QueueStaticNarrowTests {
         @Test
         public void shouldNarrowQueue() {
             final Queue<Double> doubles = of(1.0d);
@@ -302,7 +302,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class GetTests {
+    class QueueGetTests {
         @Test
         public void shouldGetFrontEnc() {
             assertThat(enqueued().get(0)).isEqualTo(1);
@@ -353,7 +353,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class IndexofTests {
+    class QueueIndexofTests {
         @Test
         public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
             assertThat(enqueued().indexOf(2, 2)).isEqualTo(-1);
@@ -384,7 +384,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class LastindexofTests {
+    class QueueLastindexofTests {
         @Test
         public void shouldNotFindLastIndexOfElementWhenEndIdLessEnc() {
             assertThat(enqueued().lastIndexOf(3, 1)).isEqualTo(-1);
@@ -472,7 +472,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class QueueSpliteratorTests {
         @Test
         public void shouldHaveSizedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();

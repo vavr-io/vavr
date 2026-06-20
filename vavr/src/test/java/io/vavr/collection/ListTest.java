@@ -210,7 +210,7 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class StaticNarrowTests {
+    class ListStaticNarrowTests {
         @Test
         public void shouldNarrowList() {
             final List<Double> doubles = of(1.0d);
@@ -473,7 +473,7 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class ListSpliteratorTests {
         @Test
         public void shouldHaveSizedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();

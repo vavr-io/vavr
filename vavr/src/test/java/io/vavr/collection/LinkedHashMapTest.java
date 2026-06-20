@@ -161,7 +161,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Nested
-    class KeysetTests {
+    class LinkedHashMapKeysetTests {
         @Test
         public void shouldKeepKeySetOrder() {
             final Set<Integer> keySet = LinkedHashMap.of(4, "d", 1, "a", 2, "b").keySet();
@@ -182,7 +182,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     
 
     @Nested
-    class PutTests {
+    class LinkedHashMapPutTests {
         @Test
         public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
             final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
