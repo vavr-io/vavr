@@ -28,7 +28,7 @@ public abstract class AbstractLinearSeqTest extends AbstractSeqTest {
     abstract protected <T> LinearSeq<T> of(T element);
 
     @Nested
-    class StaticNarrowTests {
+    class LinearSeqStaticNarrowTests {
         @Test
         public void shouldNarrowIndexedSeq() {
             final LinearSeq<Double> doubles = of(1.0d);

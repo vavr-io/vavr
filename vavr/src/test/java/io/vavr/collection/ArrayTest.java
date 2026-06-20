@@ -210,7 +210,7 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Nested
-    class StaticNarrowTests {
+    class ArrayStaticNarrowTests {
         @Test
         public void shouldNarrowArray() {
             final Array<Double> doubles = of(1.0d);
@@ -239,7 +239,7 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Nested
-    class GetTests {
+    class ArrayGetTests {
         @Test
         public void shouldThrowExceptionWhenGetIndexEqualToLength() {
             final Array<Integer> array = of(1);

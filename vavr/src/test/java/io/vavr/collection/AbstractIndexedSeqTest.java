@@ -29,7 +29,7 @@ public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
     abstract protected <T> IndexedSeq<T> of(T element);
 
     @Nested
-    class StaticNarrowTests {
+    class IndexedSeqStaticNarrowTests {
         @Test
         public void shouldNarrowIndexedSeq() {
             final IndexedSeq<Double> doubles = of(1.0d);
@@ -40,7 +40,7 @@ public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class IndexedSeqSpliteratorTests {
         @Test
         public void shouldHaveSizedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();

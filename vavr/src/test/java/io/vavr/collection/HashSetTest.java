@@ -493,7 +493,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class HashSetSpliteratorTests {
         @Test
         public void shouldNotHaveSortedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
