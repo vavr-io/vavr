@@ -198,6 +198,19 @@ public class LinkedHashMapTest extends AbstractMapTest {
             final Map<Integer, String> expected = mapOf(1, "a", 2, "b", 3, "c");
             assertThat(actual.toList()).isEqualTo(expected.toList());
         }
+
+        @Test
+        public void shouldReuseOrderStructureWhenOverwritingAnExistingKey() throws Exception {
+            final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+            final LinkedHashMap<Integer, String> actual = map.put(2, "B");
+            assertThat(orderStructureOf(actual)).isSameAs(orderStructureOf(map));
+        }
+
+        private static Object orderStructureOf(LinkedHashMap<?, ?> map) throws Exception {
+            var list = LinkedHashMap.class.getDeclaredField("list");
+            list.setAccessible(true);
+            return list.get(map);
+        }
     }
 
     @Nested
