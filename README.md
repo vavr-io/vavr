@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/ci.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/ci.yml)
 [![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=1)](https://central.sonatype.com/artifact/io.vavr/vavr/versions)
-[![javadoc](https://javadoc.io/badge2/io.vavr/vavr/1.0.0/javadoc.svg)](https://javadoc.io/doc/io.vavr/vavr/1.0.0)
+[![javadoc](https://javadoc.io/badge2/io.vavr/vavr/1.0.1/javadoc.svg)](https://javadoc.io/doc/io.vavr/vavr/1.0.1)
 
 ```text
  ____  ______________  ________________________  __________
