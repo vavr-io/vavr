@@ -206,6 +206,13 @@ public class LinkedHashMapTest extends AbstractMapTest {
             assertThat(orderStructureOf(actual)).isSameAs(orderStructureOf(map));
         }
 
+        @Test
+        public void shouldSurfaceTheReplacedKeyInstanceAfterOverwrite() {
+            final Map<IntMod2, String> map = LinkedHashMap.of(new IntMod2(1), "a").put(new IntMod2(3), "b");
+            assertThat(map.toString()).isEqualTo("LinkedHashMap((3, b))");
+            assertThat(map.keySet().head().toString()).isEqualTo("3");
+        }
+
         private static Object orderStructureOf(LinkedHashMap<?, ?> map) throws Exception {
             var list = LinkedHashMap.class.getDeclaredField("list");
             list.setAccessible(true);
