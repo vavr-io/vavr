@@ -56,7 +56,7 @@ final class Maps {
         if (value.isDefined()) {
             final V newValue = remappingFunction.apply(key, value.get());
             final M newMap = (M) map.put(key, newValue);
-            return Tuple.of(Option.of(newValue), newMap);
+            return Tuple.of(Option.some(newValue), newMap);
         } else {
             return Tuple.of(Option.none(), map);
         }
@@ -280,7 +280,7 @@ final class Maps {
     static <K, V, M extends Map<K, V>> M replace(M map, Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return (M) (map.containsKey(currentElement._1) ? map.remove(currentElement._1).put(newElement) : map);
+        return (M) (map.contains(currentElement) ? map.remove(currentElement._1).put(newElement) : map);
     }
 
     @SuppressWarnings("unchecked")

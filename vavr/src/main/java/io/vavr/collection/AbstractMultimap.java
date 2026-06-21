@@ -49,6 +49,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     /** A supplier that creates empty containers for new key entries. */
     protected final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
+    private int size = -1;
 
     /**
      * Creates a new AbstractMultimap with the specified backing map, container type, and empty container supplier.
@@ -219,7 +220,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public int size() {
-        return back.foldLeft(0, (s, t) -> s + t._2.size());
+        int s = size;
+        if (s == -1) {
+            s = back.foldLeft(0, (acc, t) -> acc + t._2.size());
+            size = s;
+        }
+        return s;
     }
 
     @Override
@@ -509,7 +515,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     public M replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return (M) (containsKey(currentElement._1) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
+        return (M) (contains(currentElement) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
     }
 
     @Override

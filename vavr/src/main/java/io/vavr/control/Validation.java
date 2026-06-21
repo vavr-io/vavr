@@ -569,14 +569,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Validation<E, U> map(@NonNull Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
-            return Validation.invalid(this.getError());
+            return (Validation<E, U>) this;
         } else {
-            final T value = this.get();
-            return Validation.valid(f.apply(value));
+            return Validation.valid(f.apply(this.get()));
         }
     }
 
@@ -615,13 +615,13 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
      */
+    @SuppressWarnings("unchecked")
     default <U> Validation<U, T> mapError(@NonNull Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
-            final E error = this.getError();
-            return Validation.invalid(f.apply(error));
+            return Validation.invalid(f.apply(this.getError()));
         } else {
-            return Validation.valid(this.get());
+            return (Validation<U, T>) this;
         }
     }
 
@@ -701,6 +701,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     @Override
     default Validation<E, T> peek(@NonNull Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isValid()) {
             action.accept(get());
         }

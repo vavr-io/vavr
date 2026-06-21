@@ -33,7 +33,7 @@ import static java.util.Arrays.copyOf;
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  *
- * @author Ruslan Sennov
+ * @author Ruslan Sennov, Grzegorz Piwowarek
  */
 interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable {
 
@@ -48,6 +48,8 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable
     int size();
 
     Option<V> get(K key);
+
+    Option<Tuple2<K, V>> getEntry(K key);
 
     V getOrElse(K key, V defaultValue);
 
@@ -209,6 +211,8 @@ interface HashArrayMappedTrieModule {
 
         abstract Option<V> lookup(int shift, int keyHash, K key);
 
+        abstract Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key);
+
         abstract V lookup(int shift, int keyHash, K key, V defaultValue);
 
         abstract AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action);
@@ -235,6 +239,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Option<V> get(K key) {
             return lookup(0, Objects.hashCode(key), key);
+        }
+
+        @Override
+        public Option<Tuple2<K, V>> getEntry(K key) {
+            return lookupEntry(0, Objects.hashCode(key), key);
         }
 
         @Override
@@ -285,6 +294,11 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, int keyHash, K key) {
+            return Option.none();
+        }
+
+        @Override
+        Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key) {
             return Option.none();
         }
 
@@ -396,6 +410,11 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
+        Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key) {
+            return equals(keyHash, key) ? Option.some(Tuple.of(this.key, value)) : Option.none();
+        }
+
+        @Override
         V lookup(int shift, int keyHash, K key, V defaultValue) {
             return equals(keyHash, key) ? value : defaultValue;
         }
@@ -467,6 +486,14 @@ interface HashArrayMappedTrieModule {
                 return Option.none();
             }
             return nodes().find(node -> Objects.equals(node.key(), key)).map(LeafNode::value);
+        }
+
+        @Override
+        Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key) {
+            if (hash != keyHash) {
+                return Option.none();
+            }
+            return nodes().find(node -> Objects.equals(node.key(), key)).map(node -> Tuple.of(node.key(), node.value()));
         }
 
         @Override
@@ -618,6 +645,19 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         @Override
+        Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key) {
+            final int frag = hashFragment(shift, keyHash);
+            final int bit = toBitmap(frag);
+            if ((bitmap & bit) != 0) {
+                final AbstractNode<K, V> n = (AbstractNode<K, V>) subNodes[fromBitmap(bitmap, bit)];
+                return n.lookupEntry(shift + SIZE, keyHash, key);
+            } else {
+                return Option.none();
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
         V lookup(int shift, int keyHash, K key, V defaultValue) {
             final int frag = hashFragment(shift, keyHash);
             final int bit = toBitmap(frag);
@@ -725,6 +765,14 @@ interface HashArrayMappedTrieModule {
             final int frag = hashFragment(shift, keyHash);
             final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, keyHash, key);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        Option<Tuple2<K, V>> lookupEntry(int shift, int keyHash, K key) {
+            final int frag = hashFragment(shift, keyHash);
+            final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
+            return child.lookupEntry(shift + SIZE, keyHash, key);
         }
 
         @SuppressWarnings("unchecked")

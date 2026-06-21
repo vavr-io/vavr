@@ -276,8 +276,8 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     static <T, ID> List<Node<T>> build(@NonNull Iterable<? extends T> source, @NonNull Function<? super T, ? extends ID> idMapper, @NonNull Function<? super T, ? extends ID> parentMapper) {
         Objects.requireNonNull(source, "source is null");
-        Objects.requireNonNull(source, "idMapper is null");
-        Objects.requireNonNull(source, "parentMapper is null");
+        Objects.requireNonNull(idMapper, "idMapper is null");
+        Objects.requireNonNull(parentMapper, "parentMapper is null");
         final List<T> list = List.ofAll(source);
         final Map<ID, List<T>> byParent = list.groupBy(parentMapper);
         final Function<? super T, Iterable<? extends T>> descend = idMapper

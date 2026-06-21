@@ -25,7 +25,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import org.jspecify.annotations.NonNull;
 
@@ -34,18 +41,18 @@ import org.jspecify.annotations.NonNull;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Ruslan Sennov
+ * @author Ruslan Sennov, Grzegorz Piwowarek
  */
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(Queue.empty(), HashMap.empty());
+    private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(Vector.empty(), HashMap.empty());
 
-    private final Queue<Tuple2<K, V>> list;
+    private final Vector<K> list;
     private final HashMap<K, V> map;
 
-    private LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    private LinkedHashMap(Vector<K> list, HashMap<K, V> map) {
         this.list = list;
         this.map = map;
     }
@@ -148,7 +155,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> of(@NonNull Tuple2<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.of(entry);
-        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
+        final Vector<K> list = Vector.of(((Tuple2<K, V>) entry)._1);
         return wrap(list, map);
     }
 
@@ -212,7 +219,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
         final HashMap<K, V> map = HashMap.of(key, value);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
+        final Vector<K> list = Vector.of(key);
         return wrap(list, map);
     }
 
@@ -229,7 +236,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2));
+        final Vector<K> list = Vector.of(k1, k2);
         return wrapNonUnique(list, map);
     }
 
@@ -248,7 +255,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3));
+        final Vector<K> list = Vector.of(k1, k2, k3);
         return wrapNonUnique(list, map);
     }
 
@@ -269,7 +276,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4);
         return wrapNonUnique(list, map);
     }
 
@@ -292,7 +299,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5);
         return wrapNonUnique(list, map);
     }
 
@@ -317,7 +324,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5, k6);
         return wrapNonUnique(list, map);
     }
 
@@ -344,7 +351,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5, k6, k7);
         return wrapNonUnique(list, map);
     }
 
@@ -373,7 +380,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5, k6, k7, k8);
         return wrapNonUnique(list, map);
     }
 
@@ -404,7 +411,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5, k6, k7, k8, k9);
         return wrapNonUnique(list, map);
     }
 
@@ -437,7 +444,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
         final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9), Tuple.of(k10, v10));
+        final Vector<K> list = Vector.of(k1, k2, k3, k4, k5, k6, k7, k8, k9, k10);
         return wrapNonUnique(list, map);
     }
 
@@ -485,11 +492,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
         HashMap<K, V> map = HashMap.empty();
-        Queue<Tuple2<K, V>> list = Queue.empty();
+        Vector<K> list = Vector.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            final Tuple2<K, V> tuple = Tuple.of(entry.getKey(), entry.getValue());
-            map = map.put(tuple);
-            list = list.append(tuple);
+            map = map.put(entry.getKey(), entry.getValue());
+            list = list.append(entry.getKey());
         }
         return wrapNonUnique(list, map);
     }
@@ -505,7 +511,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(@NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         final HashMap<K, V> map = HashMap.ofEntries(entries);
-        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
+        Vector<K> list = Vector.empty();
+        for (Tuple2<? extends K, ? extends V> entry : entries) {
+            list = list.append(entry._1);
+        }
         return wrapNonUnique(list, map);
     }
 
@@ -524,10 +533,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             return (LinkedHashMap<K, V>) entries;
         } else {
             HashMap<K, V> map = HashMap.empty();
-            Queue<Tuple2<K, V>> list = Queue.empty();
+            Vector<K> list = Vector.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 map = map.put(entry);
-                list = list.append((Tuple2<K, V>) entry);
+                list = list.append(entry._1);
             }
             return wrapNonUnique(list, map);
         }
@@ -664,7 +673,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> head() {
-        return list.head();
+        return map.getEntry(list.head()).get();
     }
 
     @Override
@@ -672,7 +681,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty LinkedHashMap");
         } else {
-            return LinkedHashMap.ofEntries(list.init());
+            return wrap(list.init(), map.remove(list.last()));
         }
     }
 
@@ -713,7 +722,17 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public @NonNull Iterator<Tuple2<K, V>> iterator() {
+        return list.iterator().map(key -> map.getEntry(key).get());
+    }
+
+    @Override
+    public Iterator<K> keysIterator() {
         return list.iterator();
+    }
+
+    @Override
+    public Iterator<V> valuesIterator() {
+        return list.iterator().map(key -> map.get(key).get());
     }
 
     @SuppressWarnings("unchecked")
@@ -724,7 +743,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> last() {
-        return list.last();
+        return map.getEntry(list.last()).get();
     }
 
     @Override
@@ -788,10 +807,14 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     /**
      * Associates the specified value with the specified key in this map.
-     * If the map previously contained a mapping for the key, the old value is
-     * replaced by the specified value.
+     * If the map previously contained a mapping for the key, both the key and
+     * the value are replaced by the specified ones, keeping the original
+     * insertion order.
      * <p>
-     * Note that this method has a worst-case linear complexity.
+     * Overwriting an existing key runs in (amortized) constant time: the
+     * insertion-order structure is left untouched and the replaced key is
+     * resolved through the backing map on read; inserting a new key appends
+     * to it in (amortized) constant time as well.
      *
      * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
@@ -799,14 +822,9 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     @Override
     public LinkedHashMap<K, V> put(K key, V value) {
-        final Queue<Tuple2<K, V>> newList;
-        final Option<V> currentEntry = get(key);
-        if (currentEntry.isDefined()) {
-            newList = list.replace(Tuple.of(key, currentEntry.get()), Tuple.of(key, value));
-        } else {
-            newList = list.append(Tuple.of(key, value));
-        }
+        final boolean containsKey = map.containsKey(key);
         final HashMap<K, V> newMap = map.put(key, value);
+        final Vector<K> newList = containsKey ? list : list.append(key);
         return wrap(newList, newMap);
     }
 
@@ -824,7 +842,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> remove(K key) {
         if (containsKey(key)) {
-            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> Objects.equals(t._1, key));
+            final Vector<K> newList = list.removeFirst(k -> Objects.equals(k, key));
             final HashMap<K, V> newMap = map.remove(key);
             return wrap(newList, newMap);
         } else {
@@ -843,7 +861,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public LinkedHashMap<K, V> removeAll(@NonNull Iterable<? extends K> keys) {
         Objects.requireNonNull(keys, "keys is null");
         final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
+        final Vector<K> newList = list.filter(k -> !toRemove.contains(k));
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newList.size() == size() ? this : wrap(newList, newMap);
     }
@@ -870,22 +888,19 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         // We replace the whole element, i.e. key and value have to be present.
         if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
 
-            Queue<Tuple2<K, V>> newList = list;
+            Vector<K> newList = list;
             HashMap<K, V> newMap = map;
 
             final K currentKey = currentElement._1;
             final K newKey = newElement._1;
 
-            // If current key and new key are equal, the element will be automatically replaced,
-            // otherwise we need to remove the pair (newKey, ?) from the list manually.
-            if (!Objects.equals(currentKey, newKey)) {
-                final Option<V> value = newMap.get(newKey);
-                if (value.isDefined()) {
-                    newList = newList.remove(Tuple.of(newKey, value.get()));
-                }
+            // If current key and new key are equal, the key keeps its position,
+            // otherwise we need to remove an already present newKey from the order manually.
+            if (!Objects.equals(currentKey, newKey) && newMap.containsKey(newKey)) {
+                newList = newList.remove(newKey);
             }
 
-            newList = newList.replace(currentElement, newElement);
+            newList = newList.replace(currentKey, newKey);
             newMap = newMap.remove(currentKey).put(newElement);
 
             return wrap(newList, newMap);
@@ -964,7 +979,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty LinkedHashMap");
         } else {
-            return wrap(list.tail(), map.remove(list.head()._1()));
+            return wrap(list.tail(), map.remove(list.head()));
         }
     }
 
@@ -1030,27 +1045,34 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     /**
      * Construct Map with given values and key order.
      *
-     * @param list The list of key-value tuples with unique keys.
+     * @param list The list of keys with unique entries.
      * @param map  The map of key-value tuples.
      * @param <K>  The key type
      * @param <V>  The value type
      * @return A new Map containing the given map with given key order
      */
-    private static <K, V> LinkedHashMap<K, V> wrap(@NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    private static <K, V> LinkedHashMap<K, V> wrap(@NonNull Vector<K> list, HashMap<K, V> map) {
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 
     /**
      * Construct Map with given values and key order.
      *
-     * @param list The list of key-value tuples with non-unique keys.
+     * @param list The list of keys with possibly non-unique entries.
      * @param map  The map of key-value tuples.
      * @param <K>  The key type
      * @param <V>  The value type
      * @return A new Map containing the given map with given key order
      */
-    private static <K, V> LinkedHashMap<K, V> wrapNonUnique(@NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list.reverse().distinctBy(Tuple2::_1).reverse().toQueue(), map);
+    private static <K, V> LinkedHashMap<K, V> wrapNonUnique(@NonNull Vector<K> list, HashMap<K, V> map) {
+        if (list.isEmpty()) {
+            return empty();
+        }
+        if (list.size() == map.size()) {
+            return new LinkedHashMap<>(list, map);
+        }
+        // Keep the last occurrence of every key, matching the value precedence in `map`.
+        return new LinkedHashMap<>(list.reverse().distinct().reverse().toVector(), map);
     }
 
     // We need this method to narrow the argument of `ofEntries`.
