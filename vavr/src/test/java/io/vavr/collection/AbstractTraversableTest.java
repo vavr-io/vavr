@@ -2631,7 +2631,24 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         if (value.hasDefiniteSize()) {
             assertThat(root).hasSameSizeAs(value);
         }
-        assertThat(root.toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        if (isOrdered()) {
+            assertThat(root.toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        } else {
+            // hash-based collections have an unspecified iteration order, so sibling order is
+            // arbitrary; assert the tree structure with sibling order normalized away
+            assertThat(normalizedLispString(root)).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        }
+    }
+
+    private static String normalizedLispString(Tree<String> tree) {
+        if (tree.isLeaf()) {
+            return tree.getValue();
+        }
+        final String children = tree.getChildren()
+          .map(AbstractTraversableTest::normalizedLispString)
+          .sorted()
+          .mkString(" ");
+        return "(" + tree.getValue() + " " + children + ")";
     }
 
     // ++++++ OBJECT ++++++
