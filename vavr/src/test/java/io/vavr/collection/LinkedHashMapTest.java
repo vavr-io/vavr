@@ -161,7 +161,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Nested
-    class KeysetTests {
+    class LinkedHashMapKeysetTests {
         @Test
         public void shouldKeepKeySetOrder() {
             final Set<Integer> keySet = LinkedHashMap.of(4, "d", 1, "a", 2, "b").keySet();
@@ -182,7 +182,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     
 
     @Nested
-    class PutTests {
+    class LinkedHashMapPutTests {
         @Test
         public void shouldKeepOrderWhenPuttingAnExistingKeyAndNonExistingValue() {
             final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
@@ -204,6 +204,13 @@ public class LinkedHashMapTest extends AbstractMapTest {
             final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
             final LinkedHashMap<Integer, String> actual = map.put(2, "B");
             assertThat(orderStructureOf(actual)).isSameAs(orderStructureOf(map));
+        }
+
+        @Test
+        public void shouldSurfaceTheReplacedKeyInstanceAfterOverwrite() {
+            final Map<IntMod2, String> map = LinkedHashMap.of(new IntMod2(1), "a").put(new IntMod2(3), "b");
+            assertThat(map.toString()).isEqualTo("LinkedHashMap((3, b))");
+            assertThat(map.keySet().head().toString()).isEqualTo("3");
         }
 
         private static Object orderStructureOf(LinkedHashMap<?, ?> map) throws Exception {

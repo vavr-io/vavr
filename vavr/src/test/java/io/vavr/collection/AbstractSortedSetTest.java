@@ -153,7 +153,7 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     }
 
     @Nested
-    class SpliteratorTests {
+    class SortedSetSpliteratorTests {
         @Test
         public void shouldHaveSortedSpliterator() {
             assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();

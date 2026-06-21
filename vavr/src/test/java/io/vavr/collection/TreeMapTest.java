@@ -365,7 +365,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Nested
-    class FlatmapTests {
+    class TreeMapFlatmapTests {
         @Test
         public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
 

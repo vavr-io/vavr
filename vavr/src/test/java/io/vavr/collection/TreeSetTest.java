@@ -285,7 +285,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Nested
-    class AddallTests {
+    class TreeSetAddallTests {
         @Test
         public void shouldKeepComparator() {
             final List<Integer> actual = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
@@ -296,7 +296,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     
 
     @Nested
-    class RemoveallTests {
+    class TreeSetRemoveallTests {
         @Test
         public void shouldKeepComparatorOnRemoveAll() {
             final TreeSet<Integer> ts = TreeSet.of(Comparators.naturalComparator()
@@ -308,7 +308,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Nested
-    class DiffTests {
+    class TreeSetDiffTests {
         @Test
         public void shouldCalculateDiffIfNotTreeSet() {
             final TreeSet<Integer> actual = of(1, 2, 3).diff(HashSet.of(1, 2));
@@ -328,7 +328,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Nested
-    class IntersectTests {
+    class TreeSetIntersectTests {
         @Test
         public void shouldCalculateEmptyIntersectIfNotTreeSet() {
             final TreeSet<Integer> actual = of(1, 2, 3).intersect(HashSet.of(4));
