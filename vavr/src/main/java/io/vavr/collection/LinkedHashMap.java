@@ -673,8 +673,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> head() {
-        final K key = list.head();
-        return Tuple.of(key, map.get(key).get());
+        return map.getEntry(list.head()).get();
     }
 
     @Override
@@ -723,7 +722,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public @NonNull Iterator<Tuple2<K, V>> iterator() {
-        return list.iterator().map(key -> Tuple.of(key, map.get(key).get()));
+        return list.iterator().map(key -> map.getEntry(key).get());
     }
 
     @Override
@@ -744,8 +743,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> last() {
-        final K key = list.last();
-        return Tuple.of(key, map.get(key).get());
+        return map.getEntry(list.last()).get();
     }
 
     @Override
@@ -809,11 +807,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     /**
      * Associates the specified value with the specified key in this map.
-     * If the map previously contained a mapping for the key, the old value is
-     * replaced by the specified value.
+     * If the map previously contained a mapping for the key, both the key and
+     * the value are replaced by the specified ones, keeping the original
+     * insertion order.
      * <p>
-     * Overwriting an existing key runs in (amortized) constant time, since the
-     * insertion-order structure is left untouched; inserting a new key appends
+     * Overwriting an existing key runs in (amortized) constant time: the
+     * insertion-order structure is left untouched and the replaced key is
+     * resolved through the backing map on read; inserting a new key appends
      * to it in (amortized) constant time as well.
      *
      * @param key   key with which the specified value is to be associated
