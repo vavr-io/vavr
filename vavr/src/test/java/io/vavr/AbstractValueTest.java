@@ -26,6 +26,7 @@ import io.vavr.collection.Traversable;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
+import io.vavr.control.Result;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import java.io.Serializable;
@@ -1043,6 +1044,7 @@ public abstract class AbstractValueTest {
             instanceOf(Either.class),
             instanceOf(Lazy.class),
             instanceOf(Option.class),
+            instanceOf(Result.class),
             instanceOf(Try.class),
             instanceOf(Traversable.class),
             instanceOf(Validation.class)
