@@ -47,7 +47,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
+    private static final HashMap<?, ?> EMPTY = new HashMap<>(CompressedHashArrayMappedPrefixTrie.empty());
 
     private final HashArrayMappedTrie<K, V> trie;
 
@@ -151,7 +151,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entry
      */
     public static <K, V> HashMap<K, V> of(@NonNull Tuple2<? extends K, ? extends V> entry) {
-        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1, entry._2));
+        return new HashMap<>(CompressedHashArrayMappedPrefixTrie.<K, V> empty().put(entry._1, entry._2));
     }
 
     /**
@@ -164,7 +164,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> HashMap<K, V> ofAll(java.util.@NonNull Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K, V> tree = CompressedHashArrayMappedPrefixTrie.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             tree = tree.put(entry.getKey(), entry.getValue());
         }
@@ -213,7 +213,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entry
      */
     public static <K, V> HashMap<K, V> of(K key, V value) {
-        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(key, value));
+        return new HashMap<>(CompressedHashArrayMappedPrefixTrie.<K, V> empty().put(key, value));
     }
 
     /**
@@ -467,7 +467,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SafeVarargs
     public static <K, V> HashMap<K, V> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K, V> trie = CompressedHashArrayMappedPrefixTrie.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry.getKey(), entry.getValue());
         }
@@ -485,7 +485,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SafeVarargs
     public static <K, V> HashMap<K, V> ofEntries(@NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K, V> trie = CompressedHashArrayMappedPrefixTrie.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry._1, entry._2);
         }
@@ -506,7 +506,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
         } else {
-            HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
+            HashArrayMappedTrie<K, V> trie = CompressedHashArrayMappedPrefixTrie.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 trie = trie.put(entry._1, entry._2);
             }
@@ -862,7 +862,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K, V> tree = CompressedHashArrayMappedPrefixTrie.empty();
         for (Tuple2<K, V> entry : elements) {
             if (contains(entry)) {
                 tree = tree.put(entry._1, entry._2);
@@ -1021,7 +1021,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            HashArrayMappedTrie<K, V> temp = HashArrayMappedTrie.empty();
+            HashArrayMappedTrie<K, V> temp = CompressedHashArrayMappedPrefixTrie.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final K key = (K) s.readObject();

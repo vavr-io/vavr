@@ -40,7 +40,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
+    private static final HashSet<?> EMPTY = new HashSet<>(CompressedHashArrayMappedPrefixTrie.empty());
 
     private final HashArrayMappedTrie<T, T> tree;
 
@@ -115,7 +115,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @SafeVarargs
     public static <T> HashSet<T> of(T @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<T, T> tree = CompressedHashArrayMappedPrefixTrie.empty();
         for (T element : elements) {
             tree = tree.put(element, element);
         }
@@ -164,7 +164,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (elements instanceof HashSet) {
             return (HashSet<T>) elements;
         } else {
-            final HashArrayMappedTrie<T, T> tree = addAll(HashArrayMappedTrie.empty(), elements);
+            final HashArrayMappedTrie<T, T> tree = addAll(CompressedHashArrayMappedPrefixTrie.empty(), elements);
             return tree.isEmpty() ? empty() : new HashSet<>(tree);
         }
     }
@@ -716,7 +716,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(),
+            final HashArrayMappedTrie<U, U> that = foldLeft(CompressedHashArrayMappedPrefixTrie.empty(),
                     (tree, t) -> addAll(tree, mapper.apply(t)));
             return new HashSet<>(that);
         }
@@ -832,7 +832,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> {
+            final HashArrayMappedTrie<U, U> that = foldLeft(CompressedHashArrayMappedPrefixTrie.empty(), (tree, t) -> {
                 final U u = mapper.apply(t);
                 return tree.put(u, u);
             });
@@ -1194,7 +1194,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            HashArrayMappedTrie<T, T> temp = HashArrayMappedTrie.empty();
+            HashArrayMappedTrie<T, T> temp = CompressedHashArrayMappedPrefixTrie.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();

@@ -24,6 +24,7 @@ import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
 import io.vavr.control.Option;
 import java.io.Serializable;
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.PUT;
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.REMOVE;
@@ -60,6 +61,7 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable
     HashArrayMappedTrie<K, V> remove(K key);
 
     @Override
+    @NonNull
     Iterator<Tuple2<K, V>> iterator();
 
     /**
@@ -222,7 +224,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public Iterator<Tuple2<K, V>> iterator() {
+        public @NonNull Iterator<Tuple2<K, V>> iterator() {
             return nodes().map(node -> Tuple.of(node.key(), node.value()));
         }
 
