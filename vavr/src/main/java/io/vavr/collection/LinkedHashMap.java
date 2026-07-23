@@ -58,20 +58,20 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private final Vector<K> list;
 
-    private final HashMap<K, Slot<V>> map;
+    private final HashMap<K, Slot<K, V>> map;
 
     private final int offset;
 
     private final int tombstones;
 
-    private LinkedHashMap(Vector<K> list, HashMap<K, Slot<V>> map, int offset, int tombstones) {
+    private LinkedHashMap(Vector<K> list, HashMap<K, Slot<K, V>> map, int offset, int tombstones) {
         this.list = list;
         this.map = map;
         this.offset = offset;
         this.tombstones = tombstones;
     }
 
-    private record Slot<V>(V value, int index) implements Serializable {}
+    private record Slot<K, V>(Tuple2<K, V> entry, int index) implements Serializable {}
 
     @SuppressWarnings("unchecked")
     private static <K> K tombstone() {
@@ -667,14 +667,14 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Option<V> get(K key) {
-        final Slot<V> slot = map.getOrElse(key, null);
-        return slot == null ? Option.none() : Option.some(slot.value());
+        final Slot<K, V> slot = map.getOrElse(key, null);
+        return slot == null ? Option.none() : Option.some(slot.entry()._2);
     }
 
     @Override
     public V getOrElse(K key, V defaultValue) {
-        final Slot<V> slot = map.getOrElse(key, null);
-        return slot == null ? defaultValue : slot.value();
+        final Slot<K, V> slot = map.getOrElse(key, null);
+        return slot == null ? defaultValue : slot.entry()._2;
     }
 
     @Override
@@ -689,8 +689,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> head() {
-        final Tuple2<K, Slot<V>> entry = map.getEntry(list.head()).get();
-        return Tuple.of(entry._1, entry._2.value());
+        return map.get(list.head()).get().entry();
     }
 
     @Override
@@ -739,20 +738,39 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public @NonNull Iterator<Tuple2<K, V>> iterator() {
-        return list.iterator().filter(key -> key != TOMBSTONE).map(key -> {
-            final Tuple2<K, Slot<V>> entry = map.getEntry(key).get();
-            return Tuple.of(entry._1, entry._2.value());
-        });
+        final Iterator<K> slots = list.iterator();
+        return new AbstractIterator<Tuple2<K, V>>() {
+            private K nextKey;
+            private boolean nextKeyDefined;
+
+            @Override
+            public boolean hasNext() {
+                while (!nextKeyDefined && slots.hasNext()) {
+                    final K key = slots.next();
+                    if (key != TOMBSTONE) {
+                        nextKey = key;
+                        nextKeyDefined = true;
+                    }
+                }
+                return nextKeyDefined;
+            }
+
+            @Override
+            protected Tuple2<K, V> getNext() {
+                nextKeyDefined = false;
+                return map.get(nextKey).get().entry();
+            }
+        };
     }
 
     @Override
     public Iterator<K> keysIterator() {
-        return list.iterator().filter(key -> key != TOMBSTONE).map(key -> map.getEntry(key).get()._1);
+        return iterator().map(entry -> entry._1);
     }
 
     @Override
     public Iterator<V> valuesIterator() {
-        return list.iterator().filter(key -> key != TOMBSTONE).map(key -> map.get(key).get().value());
+        return iterator().map(entry -> entry._2);
     }
 
     @SuppressWarnings("unchecked")
@@ -763,8 +781,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<K, V> last() {
-        final Tuple2<K, Slot<V>> entry = map.getEntry(list.last()).get();
-        return Tuple.of(entry._1, entry._2.value());
+        return map.get(list.last()).get().entry();
     }
 
     @Override
@@ -843,11 +860,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     @Override
     public LinkedHashMap<K, V> put(K key, V value) {
-        final Slot<V> existing = map.getOrElse(key, null);
+        final Slot<K, V> existing = map.getOrElse(key, null);
         if (existing != null) {
-            return new LinkedHashMap<>(list, map.put(key, new Slot<>(value, existing.index())), offset, tombstones);
+            return new LinkedHashMap<>(list, map.put(key, new Slot<>(Tuple.of(key, value), existing.index())), offset, tombstones);
         } else {
-            return new LinkedHashMap<>(list.append(key), map.put(key, new Slot<>(value, offset + list.size())), offset, tombstones);
+            return new LinkedHashMap<>(list.append(key), map.put(key, new Slot<>(Tuple.of(key, value), offset + list.size())), offset, tombstones);
         }
     }
 
@@ -864,11 +881,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> remove(K key) {
-        final Slot<V> existing = map.getOrElse(key, null);
+        final Slot<K, V> existing = map.getOrElse(key, null);
         if (existing == null) {
             return this;
         }
-        final HashMap<K, Slot<V>> newMap = map.remove(key);
+        final HashMap<K, Slot<K, V>> newMap = map.remove(key);
         if (newMap.isEmpty()) {
             return empty();
         }
@@ -888,7 +905,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public LinkedHashMap<K, V> removeAll(@NonNull Iterable<? extends K> keys) {
         Objects.requireNonNull(keys, "keys is null");
         final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final HashMap<K, Slot<V>> newMap = map.filter(t -> !toRemove.contains(t._1));
+        final HashMap<K, Slot<K, V>> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newMap.size() == map.size() ? this : reindex(list, newMap);
     }
 
@@ -915,7 +932,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
 
             Vector<K> newList = list;
-            HashMap<K, Slot<V>> newMap = map;
+            HashMap<K, Slot<K, V>> newMap = map;
             int newTombstones = tombstones;
 
             final K currentKey = currentElement._1;
@@ -924,16 +941,16 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             // If current key and new key are equal, the key keeps its position,
             // otherwise we need to remove an already present newKey from the order manually.
             if (!Objects.equals(currentKey, newKey) && newMap.containsKey(newKey)) {
-                final Slot<V> obsolete = newMap.get(newKey).get();
+                final Slot<K, V> obsolete = newMap.get(newKey).get();
                 final K tombstone = tombstone();
                 newList = newList.update(obsolete.index() - offset, tombstone);
                 newMap = newMap.remove(newKey);
                 newTombstones++;
             }
 
-            final Slot<V> currentSlot = newMap.get(currentKey).get();
+            final Slot<K, V> currentSlot = newMap.get(currentKey).get();
             newList = newList.update(currentSlot.index() - offset, newKey);
-            newMap = newMap.remove(currentKey).put(newKey, new Slot<>(newElement._2, currentSlot.index()));
+            newMap = newMap.remove(currentKey).put(newKey, new Slot<>(newElement, currentSlot.index()));
 
             return normalized(newList, newMap, offset, newTombstones);
 
@@ -1083,10 +1100,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (list.isEmpty()) {
             return empty();
         }
-        HashMap<K, Slot<V>> indexed = HashMap.empty();
+        HashMap<K, Slot<K, V>> indexed = HashMap.empty();
         int index = 0;
         for (K key : list) {
-            indexed = indexed.put(key, new Slot<>(map.get(key).get(), index++));
+            indexed = indexed.put(key, new Slot<>(Tuple.of(key, map.get(key).get()), index++));
         }
         return new LinkedHashMap<>(list, indexed, 0, 0);
     }
@@ -1108,7 +1125,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return wrap(list.reverse().distinct().reverse().toVector(), map);
     }
 
-    private static <K, V> LinkedHashMap<K, V> normalized(Vector<K> list, HashMap<K, Slot<V>> map, int offset, int tombstones) {
+    private static <K, V> LinkedHashMap<K, V> normalized(Vector<K> list, HashMap<K, Slot<K, V>> map, int offset, int tombstones) {
         while (list.head() == TOMBSTONE) {
             list = list.tail();
             offset++;
@@ -1124,7 +1141,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return new LinkedHashMap<>(list, map, offset, tombstones);
     }
 
-    private static <K, V> LinkedHashMap<K, V> reindex(Vector<K> list, HashMap<K, Slot<V>> survivors) {
+    private static <K, V> LinkedHashMap<K, V> reindex(Vector<K> list, HashMap<K, Slot<K, V>> survivors) {
         if (survivors.isEmpty()) {
             return empty();
         }
@@ -1134,10 +1151,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
                 liveKeys.add(key);
             }
         }
-        HashMap<K, Slot<V>> indexed = HashMap.empty();
+        HashMap<K, Slot<K, V>> indexed = HashMap.empty();
         int index = 0;
         for (K key : liveKeys) {
-            indexed = indexed.put(key, new Slot<>(survivors.get(key).get().value(), index++));
+            indexed = indexed.put(key, new Slot<>(survivors.get(key).get().entry(), index++));
         }
         return new LinkedHashMap<>(Vector.ofAll(liveKeys), indexed, 0, 0);
     }
