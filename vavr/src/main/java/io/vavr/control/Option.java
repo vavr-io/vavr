@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A replacement for {@link java.util.Optional}.
@@ -46,18 +47,18 @@ import org.jspecify.annotations.NonNull;
  *
  * @param <T> the type of the optional value
  */
-public interface Option<T> extends Value<T>, Serializable {
+public interface Option<T extends @Nullable Object> extends Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 
     /**
      * Creates an {@code Option} from the given value.
      *
-     * @param value the value to wrap
-     * @param <T>   the value type
+     * @param value the value to wrap, possibly {@code null}
+     * @param <T>   the (non-null) value type
      * @return {@code Some(value)} if the value is non-null, otherwise {@code None}
      */
-    static <T> Option<@NonNull T> of(T value) {
+    static <T extends @NonNull Object> Option<T> of(@Nullable T value) {
         return (value == null) ? none() : some(value);
     }
 
@@ -184,7 +185,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return {@code Some(optional.get())} if the {@code Optional} is present, otherwise {@code None}
      */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    static <T> Option<T> ofOptional(@NonNull Optional<? extends T> optional) {
+    static <T extends @NonNull Object> Option<T> ofOptional(@NonNull Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
         return optional.<Option<T>>map(Option::of).orElseGet(Option::none);
     }
