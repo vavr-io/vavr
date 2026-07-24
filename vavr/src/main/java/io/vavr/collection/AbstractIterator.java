@@ -31,6 +31,14 @@ import java.util.NoSuchElementException;
  */
 abstract class AbstractIterator<T> implements Iterator<T> {
 
+    /**
+     * Peek buffer: when {@code hasPeeked} is true, {@code peeked} holds an element that
+     * was read via {@link #getNext()} but not yet consumed by an external {@link #next()}
+     * call. This allows {@link #head()} to be non-destructive.
+     */
+    private T peeked;
+    private boolean hasPeeked = false;
+
     @Override
     public String toString() {
         return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
@@ -40,9 +48,54 @@ abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public final T next() {
+        if (hasPeeked) {
+            T result = peeked;
+            peeked = null;
+            hasPeeked = false;
+            return result;
+        }
         if (!hasNext()) {
             throw new NoSuchElementException("next() on empty iterator");
         }
         return getNext();
+    }
+
+    /**
+     * Returns the first element of this iterator without advancing it, so that a
+     * subsequent call to {@link #tail()} correctly skips only the first element and
+     * not the second.
+     *
+     * <p>Fixes the {@code Traversable} contract violation where:
+     * <pre>{@code
+     *   Iterator<Integer> it = Iterator.of(0, 1, 2, 3);
+     *   it.head();              // must return 0
+     *   it = it.tail();         // must position iterator at 1
+     *   it.head();              // must return 1
+     * }</pre>
+     */
+    @Override
+    public T head() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("head() on empty iterator");
+        }
+        if (!hasPeeked) {
+            peeked = getNext();
+            hasPeeked = true;
+        }
+        return peeked;
+    }
+
+    /**
+     * Returns this iterator positioned after the first element. If {@link #head()} was
+     * previously called (peeked), the peeked value is discarded; otherwise the first
+     * element is consumed by calling {@link #next()}.
+     */
+    @Override
+    public Iterator<T> tail() {
+        if (!hasNext()) {
+            throw new UnsupportedOperationException("tail() on empty iterator");
+        }
+        next(); // drains either the peek buffer or the real next element
+        return this;
     }
 }
