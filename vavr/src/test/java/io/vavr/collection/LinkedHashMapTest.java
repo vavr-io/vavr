@@ -336,4 +336,22 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
     }
 
+    // -- immutability
+
+    /**
+     * Every field holding the value of this immutable Map must be final, so that the JVM guarantees a thread which
+     * observes the reference also observes fully initialized contents, even when the instance was published without
+     * synchronization. Transient fields are exempt: they carry no value, only scratch state used while deserializing.
+     */
+    @Test
+    public void shouldDeclareEveryValueCarryingFieldFinalForSafePublication() {
+        for (java.lang.reflect.Field field : LinkedHashMap.class.getDeclaredFields()) {
+            final int modifiers = field.getModifiers();
+            if (!java.lang.reflect.Modifier.isStatic(modifiers) && !java.lang.reflect.Modifier.isTransient(modifiers)) {
+                assertThat(java.lang.reflect.Modifier.isFinal(modifiers))
+                        .as("field '%s' must be final", field.getName())
+                        .isTrue();
+            }
+        }
+    }
 }

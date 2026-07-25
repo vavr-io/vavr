@@ -21,6 +21,12 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,6 +57,16 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private final Vector<K> list;
     private final HashMap<K, V> map;
+
+    /**
+     * Scratch state handing the deserialized fields from {@link #readObject(ObjectInputStream)} to
+     * {@link #readResolve()}, which builds the instance that is actually handed to the caller.
+     * <p>
+     * Deserialization cannot assign the final fields above, so the instance the JVM allocates for the stream is only
+     * ever a carrier; keeping the real fields final preserves the guarantee that a thread observing a published
+     * {@code LinkedHashMap} reference also observes its fully initialized contents.
+     */
+    private transient Tuple2<Queue<Tuple2<K, V>>, HashMap<K, V>> deserialized;
 
     private LinkedHashMap(Vector<K> list, HashMap<K, V> map) {
         this.list = list;
@@ -1028,8 +1044,66 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return Collections.hashUnordered(this);
     }
 
+    /**
+     * The serialized form, deliberately pinned to the shape Vavr 1.0.1 and earlier wrote: a {@code Queue} of entries
+     * plus the backing {@code HashMap}.
+     * <p>
+     * Since 1.1.0 the key order is held internally in a {@code Vector<K>} of keys rather than a
+     * {@code Queue<Tuple2<K, V>>} of entries. Declaring the persistent fields decouples that internal representation
+     * from the bytes on the wire, so streams stay readable in both directions across the two releases.
+     */
+    @Serial
+    private static final ObjectStreamField[] serialPersistentFields = {
+        new ObjectStreamField("list", Queue.class), new ObjectStreamField("map", HashMap.class)
+    };
+
+    /**
+     * Writes the legacy field shape described by {@link #serialPersistentFields}.
+     *
+     * @param stream An object serialization stream.
+     * @throws IOException If an I/O error occurs.
+     */
+    @Serial
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        final ObjectOutputStream.PutField fields = stream.putFields();
+        fields.put("list", Queue.ofAll(this));
+        fields.put("map", map);
+        stream.writeFields();
+    }
+
+    /**
+     * Reads the legacy field shape described by {@link #serialPersistentFields}, parking it in {@link #deserialized}
+     * for {@link #readResolve()}, since the final instance fields cannot be assigned here.
+     *
+     * @param stream An object serialization stream.
+     * @throws IOException            If the expected fields cannot be read.
+     * @throws ClassNotFoundException If a serialized element type is not on the classpath.
+     * @throws InvalidObjectException If the stream does not carry the expected fields.
+     */
+    @Serial
+    @SuppressWarnings("unchecked")
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        final ObjectInputStream.GetField fields = stream.readFields();
+        final Object entries = fields.get("list", null);
+        final Object backingMap = fields.get("map", null);
+        if (!(entries instanceof Iterable) || !(backingMap instanceof HashMap)) {
+            throw new InvalidObjectException("Not a serialized LinkedHashMap");
+        }
+        deserialized = Tuple.of(Queue.ofAll((Iterable<Tuple2<K, V>>) entries), (HashMap<K, V>) backingMap);
+    }
+
+    /**
+     * Replaces the carrier instance the JVM allocated for the stream with a properly constructed one, whose final
+     * fields are assigned by the constructor.
+     *
+     * @return The deserialized {@code LinkedHashMap}.
+     */
+    @Serial
     private Object readResolve() {
-        return isEmpty() ? EMPTY : this;
+        if (deserialized == null) {
+            return isEmpty() ? EMPTY : this;
+        }
+        return wrap(deserialized._1.map(Tuple2::_1).toVector(), deserialized._2);
     }
 
     @Override

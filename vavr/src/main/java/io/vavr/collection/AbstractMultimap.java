@@ -49,7 +49,17 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     /** A supplier that creates empty containers for new key entries. */
     protected final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
-    private int size = -1;
+
+    /**
+     * Lazily computed element count; {@code null} means "not computed yet".
+     * <p>
+     * Deliberately {@code transient} so it never becomes part of the serialized form: a stream written by an older
+     * release carries no value for this field, and a primitive would silently default to {@code 0} instead of the
+     * "not computed yet" sentinel, making {@link #size()} report an empty multimap forever. A single boxed field also
+     * keeps the read/write race benign - a racing thread either sees {@code null} and recomputes the same value, or
+     * sees a fully published {@code Integer}.
+     */
+    private transient Integer size;
 
     /**
      * Creates a new AbstractMultimap with the specified backing map, container type, and empty container supplier.
@@ -220,8 +230,8 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public int size() {
-        int s = size;
-        if (s == -1) {
+        Integer s = size;
+        if (s == null) {
             s = back.foldLeft(0, (acc, t) -> acc + t._2.size());
             size = s;
         }
