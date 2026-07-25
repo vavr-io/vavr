@@ -1342,6 +1342,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
     }
 
+    @Test
+    public void shouldComputeIfPresentWithNullResult() {
+        final Map<Integer, String> map = emptyIntString().put(1, "v");
+        assertThat(map.computeIfPresent(1, (k, v) -> null)).isEqualTo(Tuple.of(Option.some(null), emptyIntString().put(1, null)));
+    }
+
     // -- get with nulls
 
     @Test
@@ -1396,6 +1402,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
         final Map<Integer, String> map = mapOf(1, "a", 2, "b");
         final Map<Integer, String> actual = map.replace(3, "?", "!");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldNotReplaceTupleWhenValueDoesNotMatch() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(Tuple.of(2, "x"), Tuple.of(2, "c"));
         assertThat(actual).isSameAs(map);
     }
 

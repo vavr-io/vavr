@@ -1268,6 +1268,11 @@ public interface Try<T> extends Value<T>, Serializable {
      * Executes a given {@link Runnable} after this {@code Try}, regardless of whether it is a
      * {@link Try.Success} or {@link Try.Failure}.
      *
+     * <p>If this {@code Try} is already a {@link Try.Failure} and the runnable also throws, the
+     * original failure is preserved and the runnable's exception is added as
+     * {@linkplain Throwable#addSuppressed(Throwable) suppressed}, consistent with Java's
+     * {@code try-finally} semantics.</p>
+     *
      * @param runnable a final action to perform
      * @return this {@code Try} unchanged if the runnable succeeds, or a new {@link Try.Failure} if it throws
      * @throws NullPointerException if {@code runnable} is null
@@ -1281,6 +1286,11 @@ public interface Try<T> extends Value<T>, Serializable {
      * Executes a given {@link CheckedRunnable} after this {@code Try}, regardless of whether it is a
      * {@link Try.Success} or {@link Try.Failure}.
      *
+     * <p>If this {@code Try} is already a {@link Try.Failure} and the runnable also throws, the
+     * original failure is preserved and the runnable's exception is added as
+     * {@linkplain Throwable#addSuppressed(Throwable) suppressed}, consistent with Java's
+     * {@code try-finally} semantics.</p>
+     *
      * @param runnable a checked final action to perform
      * @return this {@code Try} unchanged if the runnable succeeds, or a new {@link Try.Failure} if it throws
      * @throws NullPointerException if {@code runnable} is null
@@ -1291,6 +1301,10 @@ public interface Try<T> extends Value<T>, Serializable {
             runnable.run();
             return this;
         } catch (Throwable t) {
+            if (isFailure()) {
+                getCause().addSuppressed(t);
+                return this;
+            }
             return new Failure<>(t);
         }
     }
@@ -1445,7 +1459,16 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Failure && Arrays.deepEquals(cause.getStackTrace(), ((Failure<?>) obj).cause.getStackTrace()));
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Failure)) {
+                return false;
+            }
+            Throwable other = ((Failure<?>) obj).cause;
+            return cause.getClass().equals(other.getClass())
+                    && Objects.equals(cause.getMessage(), other.getMessage())
+                    && Arrays.deepEquals(cause.getStackTrace(), other.getStackTrace());
         }
 
         @Override
@@ -1455,7 +1478,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(cause.getStackTrace());
+            return Objects.hash(cause.getClass(), cause.getMessage());
         }
 
         @Override

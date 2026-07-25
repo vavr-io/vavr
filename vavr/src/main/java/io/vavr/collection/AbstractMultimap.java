@@ -51,6 +51,17 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     private final ContainerType containerType;
 
     /**
+     * Lazily computed element count; {@code null} means "not computed yet".
+     * <p>
+     * Deliberately {@code transient} so it never becomes part of the serialized form: a stream written by an older
+     * release carries no value for this field, and a primitive would silently default to {@code 0} instead of the
+     * "not computed yet" sentinel, making {@link #size()} report an empty multimap forever. A single boxed field also
+     * keeps the read/write race benign - a racing thread either sees {@code null} and recomputes the same value, or
+     * sees a fully published {@code Integer}.
+     */
+    private transient Integer size;
+
+    /**
      * Creates a new AbstractMultimap with the specified backing map, container type, and empty container supplier.
      *
      * @param back           The backing map that stores the key-value pairs
@@ -219,7 +230,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public int size() {
-        return back.foldLeft(0, (s, t) -> s + t._2.size());
+        Integer s = size;
+        if (s == null) {
+            s = back.foldLeft(0, (acc, t) -> acc + t._2.size());
+            size = s;
+        }
+        return s;
     }
 
     @Override
@@ -509,7 +525,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     public M replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return (M) (containsKey(currentElement._1) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
+        return (M) (contains(currentElement) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
     }
 
     @Override

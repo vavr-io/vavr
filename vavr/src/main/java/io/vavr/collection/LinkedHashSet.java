@@ -614,7 +614,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Add the given element to this set, replacing existing one if it is already contained.
      * <p>
-     * Note that this method has a worst-case linear complexity.
+     * Note that this method runs in (amortized) constant time.
      *
      * @param element The element to be added.
      * @return A new set containing all elements of this set and also {@code element}.
@@ -627,7 +627,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Adds all of the given elements to this set, replacing existing one if they are not already contained.
      * <p>
-     * Note that this method has a worst-case quadratic complexity.
+     * Note that this method has a worst-case linear complexity.
      *
      * @param elements The elements to be added.
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
@@ -1035,7 +1035,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
      * <p>
-     * Note that this method has a worst-case quadratic complexity.
+     * Note that this method has a worst-case linear complexity.
      * <p>
      * See also {@link #addAll(Iterable)}.
      *

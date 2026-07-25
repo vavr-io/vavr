@@ -234,6 +234,16 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
     }
 
+    // -- toJavaMap
+
+    @TestTemplate
+    public void shouldPreserveInsertionOrderInToJavaMap() {
+        final Multimap<String, Integer> map = mapOfPairs("c", 3, "a", 1, "b", 2);
+        final java.util.Map<String, java.util.Collection<Integer>> javaMap = map.toJavaMap();
+        assertThat(javaMap).isInstanceOf(java.util.LinkedHashMap.class);
+        assertThat(new ArrayList<>(javaMap.keySet())).isEqualTo(List.of("c", "a", "b").asJava());
+    }
+
     // -- isSequential()
 
     @TestTemplate

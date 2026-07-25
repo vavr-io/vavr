@@ -549,6 +549,11 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
     }
 
     @Override
+    public java.util.Map<K, java.util.Collection<V>> toJavaMap() {
+        return toJavaMap(new java.util.LinkedHashMap<>());
+    }
+
+    @Override
     public boolean isSequential() {
         return true;
     }

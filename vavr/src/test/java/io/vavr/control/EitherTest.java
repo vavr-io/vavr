@@ -131,6 +131,18 @@ public class EitherTest extends AbstractValueTest {
         }
 
         @Test
+        public void shouldTransformRight() {
+            final String value = Either.<String, Integer>right(1).transform(e -> e.fold(l -> "L:" + l, r -> "R:" + r));
+            assertThat(value).isEqualTo("R:1");
+        }
+
+        @Test
+        public void shouldTransformLeft() {
+            final String value = Either.<String, Integer>left("error").transform(e -> e.fold(l -> "L:" + l, r -> "R:" + r));
+            assertThat(value).isEqualTo("L:error");
+        }
+
+        @Test
         public void shouldFoldLeft() {
             final String value = Either.left("L").fold(l -> l + "+", r -> r + "-");
             assertThat(value).isEqualTo("L+");

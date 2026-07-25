@@ -1957,6 +1957,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @TestTemplate
+    public void shouldSlideByClassifierReturningNull() {
+        final List<Traversable<Integer>> actual = of(1, 2, 3).slideBy(e -> null).toList()
+          .map(io.vavr.collection.Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(io.vavr.collection.Vector.of(1, 2, 3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- sliding(size)
 
     @TestTemplate

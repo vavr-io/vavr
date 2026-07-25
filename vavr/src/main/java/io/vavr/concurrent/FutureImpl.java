@@ -279,8 +279,8 @@ final class FutureImpl<T> implements Future<T> {
                     if (mayInterruptIfRunning && this.thread != null) {
                         this.thread.interrupt();
                     }
-                    this.cancelled = tryComplete(Try.failure(new CancellationException()));
-                    return this.cancelled;
+                    this.cancelled = true;
+                    return tryComplete(Try.failure(new CancellationException()));
                 }
             } finally {
                 lock.unlock();

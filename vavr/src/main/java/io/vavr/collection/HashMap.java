@@ -628,6 +628,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return trie.get(key);
     }
 
+    Option<Tuple2<K, V>> getEntry(K key) {
+        return trie.getEntry(key);
+    }
+
     @Override
     public V getOrElse(K key, V defaultValue) {
         return trie.getOrElse(key, defaultValue);
