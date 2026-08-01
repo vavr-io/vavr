@@ -686,7 +686,6 @@ def genAPIAliases(im: ImportManager): String = {
      * @param <T>   type of the given {@code value}
      * @param value A value
      * @return {@link $ValidationType.Valid}
-     * @throws NullPointerException if value is null
      */
     @SuppressWarnings("unchecked")
     public static <E $nullableBound, T $nullableBound> $ValidationType.Valid<E, T> Valid(T value) {

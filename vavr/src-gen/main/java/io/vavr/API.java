@@ -950,7 +950,6 @@ public final class API {
      * @param <T>   type of the given {@code value}
      * @param value A value
      * @return {@link Validation.Valid}
-     * @throws NullPointerException if value is null
      */
     @SuppressWarnings("unchecked")
     public static <E extends @Nullable Object, T extends @Nullable Object> Validation.Valid<E, T> Valid(T value) {
