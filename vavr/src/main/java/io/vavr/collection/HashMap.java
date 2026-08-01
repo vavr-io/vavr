@@ -959,7 +959,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int hashCode() {
-        return Collections.hashUnordered(this);
+        return Collections.hashMap(this);
     }
 
     private Object writeReplace() {
