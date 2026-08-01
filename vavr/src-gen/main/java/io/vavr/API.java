@@ -39,6 +39,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -966,7 +967,7 @@ public final class API {
      * @throws NullPointerException if error is null
      */
     @SuppressWarnings("unchecked")
-    public static <E extends @Nullable Object, T extends @Nullable Object> Validation.Invalid<E, T> Invalid(E error) {
+    public static <E extends @Nullable Object, T extends @Nullable Object> Validation.Invalid<E, T> Invalid(@NonNull E error) {
         return (Validation.Invalid<E, T>) Validation.invalid(error);
     }
 
