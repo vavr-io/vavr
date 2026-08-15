@@ -535,14 +535,39 @@ public interface Either<L, R> extends Value<R>, Serializable {
     // -- Adjusted return types of Value methods
 
     /**
-     * Returns an {@link Option} describing the right value of this right-biased {@code Either}
-     * if it satisfies the given predicate.
+     * Filters this right-biased {@code Either} by testing the given predicate against the right value.
      * <p>
-     * If this {@code Either} is a {@link Either.Left} or the predicate does not match, {@link Option#none()} is returned.
+     * If this {@code Either} is a {@link Either.Left}, or a {@link Either.Right} whose value satisfies
+     * the predicate, {@code Option.some(this)} is returned. {@link Option#none()} is returned only if
+     * this is a {@link Either.Right} whose value does not satisfy the predicate.
+     * <p>
+     * Note that a {@code Left} always passes the filter unchanged and the predicate is not evaluated.
+     * Like {@code map} and {@code flatMap}, {@code filter} operates on the right side only and never
+     * discards a {@code Left}: the resulting {@link Option#none()} carries no left value, so mapping a
+     * {@code Left} to it would silently lose the left value and make a rejected right value
+     * indistinguishable from an already-present {@code Left}.
+     *
+     * <pre>{@code
+     * import static io.vavr.API.*;
+     *
+     * // = Some(Right(42))
+     * Right(42).filter(i -> i > 0);
+     *
+     * // = None
+     * Right(42).filter(i -> i < 0);
+     *
+     * // = Some(Left("error")), predicate is not evaluated
+     * Left("error").filter(i -> false);
+     * }</pre>
+     *
+     * To fall back to a {@code Left} instead of {@code None} when the predicate rejects the right value,
+     * use {@link #filterOrElse(Predicate, Function)}. To obtain {@code None} for a {@code Left} as well,
+     * use {@code either.toOption().filter(predicate)}.
      *
      * @param predicate a predicate to test the right value
-     * @return an {@link Option} containing the right value if it satisfies the predicate, or {@link Option#none()} otherwise
+     * @return {@code Option.some(this)} if this is a {@code Left} or the right value satisfies the predicate, {@link Option#none()} otherwise
      * @throws NullPointerException if {@code predicate} is null
+     * @see #filterOrElse(Predicate, Function)
      */
     default Option<Either<L, R>> filter(@NonNull Predicate<? super R> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -552,9 +577,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
     /**
      * Filters this right-biased {@code Either} using the given predicate. 
      * <p>
-     * If this {@code Either} is a {@link Either.Right} and the predicate evaluates to {@code false}, 
+     * If this {@code Either} is a {@link Either.Right} and the predicate evaluates to {@code false},
      * the result is a {@link Either.Left} obtained by applying the {@code zero} function to the right value.
      * If the predicate evaluates to {@code true}, the {@code Either.Right} is returned unchanged.
+     * A {@link Either.Left} is returned unchanged and the predicate is not evaluated.
      *
      * <pre>{@code
      * import static io.vavr.API.*;
@@ -564,6 +590,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * // = Right("a")
      * Right("a").filterOrElse(i -> true, val -> "bad: " + val);
+     *
+     * // = Left("error"), predicate is not evaluated
+     * Left("error").filterOrElse(i -> false, val -> "bad: " + val);
      * }</pre>
      *
      * @param predicate a predicate to test the right value
@@ -905,8 +934,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Returns {@code Some} value of type L if this is a left projection of a Left value and the predicate
-         * applies to the underlying value.
+         * Returns {@code Some(this)} if this is a left projection of a Right value, or a left projection
+         * of a Left value whose underlying value satisfies the predicate. Returns {@code None} if this is
+         * a left projection of a Left value whose underlying value does not satisfy the predicate.
          *
          * @param predicate A predicate
          *
@@ -1190,8 +1220,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Returns {@code Some} value of type R if this is a right projection of a Right value and the predicate
-         * applies to the underlying value.
+         * Returns {@code Some(this)} if this is a right projection of a Left value, or a right projection
+         * of a Right value whose underlying value satisfies the predicate. Returns {@code None} if this is
+         * a right projection of a Right value whose underlying value does not satisfy the predicate.
          *
          * @param predicate A predicate
          *
