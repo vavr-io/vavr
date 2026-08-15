@@ -31,6 +31,15 @@ val comment = "//"
 val javadoc = "**"
 
 /**
+ * The implicit bound every generated type-parameter *declaration* must carry.
+ *
+ * The io.vavr packages are `@NullMarked`, which makes a bare `<T>` mean `<T extends Object>`
+ * (non-null). Vavr containers deliberately accept null elements, so declarations widen to
+ * `<T extends @Nullable Object>`. Type-parameter *usages* are unaffected.
+ */
+val nullableBound = "extends @Nullable Object"
+
+/**
  * Pre-computed type variable strings for a given arity.
  *
  * Centralizes the repeated patterns like "T1, T2, T3", "<T1, T2, T3, R>", "t1, t2, t3", etc.
@@ -42,6 +51,9 @@ case class Arity(i: Int) {
   val generics: String = (1 to i).gen(j => s"T$j")(using ", ") // "T1, T2, T3"
   val genericsTuple: String = if (i > 0) s"<$generics>" else "" // "<T1, T2, T3>" or "" for arity 0
   val fullGenerics: String = s"<${(i > 0).gen(s"$generics, ")}R>" // "<T1, T2, T3, R>"
+  val genericsDecl: String = (1 to i).gen(j => s"T$j $nullableBound")(using ", ") // "T1 extends @Nullable Object, ..."
+  val genericsTupleDecl: String = if (i > 0) s"<$genericsDecl>" else "" // "<T1 extends @Nullable Object, ...>"
+  val fullGenericsDecl: String = s"<${(i > 0).gen(s"$genericsDecl, ")}R $nullableBound>" // "<T1 ..., R extends @Nullable Object>"
   val wideGenerics: String = (1 to i).gen(j => s"? super T$j")(using ", ") // "? super T1, ? super T2"
   val covariantGenerics: String = (1 to i).gen(j => s"? extends T$j")(using ", ") // "? extends T1, ? extends T2"
   val fullWideGenerics: String = s"<${(i > 0).gen(s"$wideGenerics, ")}? extends R>" // "<? super T1, ? super T2, ? extends R>"
@@ -86,7 +98,7 @@ def genAPIShortcuts(im: ImportManager): String = {
      * <p>
      * Example:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * public HttpResponse getResponse(HttpRequest request) {
      *     return TODO();
      * }
@@ -99,7 +111,7 @@ def genAPIShortcuts(im: ImportManager): String = {
      * @throws NotImplementedError when this method is called
      * @see NotImplementedError#NotImplementedError()
      */
-    public static <T> T TODO() {
+    public static <T $nullableBound> T TODO() {
         throw new NotImplementedError();
     }
 
@@ -108,7 +120,7 @@ def genAPIShortcuts(im: ImportManager): String = {
      * <p>
      * Example:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * public HttpResponse getResponse(HttpRequest request) {
      *     return TODO("fake response");
      * }
@@ -122,7 +134,7 @@ def genAPIShortcuts(im: ImportManager): String = {
      * @throws NotImplementedError when this method is called
      * @see NotImplementedError#NotImplementedError(String)
      */
-    public static <T> T TODO(String msg) {
+    public static <T $nullableBound> T TODO(String msg) {
         throw new NotImplementedError(msg);
     }
 
@@ -165,7 +177,6 @@ def genAPIShortcuts(im: ImportManager): String = {
 
 def genAPIAliases(im: ImportManager): String = {
 
-  val NonNullType = im.getType("org.jspecify.annotations.NonNull")
   val OptionType = im.getType("io.vavr.control.Option")
   val EitherType = im.getType("io.vavr.control.Either")
   val FutureType = im.getType("io.vavr.concurrent.Future")
@@ -197,7 +208,7 @@ def genAPIAliases(im: ImportManager): String = {
   val SupplierType = im.getType("java.util.function.Supplier")
 
   def genTraversableAliases(traversableType: String, returnType: String, name: String, sorted: Boolean = false) = {
-    val bound = if (sorted) " extends Comparable<? super T>" else ""
+    val bound = if (sorted) " extends Comparable<? super T>" else s" $nullableBound"
     val ofLinkParam = if (sorted) "Comparable" else "Object"
     val emptyReturn = if (sorted) s"A new {@link $traversableType} empty instance" else s"A singleton instance of empty {@link $traversableType}"
     xs"""
@@ -221,7 +232,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param comparator The comparator used to sort the elements
      * @return A new {@link $traversableType} empty instance
      */
-    public static <T$bound> $returnType<T> $name(@NonNull $JavaComparatorType<? super T> comparator) {
+    public static <T$bound> $returnType<T> $name($JavaComparatorType<? super T> comparator) {
         return $traversableType.empty(comparator);
     }
     """ else ""}
@@ -246,7 +257,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param element    An element.
      * @return A new {@link $traversableType} instance containing the given element
      */
-    public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T element) {
+    public static <T $nullableBound> $returnType<T> $name($JavaComparatorType<? super T> comparator, T element) {
         return $traversableType.of(comparator, element);
     }
     """ else ""}
@@ -261,7 +272,7 @@ def genAPIAliases(im: ImportManager): String = {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T$bound> $returnType<T> $name(T @NonNull ... elements) {
+    public static <T$bound> $returnType<T> $name(T ... elements) {
         return $traversableType.of(elements);
     }
     """ else xs"""
@@ -275,7 +286,7 @@ def genAPIAliases(im: ImportManager): String = {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> $returnType<T> $name(T @NonNull ... elements) {
+    public static <T $nullableBound> $returnType<T> $name(T ... elements) {
         return $traversableType.of(elements);
     }
     """}
@@ -291,7 +302,7 @@ def genAPIAliases(im: ImportManager): String = {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> $returnType<T> $name(@NonNull $JavaComparatorType<? super T> comparator, T @NonNull ... elements) {
+    public static <T $nullableBound> $returnType<T> $name($JavaComparatorType<? super T> comparator, T ... elements) {
         return $traversableType.of(comparator, elements);
     }
     """ else ""}
@@ -299,7 +310,7 @@ def genAPIAliases(im: ImportManager): String = {
   }
 
   def genMapAliases(mapType: String, returnType: String, name: String, sorted: Boolean = false) = {
-    val keyBound = if (sorted) " extends Comparable<? super K>" else ""
+    val keyBound = if (sorted) " extends Comparable<? super K>" else s" $nullableBound"
     val ofLinkParam = if (sorted) "Comparable" else "Object"
     xs"""
     // -- $name
@@ -311,7 +322,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param <V> The value type.
      * @return ${if (sorted) s"A new empty {@link $mapType} instance" else s"A singleton instance of empty {@link $mapType}"}
      */
-    public static <K$keyBound, V> $returnType<K, V> $name() {
+    public static <K$keyBound, V $nullableBound> $returnType<K, V> $name() {
         return $mapType.empty();
     }
 
@@ -324,7 +335,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param keyComparator The comparator used to sort the entries by their key
      * @return A new empty {@link $mapType} instance
      */
-    public static <K, V> $returnType<K, V> $name(@NonNull $JavaComparatorType<? super K> keyComparator) {
+    public static <K $nullableBound, V $nullableBound> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator) {
         return $mapType.empty(keyComparator);
     }
 
@@ -338,7 +349,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param value         A singleton map value.
      * @return A new {@link $mapType} instance containing the given entry
      */
-    public static <K, V> $returnType<K, V> $name(@NonNull Comparator<? super K> keyComparator, K key, V value) {
+    public static <K $nullableBound, V $nullableBound> $returnType<K, V> $name(Comparator<? super K> keyComparator, K key, V value) {
         return $mapType.of(keyComparator, key, value);
     }
     """ else ""}
@@ -355,7 +366,7 @@ def genAPIAliases(im: ImportManager): String = {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K$keyBound, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K$keyBound, V $nullableBound> $returnType<K, V> $name(Tuple2<? extends K, ? extends V> ... entries) {
         return $mapType.ofEntries(entries);
     }
 
@@ -373,7 +384,7 @@ def genAPIAliases(im: ImportManager): String = {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> $returnType<K, V> $name(@NonNull $JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K $nullableBound, V $nullableBound> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V> ... entries) {
         return $mapType.ofEntries(keyComparator, entries);
     }
 
@@ -387,7 +398,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @deprecated Will be removed in a future version.
      */
     @Deprecated
-    public static <K$keyBound, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
+    public static <K$keyBound, V $nullableBound> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
         return $mapType.ofAll(map);
     }
     """ else ""}
@@ -402,7 +413,7 @@ def genAPIAliases(im: ImportManager): String = {
          ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
          * @return A new {@link $mapType} instance containing the given entries
          */
-        public static <K$keyBound, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
+        public static <K$keyBound, V $nullableBound> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
             return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
         }
       """
@@ -427,7 +438,7 @@ def genAPIAliases(im: ImportManager): String = {
          * @param methodReference A method reference
          * @return A {@link Function$i}
          */
-        public static ${a.fullGenerics} Function$i${a.fullGenerics} Function(Function$i${a.fullGenerics} methodReference) {
+        public static ${a.fullGenericsDecl} Function$i${a.fullGenerics} Function(Function$i${a.fullGenerics} methodReference) {
             return Function$i.of(methodReference);
         }
       """
@@ -445,7 +456,7 @@ def genAPIAliases(im: ImportManager): String = {
          * @param methodReference A method reference
          * @return A {@link CheckedFunction$i}
          */
-        public static ${a.fullGenerics} CheckedFunction$i${a.fullGenerics} CheckedFunction(CheckedFunction$i${a.fullGenerics} methodReference) {
+        public static ${a.fullGenericsDecl} CheckedFunction$i${a.fullGenerics} CheckedFunction(CheckedFunction$i${a.fullGenerics} methodReference) {
             return CheckedFunction$i.of(methodReference);
         }
       """
@@ -463,7 +474,7 @@ def genAPIAliases(im: ImportManager): String = {
          * @param f    A method reference
          * @return An unchecked wrapper of supplied {@link CheckedFunction$i}
          */
-        public static ${a.fullGenerics} Function$i${a.fullGenerics} unchecked(CheckedFunction$i${a.fullGenerics} f) {
+        public static ${a.fullGenericsDecl} Function$i${a.fullGenerics} unchecked(CheckedFunction$i${a.fullGenerics} f) {
             return f.unchecked();
         }
       """
@@ -493,7 +504,7 @@ def genAPIAliases(im: ImportManager): String = {
          ${(1 to i).gen(j => s"* @param t$j   the ${j.ordinal} element")(using "\n")}
          * @return a tuple of ${i.numerus("element")}.
          */
-        public static <${a.generics}> Tuple$i<${a.generics}> Tuple(${a.paramsDecl}) {
+        public static <${a.genericsDecl}> Tuple$i<${a.generics}> Tuple(${a.paramsDecl}) {
             return Tuple.of(${a.params});
         }
       """
@@ -510,7 +521,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $EitherType.Right} instance.
      */
     @SuppressWarnings("unchecked")
-    public static <L, R> $EitherType.Right<L, R> Right(R right) {
+    public static <L $nullableBound, R $nullableBound> $EitherType.Right<L, R> Right(R right) {
         return ($EitherType.Right<L, R>) $EitherType.right(right);
     }
 
@@ -523,7 +534,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $EitherType.Left} instance.
      */
     @SuppressWarnings("unchecked")
-    public static <L, R> $EitherType.Left<L, R> Left(L left) {
+    public static <L $nullableBound, R $nullableBound> $EitherType.Left<L, R> Left(L left) {
         return ($EitherType.Left<L, R>) $EitherType.left(left);
     }
 
@@ -537,7 +548,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $FutureType} instance.
      * @throws NullPointerException if computation is null.
      */
-    public static <T> $FutureType<T> Future($CheckedFunction0Type<? extends T> computation) {
+    public static <T $nullableBound> $FutureType<T> Future($CheckedFunction0Type<? extends T> computation) {
         return $FutureType.of(computation);
     }
 
@@ -550,7 +561,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $FutureType} instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    public static <T> $FutureType<T> Future($ExecutorType executorService, $CheckedFunction0Type<? extends T> computation) {
+    public static <T $nullableBound> $FutureType<T> Future($ExecutorType executorService, $CheckedFunction0Type<? extends T> computation) {
         return $FutureType.of(executorService, computation);
     }
 
@@ -561,7 +572,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param result The result.
      * @return A succeeded {@link $FutureType}.
      */
-    public static <T> $FutureType<T> Future(T result) {
+    public static <T $nullableBound> $FutureType<T> Future(T result) {
         return $FutureType.successful(result);
     }
 
@@ -574,7 +585,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A succeeded {@link $FutureType}.
      * @throws NullPointerException if executorService is null
      */
-    public static <T> $FutureType<T> Future($ExecutorType executorService, T result) {
+    public static <T $nullableBound> $FutureType<T> Future($ExecutorType executorService, T result) {
         return $FutureType.successful(executorService, result);
     }
 
@@ -587,7 +598,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param supplier A supplier
      * @return A new instance of {@link Lazy}
      */
-    public static <T> Lazy<T> Lazy(@NonNull $SupplierType<? extends T> supplier) {
+    public static <T $nullableBound> Lazy<T> Lazy($SupplierType<? extends T> supplier) {
         return Lazy.of(supplier);
     }
 
@@ -600,7 +611,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @param value A value
      * @return {@link $OptionType.Some} if value is not {@code null}, {@link $OptionType.None} otherwise
      */
-    public static <T> $OptionType<T> Option(T value) {
+    public static <T $nullableBound> $OptionType<T> Option(T value) {
         return $OptionType.of(value);
     }
 
@@ -612,7 +623,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return {@link $OptionType.Some}
      */
     @SuppressWarnings("unchecked")
-    public static <T> $OptionType.Some<T> Some(T value) {
+    public static <T $nullableBound> $OptionType.Some<T> Some(T value) {
         return ($OptionType.Some<T>) $OptionType.some(value);
     }
 
@@ -623,7 +634,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return the singleton instance of {@link $OptionType.None}
      */
     @SuppressWarnings("unchecked")
-    public static <T> $OptionType.None<T> None() {
+    public static <T $nullableBound> $OptionType.None<T> None() {
         return ($OptionType.None<T>) $OptionType.none();
     }
 
@@ -637,7 +648,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
      * exception occurs calling {@code supplier.get()}.
      */
-    public static <T> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
+    public static <T $nullableBound> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
         return $TryType.of(supplier);
     }
 
@@ -649,7 +660,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $TryType.Success}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> $TryType.Success<T> Success(T value) {
+    public static <T $nullableBound> $TryType.Success<T> Success(T value) {
         return ($TryType.Success<T>) $TryType.success(value);
     }
 
@@ -661,7 +672,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @return A new {@link $TryType.Failure}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> $TryType.Failure<T> Failure(Throwable exception) {
+    public static <T $nullableBound> $TryType.Failure<T> Failure(Throwable exception) {
         return ($TryType.Failure<T>) $TryType.failure(exception);
     }
 
@@ -677,7 +688,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @throws NullPointerException if value is null
      */
     @SuppressWarnings("unchecked")
-    public static <E, T> $ValidationType.Valid<E, T> Valid(T value) {
+    public static <E $nullableBound, T $nullableBound> $ValidationType.Valid<E, T> Valid(T value) {
         return ($ValidationType.Valid<E, T>) $ValidationType.valid(value);
     }
 
@@ -691,7 +702,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @throws NullPointerException if error is null
      */
     @SuppressWarnings("unchecked")
-    public static <E, T> $ValidationType.Invalid<E, T> Invalid(E error) {
+    public static <E $nullableBound, T $nullableBound> $ValidationType.Invalid<E, T> Invalid(E error) {
         return ($ValidationType.Invalid<E, T>) $ValidationType.invalid(error);
     }
 
@@ -794,7 +805,6 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
   val ValidationType = im.getType("io.vavr.control.Validation")
   val Objects = im.getType("java.util.Objects")
   im.getType("java.util.function.BiFunction")
-  im.getType("org.jspecify.annotations.NonNull")
 
   val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType, EitherType, ValidationType)
   val monadicTypesThatNeedParameter = List(EitherType, ValidationType)
@@ -816,8 +826,9 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
     val isComplex = monadicTypesThatNeedParameter.contains(mtype)
     val parameterInset = if (isComplex) "L, " else ""
     val generics = parameterInset + Arity(i).generics
+    val genericsDecl = parameterInset.replace("L, ", s"L $nullableBound, ") + Arity(i).genericsDecl
     val fcn = forClassName(mtype, i)
-    val params = (1 to i).gen(j => s"@NonNull ${tsType(mtype, parameterInset, j)} ts$j")(using ", ")
+    val params = (1 to i).gen(j => s"${tsType(mtype, parameterInset, j)} ts$j")(using ", ")
     val ctorArgs = (1 to i).gen(j => s"ts$j")(using ", ")
 
     if (isLazy) {
@@ -837,7 +848,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          * @return a new {@code $fcn} builder of arity $i
          * @throws NullPointerException if any argument is {@code null}
          */
-        public static <$generics> $fcn<$generics> For($params) {
+        public static <$genericsDecl> $fcn<$generics> For($params) {
             ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
             return new $fcn<>($ctorArgs);
         }
@@ -851,7 +862,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")(using "\n")}
          * @return a new {@code For}-comprehension of arity $i
          */
-        public static <$generics> $fcn<$generics> For($params) {
+        public static <$genericsDecl> $fcn<$generics> For($params) {
             ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
             return new $fcn<>($ctorArgs);
         }
@@ -865,6 +876,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
     val fcn = forClassName(mtype, i)
     val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
     val generics = parameterInset + Arity(i).generics
+    val genericsDecl = parameterInset.replace("L, ", s"L $nullableBound, ") + Arity(i).genericsDecl
 
     val fields = (1 to i).gen(j => s"private final ${tsType(mtype, parameterInset, j)} ts$j;")(using "\n")
     val ctorParams = (1 to i).gen(j => s"${tsType(mtype, parameterInset, j)} ts$j")(using ", ")
@@ -904,7 +916,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
          ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
          */
-        public static class $fcn<$generics> {
+        public static class $fcn<$genericsDecl> {
 
             $fields
 
@@ -923,11 +935,11 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
              * @return an {@code $rtype} containing mapped results
              * @throws NullPointerException if {@code f} is {@code null}
              */
-            public <R> $rtype<${parameterInset}R> yield(${
+            public <R $nullableBound> $rtype<${parameterInset}R> yield(${
           if (i == 2)
-            s"@NonNull BiFunction<? super T1, ? super T2, ? extends R>"
+            s"BiFunction<? super T1, ? super T2, ? extends R>"
           else
-            s"@NonNull Function$i<${Arity(i).wideGenerics}, ? extends R>"
+            s"Function$i<${Arity(i).wideGenerics}, ? extends R>"
         } f) {
                 $Objects.requireNonNull(f, "f is null");
                 return $yieldBody;
@@ -947,7 +959,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          $parameterDoc
          $typeDocs
          */
-        public static class $fcn<$generics> {
+        public static class $fcn<$genericsDecl> {
 
             ${(1 to i).gen(j => xs"""private final $mtype<${parameterInset}T$j> ts$j;""")(using "\n")}
 
@@ -962,7 +974,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
              * @param <R> type of the resulting {@code $rtype} elements
              * @return an {@code $rtype} of mapped results
              */
-            public <R> $rtype<${parameterInset}R> yield(@NonNull $functionType<$args, ? extends R> f) {
+            public <R $nullableBound> $rtype<${parameterInset}R> yield($functionType<$args, ? extends R> f) {
                 $Objects.requireNonNull(f, "f is null");
                 ${if (i == 1) xs"""
                   return ${cons("ts1")}.map(f);
@@ -1018,7 +1030,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          * @param <U> component type of the resulting {@code Iterator}
          * @return A new Iterator
          */
-        public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+        public static <T $nullableBound, U $nullableBound> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
             return $IteratorType.ofAll(ts).flatMap(f);
         }
 
@@ -1039,7 +1051,6 @@ def genAPIMatch(im: ImportManager): String = {
   val PartialFunctionType = im.getType("io.vavr.PartialFunction")
   val OptionType = im.getType("io.vavr.control.Option")
   val PredicateType = im.getType("java.util.function.Predicate")
-  im.getType("org.jspecify.annotations.NonNull")
 
   xs"""
     //
@@ -1055,7 +1066,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param <T> type of the value
      * @return a new {@code Match} instance
      */
-    public static <T> Match<T> Match(T value) {
+    public static <T $nullableBound> Match<T> Match(T value) {
         return new Match<>(value);
     }
 
@@ -1072,7 +1083,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param f       Matched value consumer
      * @return new Case0
      */
-    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull $FunctionType<? super T, ? extends R> f) {
+    public static <T $nullableBound, R $nullableBound> Case<T, R> Case(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
         $Objects.requireNonNull(pattern, "pattern is null");
         $Objects.requireNonNull(f, "f is null");
         return new Case0<>(pattern, f);
@@ -1087,7 +1098,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param supplier Matched value supplier
      * @return new Case0
      */
-    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull $SupplierType<? extends R> supplier) {
+    public static <T $nullableBound, R $nullableBound> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> supplier) {
         $Objects.requireNonNull(pattern, "pattern is null");
         $Objects.requireNonNull(supplier, "supplier is null");
         return new Case0<>(pattern, ignored -> supplier.get());
@@ -1102,7 +1113,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param retVal  Constant value to return
      * @return new Case0
      */
-    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, R retVal) {
+    public static <T $nullableBound, R $nullableBound> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         $Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, ignored -> retVal);
     }
@@ -1111,6 +1122,7 @@ def genAPIMatch(im: ImportManager): String = {
       val a = Arity(i)
       val argTypes = a.wideGenerics
       val generics = a.generics
+      val genericsDecl = a.genericsDecl
       val params = (i > 1).gen("(") + a.underscoreParams + (i > 1).gen(")")
       val functionType = javaFunctionType(i, im)
       val typeDocs = (1 to i).gen(j => s"* @param <T$j>     Intermediate type $j for the pattern\n")
@@ -1128,7 +1140,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param f        Matched value consumer
          * @return new Case$i
          */
-        public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, @NonNull $functionType<$argTypes, ? extends R> f) {
+        public static <T $nullableBound, $genericsDecl, R $nullableBound> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
             $Objects.requireNonNull(pattern, "pattern is null");
             $Objects.requireNonNull(f, "f is null");
             return new Case$i<>(pattern, f);
@@ -1144,7 +1156,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param supplier Matched value supplier
          * @return new Case$i
          */
-        public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, @NonNull $SupplierType<? extends R> supplier) {
+        public static <T $nullableBound, $genericsDecl, R $nullableBound> Case<T, R> Case(Pattern$i<T, $generics> pattern, $SupplierType<? extends R> supplier) {
             $Objects.requireNonNull(pattern, "pattern is null");
             $Objects.requireNonNull(supplier, "supplier is null");
             return new Case$i<>(pattern, $params -> supplier.get());
@@ -1160,7 +1172,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param retVal   Constant value to return
          * @return new Case$i
          */
-        public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, R retVal) {
+        public static <T $nullableBound, $genericsDecl, R $nullableBound> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
             $Objects.requireNonNull(pattern, "pattern is null");
             return new Case$i<>(pattern, $params -> retVal);
         }
@@ -1177,7 +1189,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param <T> injected type of the underlying value
      * @return a new {@code Pattern0} instance
      */
-    public static <T> Pattern0<T> $$() {
+    public static <T $nullableBound> Pattern0<T> $$() {
         return Pattern0.any();
     }
 
@@ -1188,7 +1200,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param prototype the value that should be equal to the underlying object
      * @return a new {@code Pattern0} instance
      */
-    public static <T> Pattern0<T> $$(T prototype) {
+    public static <T $nullableBound> Pattern0<T> $$(T prototype) {
         return new Pattern0<T>() {
 
             private static final long serialVersionUID = 1L;
@@ -1216,7 +1228,7 @@ def genAPIMatch(im: ImportManager): String = {
      * <p>
      * This method is intended to be used with lambdas and method references, for example:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * String evenOrOdd(int num) {
      *     return Match(num).of(
      *             Case($$(i -> i % 2 == 0), "even"),
@@ -1231,7 +1243,7 @@ def genAPIMatch(im: ImportManager): String = {
      *
      * It is also valid to pass {@code Predicate} instances:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * Predicate<Integer> isOdd = i -> i % 2 == 1;
      *
      * Match(num).of(
@@ -1247,7 +1259,7 @@ def genAPIMatch(im: ImportManager): String = {
      * <p>
      * However, this code will fail:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * Predicate<Integer> p = i -> true;
      * Match(p).of(
      *     Case($$(p), 1) // WRONG! It calls $$(Predicate)
@@ -1256,7 +1268,7 @@ def genAPIMatch(im: ImportManager): String = {
      *
      * Instead we have to use {@link Predicates#is(Object)}:
      *
-     * <pre>{@code 
+     * <pre>{@code
      * Predicate<Integer> p = i -> true;
      * Match(p).of(
      *     Case($$(is(p)), 1) // CORRECT! It calls $$(T)
@@ -1267,7 +1279,7 @@ def genAPIMatch(im: ImportManager): String = {
      * @param predicate the predicate that tests a given value
      * @return a new {@code Pattern0} instance
      */
-    public static <T> Pattern0<T> $$(@NonNull $PredicateType<? super T> predicate) {
+    public static <T $nullableBound> Pattern0<T> $$($PredicateType<? super T> predicate) {
         $Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
 
@@ -1293,7 +1305,7 @@ def genAPIMatch(im: ImportManager): String = {
      * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
      * @param <T> type of the object that is matched
      */
-    public static final class Match<T> {
+    public static final class Match<T $nullableBound> {
 
         private final T value;
 
@@ -1312,7 +1324,7 @@ def genAPIMatch(im: ImportManager): String = {
          */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> R of(@NonNull Case<? extends T, ? extends R> @NonNull ... cases) {
+        public final <R $nullableBound> R of(Case<? extends T, ? extends R> ... cases) {
             Objects.requireNonNull(cases, "cases is null");
             for (Case<? extends T, ? extends R> _case : cases) {
                 final Case<T, R> __case = (Case<T, R>) _case;
@@ -1333,7 +1345,7 @@ def genAPIMatch(im: ImportManager): String = {
         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> $OptionType<R> option(@NonNull Case<? extends T, ? extends R> @NonNull ... cases) {
+        public final <R $nullableBound> $OptionType<R> option(Case<? extends T, ? extends R> ... cases) {
             Objects.requireNonNull(cases, "cases is null");
             for (Case<? extends T, ? extends R> _case : cases) {
                 final Case<T, R> __case = (Case<T, R>) _case;
@@ -1352,7 +1364,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param <T> Type of the value being matched
          * @param <R> Return value type
          */
-        public interface Case<T, R> extends $PartialFunctionType<T, R> {
+        public interface Case<T $nullableBound, R $nullableBound> extends $PartialFunctionType<T, R> {
 
             /**
              * The serial version UID for serialization.
@@ -1366,7 +1378,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param <T> Type of the value being matched
          * @param <R> Return value type
          */
-        public static final class Case0<T, R> implements Case<T, R> {
+        public static final class Case0<T $nullableBound, R $nullableBound> implements Case<T, R> {
 
             /$javadoc
              * The serial version UID for serialization.
@@ -1396,6 +1408,7 @@ def genAPIMatch(im: ImportManager): String = {
           val a = Arity(i)
           val argTypes = a.wideGenerics
           val generics = a.generics
+          val genericsDecl = a.genericsDecl
           val functionType = javaFunctionType(i, im)
           val accessModifier = i match {
             case 1 => "transient final"
@@ -1411,7 +1424,7 @@ def genAPIMatch(im: ImportManager): String = {
              $typeDocs
              * @param <R>  Return value type
              */
-            public static final class Case$i<T, $generics, R> implements Case<T, R> {
+            public static final class Case$i<T $nullableBound, $genericsDecl, R $nullableBound> implements Case<T, R> {
 
                 /$javadoc
                  * The serial version UID for serialization.
@@ -1453,7 +1466,7 @@ def genAPIMatch(im: ImportManager): String = {
          * @param <R> Type of the single or composite part this pattern decomposes
          */
         // javac needs fqn's here
-        public interface Pattern<T, R> extends $PartialFunctionType<T, R> {
+        public interface Pattern<T $nullableBound, R $nullableBound> extends $PartialFunctionType<T, R> {
         }
 
         // These can't be @FunctionalInterfaces because of ambiguities.
@@ -1464,7 +1477,7 @@ def genAPIMatch(im: ImportManager): String = {
          *
          * @param <T>  Class type that is matched by this pattern
          */
-        public static abstract class Pattern0<T> implements Pattern<T, T> {
+        public static abstract class Pattern0<T $nullableBound> implements Pattern<T, T> {
 
             /$javadoc
              * The serial version UID for serialization.
@@ -1493,7 +1506,7 @@ def genAPIMatch(im: ImportManager): String = {
              * @return Pattern0
              */
             @SuppressWarnings("unchecked")
-            public static <T> Pattern0<T> any() {
+            public static <T $nullableBound> Pattern0<T> any() {
                 return (Pattern0<T>) ANY;
             }
 
@@ -1509,7 +1522,7 @@ def genAPIMatch(im: ImportManager): String = {
              * @param <T>  Class type matched by this pattern
              * @return new Pattern0
              */
-            public static <T> Pattern0<T> of(@NonNull Class<? super T> type) {
+            public static <T $nullableBound> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
 
                     /$javadoc
@@ -1542,12 +1555,12 @@ def genAPIMatch(im: ImportManager): String = {
 
         ${(1 to N).gen(i => {
           val a = Arity(i)
-          val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j")(using ", ")
+          val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j $nullableBound")(using ", ")
           val resultGenerics = a.generics
           val resultType = if (i == 1) resultGenerics else s"Tuple$i<$resultGenerics>"
           val unapplyGenerics = (1 to i).gen(j => s"U$j")(using ", ")
           val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
-          val args = (1 to i).gen(j => s"@NonNull Pattern<T$j, ?> p$j")(using ", ")
+          val args = (1 to i).gen(j => s"Pattern<T$j, ?> p$j")(using ", ")
           val typeDocs = (1 to i).gen(j => s"* @param <T$j> Member type $j of the composite part this pattern decomposes\n")
           val staticOfTypeDocs = (1 to i).gen(j =>
             xs"""
@@ -1563,7 +1576,7 @@ def genAPIMatch(im: ImportManager): String = {
              * @param <T>  Class type that is matched by this pattern
              $typeDocs
              */
-            public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
+            public static abstract class Pattern$i<T $nullableBound, ${a.genericsDecl}> implements Pattern<T, $resultType> {
 
                 /$javadoc
                  * The serial version UID for serialization.
@@ -1581,7 +1594,7 @@ def genAPIMatch(im: ImportManager): String = {
                  $staticOfTypeDocs
                  * @return new Pattern$i
                  */
-                public static <T, $declaredGenerics> Pattern$i<T, $resultGenerics> of(@NonNull Class<? super T> type, $args, @NonNull Function<T, $unapplyTupleType> unapply) {
+                public static <T $nullableBound, $declaredGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<T, $unapplyTupleType> unapply) {
                     return new Pattern$i<T, $resultGenerics>() {
 
                         /$javadoc
@@ -1657,7 +1670,7 @@ def generateMainClasses(): Unit = {
         /**
          * The most basic Vavr functionality is accessed through this API class.
          *
-         * <pre>{@code 
+         * <pre>{@code
          * import static io.vavr.API.*;
          * }</pre>
          *
@@ -1665,14 +1678,14 @@ def generateMainClasses(): Unit = {
          * <p>
          * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
          *
-         * <pre>{@code 
+         * <pre>{@code
          * // lazily evaluated
          * Iterator<R> result = For(iterable1, iterable2, ..., iterableN).yield(f);
          * }</pre>
          *
          * or
          *
-         * <pre>{@code 
+         * <pre>{@code
          * Iterator<R> result =
          *     For(iterable1, v1 ->
          *         For(iterable2, v2 ->
@@ -1684,7 +1697,7 @@ def generateMainClasses(): Unit = {
          *
          * instead of
          *
-         * <pre>{@code 
+         * <pre>{@code
          * for(T1 v1 : iterable1) {
          *     for (T2 v2 : iterable2) {
          *         ...
@@ -1704,7 +1717,7 @@ def generateMainClasses(): Unit = {
          * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a Stream of the
          * mapped cross product elements.
          *
-         * <pre>{@code 
+         * <pre>{@code
          * { f(v1, v2, ..., vN) | v1 ∈ iterable1, ... vN ∈ iterableN }
          * }</pre>
          *
@@ -1746,7 +1759,7 @@ def generateMainClasses(): Unit = {
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val a = Arity(i)
-        import a.{generics, fullGenerics, wideGenerics, fullWideGenerics, genericsReversed, genericsTuple, genericsFunction, genericsReversedFunction, paramsDecl, params, paramsReversed, tupled}
+        import a.{generics, genericsDecl, fullGenerics, fullGenericsDecl, wideGenerics, fullWideGenerics, genericsReversed, genericsTuple, genericsFunction, genericsReversedFunction, paramsDecl, params, paramsReversed, tupled}
         val genericsOptionReturnType = s"<${genericsFunction}${im.getType("io.vavr.control.Option")}<R>>"
         val genericsTryReturnType = s"<${genericsFunction}${im.getType("io.vavr.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(using " -> ")
@@ -1754,7 +1767,6 @@ def generateMainClasses(): Unit = {
 
         // imports
 
-        val NonNullType = im.getType("org.jspecify.annotations.NonNull")
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("io.vavr.control.Try") else ""
         val Serializable = im.getType("java.io.Serializable")
@@ -1804,7 +1816,7 @@ def generateMainClasses(): Unit = {
            * @author Daniel Dietrich
            */
           @FunctionalInterface
-          public interface $className$fullGenerics extends $Serializable$additionalExtends {
+          public interface $className$fullGenericsDecl extends $Serializable$additionalExtends {
 
               /$javadoc
                * The serial version UID for serialization.
@@ -1820,7 +1832,7 @@ def generateMainClasses(): Unit = {
                * @param value the value to be returned
                * @return a function always returning the given value
                */
-              static $fullGenerics $className$fullGenerics constant(R value) {
+              static $fullGenericsDecl $className$fullGenerics constant(R value) {
                   return ($params) -> value;
               }
 
@@ -1857,7 +1869,7 @@ def generateMainClasses(): Unit = {
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a {@code $className}
                */
-              static $fullGenerics $className$fullGenerics of(@NonNull $className$fullGenerics methodReference) {
+              static $fullGenericsDecl $className$fullGenerics of($className$fullGenerics methodReference) {
                   return methodReference;
               }
 
@@ -1869,7 +1881,7 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
-              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift(@NonNull $fullGenericsType partialFunction) {
+              static $fullGenericsDecl ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
                     val func = "partialFunction"
                     val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
@@ -1888,7 +1900,7 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
                *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
                */
-              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry(@NonNull $fullGenericsType partialFunction) {
+              static $fullGenericsDecl ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
                   ${
                     val supplier = if (!checked && i == 0) "partialFunction::get" else if (checked && i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
@@ -1906,7 +1918,7 @@ def generateMainClasses(): Unit = {
                * @return the given {@code f} instance as narrowed type {@code $className$fullGenerics}
                */
               @SuppressWarnings("unchecked")
-              static $fullGenerics $className$fullGenerics narrow($className$fullWideGenerics f) {
+              static $fullGenericsDecl $className$fullGenerics narrow($className$fullWideGenerics f) {
                   return ($className$fullGenerics) f;
               }
 
@@ -1917,7 +1929,7 @@ def generateMainClasses(): Unit = {
                  * @param <T> argument type (and return type) of the identity function
                  * @return the identity $className
                  */
-                static <T> ${name}1<T, T> identity() {
+                static <T $nullableBound> ${name}1<T, T> identity() {
                     return t -> t;
                 }
               """)}
@@ -2086,7 +2098,7 @@ def generateMainClasses(): Unit = {
                  * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
                  * @throws NullPointerException if {@code isDefinedAt} is null
                  */
-                default PartialFunction<T1, R> partial(@NonNull ${im.getType("java.util.function.Predicate")}<? super T1> isDefinedAt) {
+                default PartialFunction<T1, R> partial(${im.getType("java.util.function.Predicate")}<? super T1> isDefinedAt) {
                     Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
                     final Function1<T1, R> self = this;
                     return new PartialFunction<T1, R>() {
@@ -2115,7 +2127,7 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of this and recover
                  * @throws NullPointerException if recover is null
                  */
-                default Function$i$fullGenerics recover(@NonNull ${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
+                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
                     Objects.requireNonNull(recover, "recover is null");
                     return ($params) -> {
                         try {
@@ -2153,7 +2165,7 @@ def generateMainClasses(): Unit = {
                * @return a function composed of this and after
                * @throws NullPointerException if after is null
                */
-              default <V> $className<${genericsFunction}V> andThen(@NonNull $compositionType<? super R, ? extends V> after) {
+              default <V $nullableBound> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
                   $Objects.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
@@ -2168,7 +2180,7 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of before and this
                  * @throws NullPointerException if before is null
                  */
-                default <V> ${name}1<V, R> compose(@NonNull $compositionType<? super V, ? extends T1> before) {
+                default <V $nullableBound> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
                     $Objects.requireNonNull(before, "before is null");
                     return v -> apply(before.apply(v));
                 }
@@ -2196,7 +2208,7 @@ def generateMainClasses(): Unit = {
                    * @return a function composed of $fName and this
                    * @throws NullPointerException if $fName is null
                    */
-                  default <S> $className<$generics, R> compose$j(@NonNull Function1<? super $fGeneric, ? extends T$j> $fName) {
+                  default <S $nullableBound> $className<$generics, R> compose$j(Function1<? super $fGeneric, ? extends T$j> $fName) {
                       Objects.requireNonNull($fName, "$fName is null");
                       return ($applicationArgs) -> apply($applyArgs);
                   }
@@ -2209,7 +2221,7 @@ def generateMainClasses(): Unit = {
 
                 // DEV-NOTE: we do not plan to expose this as public API
                 @SuppressWarnings("unchecked")
-                static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+                static <T extends Throwable, R $nullableBound> R sneakyThrow(Throwable t) throws T {
                     throw (T) t;
                 }
             }
@@ -2236,10 +2248,12 @@ def generateMainClasses(): Unit = {
     def genTuple(i: Int)(im: ImportManager, packageName: String, className: String): String = {
       val a = Arity(i)
       val generics = a.genericsTuple
+      val genericsDecl = a.genericsTupleDecl
       val paramsDecl = a.paramsDecl
       val params = a.underscoreParams
       val paramTypes = a.wideGenerics
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(using ", ")}>"
+      val resultGenericsDecl = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j $nullableBound")(using ", ")}>"
       val mapResult = i match {
         case 0 => ""
         case 1 => "? extends U1"
@@ -2248,7 +2262,6 @@ def generateMainClasses(): Unit = {
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(using ", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(using ", ")}>"
       val functionType = javaFunctionType(i, im)
-      val NonNullType = im.getType("org.jspecify.annotations.NonNull")
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
@@ -2264,7 +2277,7 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")(using "\n")}
          * @author Daniel Dietrich
          */
-        public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
+        public final class $className$genericsDecl implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -2309,7 +2322,7 @@ def generateMainClasses(): Unit = {
               }
             """}
 
-            public static $generics $Comparator<$className$generics> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(using ", ")}) {
+            public static $genericsDecl $Comparator<$className$generics> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(using ", ")}) {
                 ${if (i == 0) xs"""
                   return COMPARATOR;
                 """ else xs"""
@@ -2412,7 +2425,7 @@ def generateMainClasses(): Unit = {
                * @return A new Tuple of same arity.
                * @throws NullPointerException if {@code mapper} is null
                */
-              public $resultGenerics $className$resultGenerics map(@NonNull $functionType<$paramTypes, $mapResult> mapper) {
+              public $resultGenericsDecl $className$resultGenerics map($functionType<$paramTypes, $mapResult> mapper) {
                   Objects.requireNonNull(mapper, "mapper is null");
                   ${if (i == 1)
                     "return Tuple.of(mapper.apply(_1));"
@@ -2430,7 +2443,7 @@ def generateMainClasses(): Unit = {
                * @return A new Tuple of same arity.
                * @throws NullPointerException if one of the arguments is null
                */
-              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"@NonNull ${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(using ", ")}) {
+              public $resultGenericsDecl $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(using ", ")}) {
                   ${(1 to i).gen(j => s"""Objects.requireNonNull(f$j, "f$j is null");""")(using "\n")}
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(using ", ")});
               }
@@ -2444,7 +2457,7 @@ def generateMainClasses(): Unit = {
                * @param mapper A mapping function
                * @return a new tuple based on this tuple and substituted ${j.ordinal} component
                */
-              public <U> $className<${(1 to i).gen(k => if (j == k) "U" else s"T$k")(using ", ")}> map$j(${im.getType("java.util.function.Function")}<? super T$j, ? extends U> mapper) {
+              public <U $nullableBound> $className<${(1 to i).gen(k => if (j == k) "U" else s"T$k")(using ", ")}> map$j(${im.getType("java.util.function.Function")}<? super T$j, ? extends U> mapper) {
                   Objects.requireNonNull(mapper, "mapper is null");
                   final U u = mapper.apply(_$j);
                   return Tuple.of(${(1 to i).gen(k => if (j == k) "u" else s"_$k")(using ", ")});
@@ -2460,12 +2473,12 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code f} is null
              */
             ${if (i == 0) xs"""
-              public <U> U apply(@NonNull $functionType<? extends U> f) {
+              public <U $nullableBound> U apply($functionType<? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
                   return f.get();
               }
             """ else xs"""
-              public <U> U apply(@NonNull $functionType<$paramTypes, ? extends U> f) {
+              public <U $nullableBound> U apply($functionType<$paramTypes, ? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
                   return f.apply($params);
               }
@@ -2488,7 +2501,7 @@ def generateMainClasses(): Unit = {
                * @param t${i+1} the value to append
                * @return a new Tuple with the value appended
                */
-              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(using ", ")}> append(T${i+1} t${i+1}) {
+              public <T${i+1} $nullableBound> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(using ", ")}> append(T${i+1} t${i+1}) {
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(using ", ")}${(i > 0).gen(", ")}t${i+1});
               }
             """)}
@@ -2502,7 +2515,7 @@ def generateMainClasses(): Unit = {
                * @return a new Tuple with the tuple values appended
                * @throws NullPointerException if {@code tuple} is null
                */
-              public <${(i+1 to i+j).gen(k => s"T$k")(using ", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(using ", ")}> concat(@NonNull Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(using ", ")}> tuple) {
+              public <${(i+1 to i+j).gen(k => s"T$k " + nullableBound)(using ", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(using ", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(using ", ")}> tuple) {
                   Objects.requireNonNull(tuple, "tuple is null");
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(using ", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(using ", ")});
               }
@@ -2511,7 +2524,7 @@ def generateMainClasses(): Unit = {
             // -- Object
 
             @Override
-            public boolean equals(Object o) {
+            public boolean equals(@Nullable Object o) {
                 ${if (i == 0) xs"""
                   return o == this;
                 """ else xs"""
@@ -2558,7 +2571,6 @@ def generateMainClasses(): Unit = {
      * Generates Tuple
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
-      val NonNullType = im.getType("org.jspecify.annotations.NonNull")
 
       val Map = im.getType("java.util.Map")
       val Objects = im.getType("java.util.Objects")
@@ -2566,7 +2578,7 @@ def generateMainClasses(): Unit = {
 
       def genFactoryMethod(i: Int) = {
         val a = Arity(i)
-        import a.{generics, paramsDecl, params, covariantGenerics => wideGenerics}
+        import a.{generics, genericsDecl, paramsDecl, params, covariantGenerics => wideGenerics}
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
@@ -2574,7 +2586,7 @@ def generateMainClasses(): Unit = {
            ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")(using "\n")}
            * @return a tuple of ${i.numerus("element")}.
            */
-          static <$generics> Tuple$i<$generics> of($paramsDecl) {
+          static <$genericsDecl> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
           }
         """
@@ -2604,7 +2616,7 @@ def generateMainClasses(): Unit = {
 
       def genNarrowMethod(i: Int) = {
         val a = Arity(i)
-        import a.{generics, covariantGenerics => wideGenerics}
+        import a.{generics, genericsDecl, covariantGenerics => wideGenerics}
         xs"""
           /**
            * Narrows a widened {@code Tuple$i<$wideGenerics>} to {@code Tuple$i<$generics>}.
@@ -2614,7 +2626,7 @@ def generateMainClasses(): Unit = {
            * @return the given {@code t} instance as narrowed type {@code Tuple$i<$generics>}.
            */
           @SuppressWarnings("unchecked")
-          static <$generics> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
+          static <$genericsDecl> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
               return (Tuple$i<$generics>) t;
           }
         """
@@ -2622,7 +2634,7 @@ def generateMainClasses(): Unit = {
 
       def genSeqMethod(i: Int) = {
         val a = Arity(i)
-        import a.generics
+        import a.{generics, genericsDecl}
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(using ", ")
         val Stream = im.getType("io.vavr.collection.Stream")
         val widenedGenerics = a.covariantGenerics
@@ -2634,7 +2646,7 @@ def generateMainClasses(): Unit = {
              * @param tuples an {@code Iterable} of tuples
              * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
              */
-            static <$generics> Tuple$i<$seqs> sequence$i(@NonNull Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
+            static <$genericsDecl> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
                 final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
                 return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(using s", ")});
@@ -2693,7 +2705,7 @@ def generateMainClasses(): Unit = {
              * @param      entry A {@link java.util.Map.Entry}
              * @return a new {@code Tuple2} containing key and value of the given {@code entry}
              */
-            static <T1, T2> Tuple2<T1, T2> fromEntry($Map.@NonNull Entry<? extends T1, ? extends T2> entry) {
+            static <T1 $nullableBound, T2 $nullableBound> Tuple2<T1, T2> fromEntry($Map.Entry<? extends T1, ? extends T2> entry) {
                 $Objects.requireNonNull(entry, "entry is null");
                 return new Tuple2<>(entry.getKey(), entry.getValue());
             }
@@ -2736,12 +2748,12 @@ def generateMainClasses(): Unit = {
        *
        * @author Pap Lőrinc
        */
-      interface ArrayType<T> extends Serializable {
+      interface ArrayType<T $nullableBound> extends Serializable {
 
           long serialVersionUID = 1L;
 
           @SuppressWarnings("unchecked")
-          static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
+          static <T $nullableBound> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 
           Class<T> type();
           int lengthOf(Object array);
@@ -2752,10 +2764,10 @@ def generateMainClasses(): Unit = {
           Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
           @SuppressWarnings("unchecked")
-          static <T> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
-          static <T> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
+          static <T $nullableBound> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
+          static <T $nullableBound> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
           @SuppressWarnings("unchecked")
-          static <T> ArrayType<T> ofPrimitive(Class<T> type) {
+          static <T $nullableBound> ArrayType<T> ofPrimitive(Class<T> type) {
               if (boolean.class == type) {
                   return (ArrayType<T>) BooleanArrayType.INSTANCE;
               } else if (byte.class == type) {
@@ -2841,7 +2853,7 @@ def generateMainClasses(): Unit = {
           }
 
           @SuppressWarnings("unchecked")
-          static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+          static <T $nullableBound> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
               final Object[] array = Array.ofAll(values).toJavaArray();
               final ArrayType<T> type = of((Class<T>) primitiveClass);
               final Object results = type.newInstance(array.length);
@@ -4112,7 +4124,12 @@ def genVavrFile(packageName: String, className: String, baseDir: String = TARGET
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  """)(gen)(using CHARSET)
+  """)((im, pn, cn) => {
+    // Every generated *main* class declares nullable-bounded type parameters (see `nullableBound`),
+    // so the JSpecify @Nullable import is always required there. Generated tests declare none.
+    if (baseDir == TARGET_MAIN) im.getType("org.jspecify.annotations.Nullable")
+    gen(im, pn, cn)
+  })(using CHARSET)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      J A V A   G E N E R A T O R   F R A M E W O R K

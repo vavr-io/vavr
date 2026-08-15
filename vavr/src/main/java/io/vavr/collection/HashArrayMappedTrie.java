@@ -24,6 +24,7 @@ import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
 import io.vavr.control.Option;
 import java.io.Serializable;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.PUT;
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.REMOVE;
@@ -35,11 +36,11 @@ import static java.util.Arrays.copyOf;
  *
  * @author Ruslan Sennov, Grzegorz Piwowarek
  */
-interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable {
+interface HashArrayMappedTrie<K extends @Nullable Object, V extends @Nullable Object> extends Iterable<Tuple2<K, V>>, Serializable {
 
     static final long serialVersionUID = 1L;
 
-    static <K, V> HashArrayMappedTrie<K, V> empty() {
+    static <K extends @Nullable Object, V extends @Nullable Object> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
     }
 
@@ -79,13 +80,13 @@ interface HashArrayMappedTrieModule {
         PUT, REMOVE
     }
 
-    class LeafNodeIterator<K, V> extends AbstractIterator<LeafNode<K, V>> {
+    class LeafNodeIterator<K extends @Nullable Object, V extends @Nullable Object> extends AbstractIterator<LeafNode<K, V>> {
 
         // buckets levels + leaf level = (Integer.SIZE / AbstractNode.SIZE + 1) + 1
         private final static int MAX_LEVELS = Integer.SIZE / AbstractNode.SIZE + 2;
 
         private final int total;
-        private final Object[] nodes = new Object[MAX_LEVELS];
+        private final @Nullable Object[] nodes = new @Nullable Object[MAX_LEVELS];
         private final int[] indexes = new int[MAX_LEVELS];
 
         private int level;
@@ -104,7 +105,7 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         protected LeafNode<K, V> getNext() {
-            Object node = nodes[level];
+            @Nullable Object node = nodes[level];
             while (!(node instanceof LeafNode)) {
                 node = findNextLeaf();
             }
@@ -120,8 +121,8 @@ interface HashArrayMappedTrieModule {
         }
 
         @SuppressWarnings("unchecked")
-        private Object findNextLeaf() {
-            AbstractNode<K, V> node = null;
+        private @Nullable Object findNextLeaf() {
+            @Nullable AbstractNode<K, V> node = null;
             while (level > 0) {
                 level--;
                 indexes[level]++;
@@ -134,7 +135,7 @@ interface HashArrayMappedTrieModule {
             return nodes[level];
         }
 
-        private static <K, V> int downstairs(Object[] nodes, int[] indexes, AbstractNode<K, V> root, int level) {
+        private static <K extends @Nullable Object, V extends @Nullable Object> int downstairs(@Nullable Object[] nodes, int[] indexes, @Nullable AbstractNode<K, V> root, int level) {
             while (true) {
                 nodes[level] = root;
                 indexes[level] = 0;
@@ -149,7 +150,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @SuppressWarnings("unchecked")
-        private static <K, V> AbstractNode<K, V> getChild(AbstractNode<K, V> node, int index) {
+        private static <K extends @Nullable Object, V extends @Nullable Object> @Nullable AbstractNode<K, V> getChild(@Nullable AbstractNode<K, V> node, int index) {
             if (node instanceof IndexedNode) {
                 final Object[] subNodes = ((IndexedNode<K, V>) node).subNodes;
                 return index < subNodes.length ? (AbstractNode<K, V>) subNodes[index] : null;
@@ -167,7 +168,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
+    abstract class AbstractNode<K extends @Nullable Object, V extends @Nullable Object> implements HashArrayMappedTrie<K, V> {
 
         private static final long serialVersionUID = 1L;
 
@@ -215,7 +216,7 @@ interface HashArrayMappedTrieModule {
 
         abstract V lookup(int shift, int keyHash, K key, V defaultValue);
 
-        abstract AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action);
+        abstract AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action);
 
         Iterator<LeafNode<K, V>> nodes() {
             return new LeafNodeIterator<>(this);
@@ -278,7 +279,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    final class EmptyNode<K extends @Nullable Object, V extends @Nullable Object> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -288,7 +289,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @SuppressWarnings("unchecked")
-        static <K, V> EmptyNode<K, V> instance() {
+        static <K extends @Nullable Object, V extends @Nullable Object> EmptyNode<K, V> instance() {
             return (EmptyNode<K, V>) INSTANCE;
         }
 
@@ -308,7 +309,9 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action) {
+        // `value` is only read when action != REMOVE, which is exactly when it is supplied
+        @SuppressWarnings("NullAway")
+        AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action) {
             return (action == REMOVE) ? this : new LeafSingleton<>(keyHash, key, value);
         }
 
@@ -344,7 +347,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    abstract class LeafNode<K, V> extends AbstractNode<K, V> {
+    abstract class LeafNode<K extends @Nullable Object, V extends @Nullable Object> extends AbstractNode<K, V> {
 
         private static final long serialVersionUID = 1L;
 
@@ -354,7 +357,7 @@ interface HashArrayMappedTrieModule {
 
         abstract int hash();
 
-        static <K, V> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
+        static <K extends @Nullable Object, V extends @Nullable Object> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
             final int h1 = leaf1.hash();
             final int h2 = leaf2.hash();
             if (h1 == h2) {
@@ -384,7 +387,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class LeafSingleton<K, V> extends LeafNode<K, V> implements Serializable {
+    final class LeafSingleton<K extends @Nullable Object, V extends @Nullable Object> extends LeafNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -420,7 +423,9 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action) {
+        // `value` is only read when action != REMOVE, which is exactly when it is supplied
+        @SuppressWarnings("NullAway")
+        AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action) {
             if (keyHash == hash && Objects.equals(key, this.key)) {
                 return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
             } else {
@@ -460,7 +465,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class LeafList<K, V> extends LeafNode<K, V> implements Serializable {
+    final class LeafList<K extends @Nullable Object, V extends @Nullable Object> extends LeafNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -514,7 +519,9 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action) {
+        // `value` is only read when action != REMOVE, which is exactly when it is supplied
+        @SuppressWarnings("NullAway")
+        AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action) {
             if (keyHash == hash) {
                 final AbstractNode<K, V> filtered = removeElement(key);
                 if (action == REMOVE) {
@@ -527,7 +534,7 @@ interface HashArrayMappedTrieModule {
             }
         }
 
-        private static <K, V> AbstractNode<K, V> mergeNodes(LeafNode<K, V> leaf1, LeafNode<K, V> leaf2) {
+        private static <K extends @Nullable Object, V extends @Nullable Object> AbstractNode<K, V> mergeNodes(LeafNode<K, V> leaf1, @Nullable LeafNode<K, V> leaf2) {
             if (leaf2 == null) {
                 return leaf1;
             }
@@ -581,6 +588,8 @@ interface HashArrayMappedTrieModule {
                 }
 
                 @Override
+                // getNext() is only reached when hasNext() reported node != null
+                @SuppressWarnings("NullAway")
                 public LeafNode<K, V> getNext() {
                     final LeafNode<K, V> result = node;
                     if (node instanceof LeafSingleton) {
@@ -615,7 +624,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class IndexedNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    final class IndexedNode<K extends @Nullable Object, V extends @Nullable Object> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -668,9 +677,12 @@ interface HashArrayMappedTrieModule {
             }
         }
 
-        @SuppressWarnings("unchecked")
+        // `exists` means the bitmap bit for this fragment is set, which by construction implies a
+        // non-null sub-node at `index`. NullAway cannot correlate the two, so the reads of
+        // `atIndx` guarded by `exists`/`removed` need an explicit exemption.
+        @SuppressWarnings({"unchecked", "NullAway"})
         @Override
-        AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action) {
+        AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action) {
             final int frag = hashFragment(shift, keyHash);
             final int bit = toBitmap(frag);
             final int index = fromBitmap(bitmap, bit);
@@ -743,7 +755,7 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class ArrayNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    final class ArrayNode<K extends @Nullable Object, V extends @Nullable Object> extends AbstractNode<K, V> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -784,7 +796,7 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         @Override
-        AbstractNode<K, V> modify(int shift, int keyHash, K key, V value, Action action) {
+        AbstractNode<K, V> modify(int shift, int keyHash, K key, @Nullable V value, Action action) {
             final int frag = hashFragment(shift, keyHash);
             final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             final AbstractNode<K, V> newChild = child.modify(shift + SIZE, keyHash, key, value, action);

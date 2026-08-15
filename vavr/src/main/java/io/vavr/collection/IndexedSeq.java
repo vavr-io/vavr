@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents an immutable, indexed sequence of elements.
@@ -37,7 +37,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T> the element type
  * @author Daniel Dietrich
  */
-public interface IndexedSeq<T> extends Seq<T> {
+public interface IndexedSeq<T extends @Nullable Object> extends Seq<T> {
 
     long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      * @return the same {@code IndexedSeq} instance with the narrowed type
      */
     @SuppressWarnings("unchecked")
-    static <T> IndexedSeq<T> narrow(IndexedSeq<? extends T> indexedSeq) {
+    static <T extends @Nullable Object> IndexedSeq<T> narrow(IndexedSeq<? extends T> indexedSeq) {
         return (IndexedSeq<T>) indexedSeq;
     }
 
@@ -62,13 +62,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> append(T element);
 
     @Override
-    IndexedSeq<T> appendAll(@NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    IndexedSeq<T> asJava(@NonNull Consumer<? super java.util.List<T>> action);
+    IndexedSeq<T> asJava(Consumer<? super java.util.List<T>> action);
 
     @Override
-    IndexedSeq<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action);
+    IndexedSeq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 
     @Override
     default PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException {
@@ -86,7 +86,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    <R> IndexedSeq<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction);
+    <R extends @Nullable Object> IndexedSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations();
@@ -101,37 +101,37 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> distinct();
 
     @Override
-    IndexedSeq<T> distinctBy(@NonNull Comparator<? super T> comparator);
+    IndexedSeq<T> distinctBy(Comparator<? super T> comparator);
 
     @Override
-    <U> IndexedSeq<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> IndexedSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    IndexedSeq<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator);
+    IndexedSeq<T> distinctByKeepLast(Comparator<? super T> comparator);
 
     @Override
-    <U> IndexedSeq<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> IndexedSeq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     IndexedSeq<T> drop(int n);
 
     @Override
-    IndexedSeq<T> dropUntil(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> dropUntil(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> dropWhile(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
     IndexedSeq<T> dropRight(int n);
 
     @Override
-    IndexedSeq<T> dropRightUntil(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> dropRightUntil(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> dropRightWhile(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> dropRightWhile(Predicate<? super T> predicate);
 
     @Override
-    default boolean endsWith(@NonNull Seq<? extends T> that) {
+    default boolean endsWith(Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         if (that instanceof IndexedSeq) {
             int i = length() - 1;
@@ -154,19 +154,19 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    IndexedSeq<T> filter(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> reject(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> reject(Predicate<? super T> predicate);
 
     @Override
-    <U> IndexedSeq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U extends @Nullable Object> IndexedSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <C> Map<C, ? extends IndexedSeq<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
+    <C extends @Nullable Object> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    default int indexWhere(@NonNull Predicate<? super T> predicate, int from) {
+    default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int start = Math.max(from, 0);
         int n = start + segmentLength(predicate.negate(), start);
@@ -177,7 +177,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
-    default int indexOfSlice(@NonNull Iterable<? extends T> that, int from) {
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
         Objects.requireNonNull(that, "that is null");
         return IndexedSeqModule.Slice.indexOfSlice(this, that, from);
     }
@@ -192,7 +192,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> insert(int index, T element);
 
     @Override
-    IndexedSeq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> intersperse(T element);
@@ -213,13 +213,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    default int lastIndexOfSlice(@NonNull Iterable<? extends T> that, int end) {
+    default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
         Objects.requireNonNull(that, "that is null");
         return IndexedSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
-    default int lastIndexWhere(@NonNull Predicate<? super T> predicate, int end) {
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = Math.min(end, length() - 1);
         while (i >= 0 && !predicate.test(this.get(i))) {
@@ -229,35 +229,35 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    <U> IndexedSeq<U> map(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    default <U> IndexedSeq<U> mapTo(U value) {
+    default <U extends @Nullable Object> IndexedSeq<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default IndexedSeq<Void> mapToVoid() {
-        return map(ignored -> null);
+    default IndexedSeq<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
     IndexedSeq<T> orElse(Iterable<? extends T> other);
 
     @Override
-    IndexedSeq<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier);
+    IndexedSeq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
     IndexedSeq<T> padTo(int length, T element);
 
     @Override
-    IndexedSeq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
+    IndexedSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
-    Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> peek(@NonNull Consumer<? super T> action);
+    IndexedSeq<T> peek(Consumer<? super T> action);
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> permutations();
@@ -266,16 +266,16 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> prepend(T element);
 
     @Override
-    IndexedSeq<T> prependAll(@NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> prependAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> remove(T element);
 
     @Override
-    IndexedSeq<T> removeFirst(@NonNull Predicate<T> predicate);
+    IndexedSeq<T> removeFirst(Predicate<T> predicate);
 
     @Override
-    IndexedSeq<T> removeLast(@NonNull Predicate<T> predicate);
+    IndexedSeq<T> removeLast(Predicate<T> predicate);
 
     @Override
     IndexedSeq<T> removeAt(int index);
@@ -284,11 +284,11 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> removeAll(T element);
 
     @Override
-    IndexedSeq<T> removeAll(@NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     @Deprecated
-    IndexedSeq<T> removeAll(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> removeAll(Predicate<? super T> predicate);
 
     @Override
     IndexedSeq<T> replace(T currentElement, T newElement);
@@ -297,7 +297,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    IndexedSeq<T> retainAll(@NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> reverse();
@@ -326,16 +326,16 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> rotateRight(int n);
 
     @Override
-    IndexedSeq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> IndexedSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U extends @Nullable Object> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> IndexedSeq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U extends @Nullable Object> IndexedSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    default int segmentLength(@NonNull Predicate<? super T> predicate, int from) {
+    default int segmentLength(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int len = length();
         int i = from;
@@ -352,7 +352,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
-    Iterator<? extends IndexedSeq<T>> slideBy(@NonNull Function<? super T, ?> classifier);
+    Iterator<? extends IndexedSeq<T>> slideBy(Function<? super T, ?> classifier);
 
     @Override
     Iterator<? extends IndexedSeq<T>> sliding(int size);
@@ -364,19 +364,19 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> sorted();
 
     @Override
-    IndexedSeq<T> sorted(@NonNull Comparator<? super T> comparator);
+    IndexedSeq<T> sorted(Comparator<? super T> comparator);
 
     @Override
-    <U extends Comparable<? super U>> IndexedSeq<T> sortBy(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends Comparable<? super U>> IndexedSeq<T> sortBy(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> IndexedSeq<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> IndexedSeq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
 
     @Override
-    Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default boolean startsWith(@NonNull Iterable<? extends T> that, int offset) {
+    default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
         if (offset < 0) { return false; }
         if (that instanceof IndexedSeq) {
@@ -420,46 +420,46 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> take(int n);
 
     @Override
-    IndexedSeq<T> takeUntil(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> takeUntil(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> takeWhile(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     IndexedSeq<T> takeRight(int n);
 
     @Override
-    IndexedSeq<T> takeRightUntil(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> takeRightUntil(Predicate<? super T> predicate);
 
     @Override
-    IndexedSeq<T> takeRightWhile(@NonNull Predicate<? super T> predicate);
+    IndexedSeq<T> takeRightWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <T1, T2, T3> Tuple3<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>, ? extends IndexedSeq<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+    <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>, ? extends IndexedSeq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
     IndexedSeq<T> update(int index, T element);
 
     @Override
-    IndexedSeq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
+    IndexedSeq<T> update(int index, Function<? super T, ? extends T> updater);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
+    <U extends @Nullable Object> IndexedSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U, R> IndexedSeq<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+    <U extends @Nullable Object, R extends @Nullable Object> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem);
+    <U extends @Nullable Object> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     IndexedSeq<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> IndexedSeq<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper);
+    <U extends @Nullable Object> IndexedSeq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a binary search. The sequence must already be sorted into
@@ -496,7 +496,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      * the return value will be &gt;= 0 if and only if the element is found.
      */
     @Override
-    default int search(T element, @NonNull Comparator<? super T> comparator) {
+    default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         IntUnaryOperator comparison = midIndex -> {
             T midVal = get(midIndex);
@@ -511,7 +511,7 @@ interface IndexedSeqModule {
 
     class Slice {
 
-        static <T> int indexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int from) {
+        static <T extends @Nullable Object> int indexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int from) {
             if (source.isEmpty()) {
                 return from == 0 && Collections.isEmpty(slice) ? 0 : -1;
             }
@@ -520,7 +520,7 @@ interface IndexedSeqModule {
             return findSlice(source, _slice, Math.max(from, 0), maxIndex);
         }
 
-        static <T> int lastIndexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int end) {
+        static <T extends @Nullable Object> int lastIndexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
             } else if (source.isEmpty()) {
@@ -548,7 +548,7 @@ interface IndexedSeqModule {
             return result;
         }
 
-        private static <T> int findSlice(IndexedSeq<T> source, IndexedSeq<T> slice, int index, int maxIndex) {
+        private static <T extends @Nullable Object> int findSlice(IndexedSeq<T> source, IndexedSeq<T> slice, int index, int maxIndex) {
             while (index <= maxIndex) {
                 if (source.startsWith(slice, index)) {
                     return index;
@@ -559,14 +559,14 @@ interface IndexedSeqModule {
         }
 
         @SuppressWarnings("unchecked")
-        private static <T> IndexedSeq<T> toIndexedSeq(Iterable<? extends T> iterable) {
+        private static <T extends @Nullable Object> IndexedSeq<T> toIndexedSeq(Iterable<? extends T> iterable) {
             return (iterable instanceof IndexedSeq) ? (IndexedSeq<T>) iterable : Vector.ofAll(iterable);
         }
     }
 
     interface Search {
         
-        static <T> int binarySearch(IndexedSeq<T> seq, IntUnaryOperator comparison) {
+        static <T extends @Nullable Object> int binarySearch(IndexedSeq<T> seq, IntUnaryOperator comparison) {
             int low = 0;
             int high = seq.size() - 1;
             while (low <= high) {

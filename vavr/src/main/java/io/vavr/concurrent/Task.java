@@ -19,6 +19,7 @@
 package io.vavr.concurrent;
 
 import io.vavr.control.Try;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a possibly asynchronous unit of work, called "Task".
@@ -37,7 +38,7 @@ import io.vavr.control.Try;
  */
 @Deprecated
 @FunctionalInterface
-public interface Task<T> {
+public interface Task<T extends @Nullable Object> {
 
     /**
      * Runs the task. Non-fatal errors are caught by a {@link Future}.
@@ -48,7 +49,7 @@ public interface Task<T> {
     void run(Complete<T> complete) throws Throwable;
 
     @FunctionalInterface
-    interface SyncTask<T> extends Task<T> {
+    interface SyncTask<T extends @Nullable Object> extends Task<T> {
     }
 
     /**
@@ -57,7 +58,7 @@ public interface Task<T> {
      * @param <T> result type
      */
     @FunctionalInterface
-    interface Complete<T> {
+    interface Complete<T extends @Nullable Object> {
 
         /**
          * A function that takes a {@link Try} (success or failure) and returns the state of completion.

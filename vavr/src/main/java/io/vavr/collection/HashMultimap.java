@@ -28,7 +28,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link HashMap}-based implementation of {@link Multimap}
@@ -37,7 +37,7 @@ import org.jspecify.annotations.NonNull;
  * @param <V> Value type
  * @author Ruslan Sennov
  */
-public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
+public final class HashMultimap<K extends @Nullable Object, V extends @Nullable Object> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +48,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
      * @param <V> The value type
      * @return A new Builder for creating HashMultimap instances with sequence-based value storage
      */
-    public static <V> Builder<V> withSeq() {
+    public static <V extends @Nullable Object> Builder<V> withSeq() {
         return new Builder<>(ContainerType.SEQ, List::empty);
     }
 
@@ -59,7 +59,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
      * @param <V> The value type
      * @return A new Builder for creating HashMultimap instances with set-based value storage
      */
-    public static <V> Builder<V> withSet() {
+    public static <V extends @Nullable Object> Builder<V> withSet() {
         return new Builder<>(ContainerType.SET, HashSet::empty);
     }
 
@@ -83,7 +83,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
      * @param comparator The comparator used to sort values
      * @return A new Builder for creating HashMultimap instances with sorted set-based value storage using the given comparator
      */
-    public static <V> Builder<V> withSortedSet(Comparator<? super V> comparator) {
+    public static <V extends @Nullable Object> Builder<V> withSortedSet(Comparator<? super V> comparator) {
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
@@ -92,7 +92,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
      *
      * @param <V> The value type
      */
-    public static class Builder<V> {
+    public static class Builder<V extends @Nullable Object> {
 
         private final ContainerType containerType;
         private final SerializableSupplier<Traversable<?>> emptyContainer;
@@ -109,7 +109,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new empty HashMultimap.
          */
-        public <K, V2 extends V> HashMultimap<K, V2> empty() {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> empty() {
             return new HashMultimap<>(HashMap.empty(), containerType, emptyContainer);
         }
 
@@ -121,7 +121,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param entries       Multimap entries
          * @return A new HashMultimap containing the given entries.
          */
-        public <K, V2 extends V> HashMultimap<K, V2> ofEntries(@NonNull Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
@@ -139,7 +139,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A new HashMultimap containing the given entries.
          */
         @SafeVarargs
-        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(@NonNull Tuple2<? extends K, ? extends V2> @NonNull ... entries) {
+        public final <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2> ... entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
@@ -157,7 +157,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A new HashMultimap containing the given entries.
          */
         @SafeVarargs
-        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V2> @NonNull ... entries) {
+        public final <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2> ... entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
@@ -174,7 +174,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given map entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.@NonNull Map<? extends K, ? extends V2> map) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofAll(java.util.Map<? extends K, ? extends V2> map) {
             return Multimaps.ofJavaMap(empty(), map);
         }
 
@@ -189,9 +189,9 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>        The value type
          * @return A new Multimap
          */
-        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                              @NonNull Function<? super T, ? extends K> keyMapper,
-                                                              @NonNull Function<? super T, ? extends V2> valueMapper) {
+        public <T extends @Nullable Object, K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, ? extends K> keyMapper,
+                                                              Function<? super T, ? extends V2> valueMapper) {
             return Multimaps.ofStream(empty(), stream, keyMapper, valueMapper);
         }
 
@@ -205,8 +205,8 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>        The value type
          * @return A new HashMultimap
          */
-        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                              @NonNull Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+        public <T extends @Nullable Object, K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
             return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
@@ -222,7 +222,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> tabulate(int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(f, "f is null");
             return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
@@ -238,7 +238,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @throws NullPointerException if {@code s} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(s, "s is null");
             return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
@@ -253,7 +253,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A HashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
             return ofEntries(Collections.fillObject(n, element));
         }
 
@@ -266,7 +266,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>  The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K key, V2 value) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K key, V2 value) {
             final HashMultimap<K, V2> e = empty();
             return e.put(key, value);
         }
@@ -282,7 +282,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2) {
             return of(k1, v1).put(k2, v2);
         }
 
@@ -299,7 +299,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3) {
             return of(k1, v1, k2, v2).put(k3, v3);
         }
 
@@ -318,7 +318,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4) {
             return of(k1, v1, k2, v2, k3, v3).put(k4, v4);
         }
 
@@ -339,7 +339,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4).put(k5, v5);
         }
 
@@ -362,7 +362,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5).put(k6, v6);
         }
 
@@ -387,7 +387,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6).put(k7, v7);
         }
 
@@ -414,7 +414,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7).put(k8, v8);
         }
 
@@ -443,7 +443,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8).put(k9, v9);
         }
 
@@ -474,7 +474,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9, K k10, V2 v10) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9, K k10, V2 v10) {
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
         }
 
@@ -487,7 +487,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param entry A tuple containing the key-value pair.
          * @return A new HashMultimap containing the given entry.
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(@NonNull Tuple2<? extends K, ? extends V2> entry) {
+        public <K extends @Nullable Object, V2 extends V> HashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
             final HashMultimap<K, V2> e = empty();
             return e.put(entry._1, entry._2);
         }
@@ -501,7 +501,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A {@link HashMultimap} Collector.
          */
-        public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
+        public <K extends @Nullable Object, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
             final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
             final BiConsumer<ArrayList<Tuple2<K, V2>>, Tuple2<K, V2>> accumulator = ArrayList::add;
             final BinaryOperator<ArrayList<Tuple2<K, V2>>> combiner = (left, right) -> {
@@ -523,7 +523,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
      * @return the same multimap viewed as {@code HashMultimap<K, V>}
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V> narrow(HashMultimap<? extends K, ? extends V> map) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> HashMultimap<K, V> narrow(HashMultimap<? extends K, ? extends V> map) {
         return (HashMultimap<K, V>) map;
     }
 
@@ -532,18 +532,18 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
     }
 
     @Override
-    protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
+    protected <K2 extends @Nullable Object, V2 extends @Nullable Object> Map<K2, V2> emptyMapSupplier() {
         return HashMap.empty();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <K2, V2> HashMultimap<K2, V2> emptyInstance() {
+    protected <K2 extends @Nullable Object, V2 extends @Nullable Object> HashMultimap<K2, V2> emptyInstance() {
         return new HashMultimap<>(HashMap.empty(), getContainerType(), emptyContainer);
     }
 
     @Override
-    protected <K2, V2> HashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
+    protected <K2 extends @Nullable Object, V2 extends @Nullable Object> HashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
         return new HashMultimap<>(back, getContainerType(), emptyContainer);
     }
 

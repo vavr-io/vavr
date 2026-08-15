@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a function with one argument.
@@ -42,7 +42,7 @@ import org.jspecify.annotations.NonNull;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction1<T1, R> extends Serializable {
+public interface CheckedFunction1<T1 extends @Nullable Object, R extends @Nullable Object> extends Serializable {
 
     /**
      * The serial version UID for serialization.
@@ -58,7 +58,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @param value the value to be returned
      * @return a function always returning the given value
      */
-    static <T1, R> CheckedFunction1<T1, R> constant(R value) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> CheckedFunction1<T1, R> constant(R value) {
         return (t1) -> value;
     }
 
@@ -96,7 +96,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @param <T1> 1st argument
      * @return a {@code CheckedFunction1}
      */
-    static <T1, R> CheckedFunction1<T1, R> of(@NonNull CheckedFunction1<T1, R> methodReference) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> CheckedFunction1<T1, R> of(CheckedFunction1<T1, R> methodReference) {
         return methodReference;
     }
 
@@ -109,7 +109,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, R> Function1<T1, Option<R>> lift(@NonNull CheckedFunction1<? super T1, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
     }
 
@@ -122,7 +122,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, R> Function1<T1, Try<R>> liftTry(@NonNull CheckedFunction1<? super T1, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.of(() -> partialFunction.apply(t1));
     }
 
@@ -135,7 +135,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return the given {@code f} instance as narrowed type {@code CheckedFunction1<T1, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, R> CheckedFunction1<T1, R> narrow(CheckedFunction1<? super T1, ? extends R> f) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> CheckedFunction1<T1, R> narrow(CheckedFunction1<? super T1, ? extends R> f) {
         return (CheckedFunction1<T1, R>) f;
     }
 
@@ -145,7 +145,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @param <T> argument type (and return type) of the identity function
      * @return the identity CheckedFunction1
      */
-    static <T> CheckedFunction1<T, T> identity() {
+    static <T extends @Nullable Object> CheckedFunction1<T, T> identity() {
         return t -> t;
     }
 
@@ -242,7 +242,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function1<T1, R> recover(@NonNull Function<? super Throwable, ? extends Function<? super T1, ? extends R>> recover) {
+    default Function1<T1, R> recover(Function<? super Throwable, ? extends Function<? super T1, ? extends R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return (t1) -> {
             try {
@@ -279,7 +279,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> CheckedFunction1<T1, V> andThen(@NonNull CheckedFunction1<? super R, ? extends V> after) {
+    default <V extends @Nullable Object> CheckedFunction1<T1, V> andThen(CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1) -> after.apply(apply(t1));
     }
@@ -293,7 +293,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <V> CheckedFunction1<V, R> compose(@NonNull CheckedFunction1<? super V, ? extends T1> before) {
+    default <V extends @Nullable Object> CheckedFunction1<V, R> compose(CheckedFunction1<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }
@@ -307,7 +307,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> CheckedFunction1<S, R> compose1(@NonNull Function1<? super S, ? extends T1> before) {
+    default <S extends @Nullable Object> CheckedFunction1<S, R> compose1(Function1<? super S, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return (S s) -> apply(before.apply(s));
     }
@@ -317,7 +317,7 @@ interface CheckedFunction1Module {
 
     // DEV-NOTE: we do not plan to expose this as public API
     @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    static <T extends Throwable, R extends @Nullable Object> R sneakyThrow(Throwable t) throws T {
         throw (T) t;
     }
 }

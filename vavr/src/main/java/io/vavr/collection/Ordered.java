@@ -19,6 +19,7 @@
 package io.vavr.collection;
 
 import java.util.Comparator;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A collection whose elements are arranged according to a well-defined order.
@@ -27,7 +28,7 @@ import java.util.Comparator;
  * @param <T> the element type
  * @author Ruslan Sennov, Daniel Dietrich
  */
-public interface Ordered<T> {
+public interface Ordered<T extends @Nullable Object> {
 
     /**
      * Returns the comparator that governs the ordering of elements in this collection.

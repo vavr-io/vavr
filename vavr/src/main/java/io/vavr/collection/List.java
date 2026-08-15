@@ -30,7 +30,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -125,7 +125,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * @param <T> Component type of the List
  * @author Daniel Dietrich
  */
-public interface List<T> extends LinearSeq<T> {
+public interface List<T extends @Nullable Object> extends LinearSeq<T> {
 
     /**
      * The serial version UID for serialization.
@@ -140,7 +140,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param <T> Component type of the List.
      * @return A io.vavr.collection.List Collector.
      */
-    static <T> Collector<T, ArrayList<T>, List<T>> collector() {
+    static <T extends @Nullable Object> Collector<T, ArrayList<T>, List<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -160,7 +160,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
-    static <T> List<T> empty() {
+    static <T extends @Nullable Object> List<T> empty() {
         return Nil.instance();
     }
 
@@ -197,7 +197,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return the given {@code list} instance as narrowed type {@code List<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> narrow(List<? extends T> list) {
+    static <T extends @Nullable Object> List<T> narrow(List<? extends T> list) {
         return (List<T>) list;
     }
 
@@ -208,7 +208,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param <T>     The component type
      * @return A new List instance containing the given element
      */
-    static <T> List<T> of(T element) {
+    static <T extends @Nullable Object> List<T> of(T element) {
         return new Cons<>(element, Nil.instance());
     }
 
@@ -228,7 +228,7 @@ public interface List<T> extends LinearSeq<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> List<T> of(T @NonNull ... elements) {
+    static <T extends @Nullable Object> List<T> of(T ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.instance();
         for (int i = elements.length - 1; i >= 0; i--) {
@@ -249,7 +249,7 @@ public interface List<T> extends LinearSeq<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> ofAll(@NonNull Iterable<? extends T> elements) {
+    static <T extends @Nullable Object> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
@@ -287,7 +287,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param <T>        Component type of the Stream.
      * @return A List containing the given elements in the same order.
      */
-    static <T> List<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
+    static <T extends @Nullable Object> List<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         final java.util.Iterator<? extends T> iterator = javaStream.iterator();
         List<T> list = List.empty();
@@ -304,7 +304,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Boolean values
      * @throws NullPointerException if elements is null
      */
-    static List<Boolean> ofAll(boolean @NonNull ... elements) {
+    static List<Boolean> ofAll(boolean ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -316,7 +316,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Byte values
      * @throws NullPointerException if elements is null
      */
-    static List<Byte> ofAll(byte @NonNull ... elements) {
+    static List<Byte> ofAll(byte ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -328,7 +328,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Character values
      * @throws NullPointerException if elements is null
      */
-    static List<Character> ofAll(char @NonNull ... elements) {
+    static List<Character> ofAll(char ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -340,7 +340,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Double values
      * @throws NullPointerException if elements is null
      */
-    static List<Double> ofAll(double @NonNull ... elements) {
+    static List<Double> ofAll(double ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -352,7 +352,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Float values
      * @throws NullPointerException if elements is null
      */
-    static List<Float> ofAll(float @NonNull ... elements) {
+    static List<Float> ofAll(float ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -364,7 +364,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Integer values
      * @throws NullPointerException if elements is null
      */
-    static List<Integer> ofAll(int @NonNull ... elements) {
+    static List<Integer> ofAll(int ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -376,7 +376,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Long values
      * @throws NullPointerException if elements is null
      */
-    static List<Long> ofAll(long @NonNull ... elements) {
+    static List<Long> ofAll(long ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -388,7 +388,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A new List of Short values
      * @throws NullPointerException if elements is null
      */
-    static List<Short> ofAll(short @NonNull ... elements) {
+    static List<Short> ofAll(short ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -403,7 +403,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    static <T extends @Nullable Object> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, empty(), List::of);
     }
@@ -417,7 +417,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> List<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    static <T extends @Nullable Object> List<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, empty(), List::of);
     }
@@ -430,7 +430,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param element The element
      * @return A List of size {@code n}, where each element is the given {@code element}.
      */
-    static <T> List<T> fill(int n, T element) {
+    static <T extends @Nullable Object> List<T> fill(int n, T element) {
         return Collections.fillObject(n, element, empty(), List::of);
     }
 
@@ -774,7 +774,7 @@ public interface List<T> extends LinearSeq<T> {
      * List.transpose(List(List(1,2,3), List(4,5,6))) → List(List(1,4), List(2,5), List(3,6))
      * }
      */
-    static <T> List<List<T>> transpose(@NonNull List<List<T>> matrix) {
+    static <T extends @Nullable Object> List<List<T>> transpose(List<List<T>> matrix) {
         return Collections.transpose(matrix, List::ofAll, List::of);
     }
 
@@ -803,7 +803,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> List<U> unfoldRight(T seed, @NonNull Function<? super T, @NonNull Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T extends @Nullable Object, U extends @Nullable Object> List<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toList();
     }
 
@@ -832,7 +832,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> List<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T extends @Nullable Object, U extends @Nullable Object> List<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
           .foldLeft(List.empty(), List::prepend);
     }
@@ -861,7 +861,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T extends @Nullable Object> List<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
           .foldLeft(List.empty(), List::prepend);
     }
@@ -872,7 +872,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> appendAll(@NonNull Iterable<? extends T> elements) {
+    default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.<T> ofAll(elements).prependAll(this);
     }
@@ -883,7 +883,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
+    default List<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
@@ -893,12 +893,12 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
+    default List<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
-    default <R> List<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    default <R extends @Nullable Object> List<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -923,27 +923,27 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    default List<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    default <U> List<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    default <U extends @Nullable Object> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default List<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator) {
+    default List<T> distinctByKeepLast(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(iterator().distinctByKeepLast(comparator));
     }
 
     @Override
-    default <U> List<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    default <U extends @Nullable Object> List<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(iterator().distinctByKeepLast(keyExtractor));
     }
@@ -964,13 +964,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    default List<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    default List<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    default List<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> list = this;
         while (!list.isEmpty() && predicate.test(list.head())) {
@@ -991,19 +991,19 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> dropRightUntil(@NonNull Predicate<? super T> predicate) {
+    default List<T> dropRightUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reverse().dropUntil(predicate).reverse();
     }
 
     @Override
-    default List<T> dropRightWhile(@NonNull Predicate<? super T> predicate) {
+    default List<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
-    default List<T> filter(@NonNull Predicate<? super T> predicate) {
+    default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
@@ -1020,13 +1020,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> reject(@NonNull Predicate<? super T> predicate){
+    default List<T> reject(Predicate<? super T> predicate){
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);
     }
 
     @Override
-    default <U> List<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U extends @Nullable Object> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();
         for (T t : this) {
@@ -1056,7 +1056,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <C> Map<C, List<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+    default <C extends @Nullable Object> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, List::ofAll);
     }
 
@@ -1119,7 +1119,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    default List<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -1166,7 +1166,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> List<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();
         for (T t : this) {
@@ -1176,22 +1176,22 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> List<U> mapTo(U value) {
+    default <U extends @Nullable Object> List<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default List<Void> mapToVoid() {
-        return map(ignored -> null);
+    default List<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
-    default List<T> orElse(@NonNull Iterable<? extends T> other) {
+    default List<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    default List<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    default List<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
@@ -1216,7 +1216,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    default List<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         List<T> result = take(from).appendAll(that);
@@ -1226,7 +1226,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> partition(@NonNull Predicate<? super T> predicate) {
+    default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> left = empty(), right = empty();
         for (T t : this) {
@@ -1268,7 +1268,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return this {@code List}
      */
     @Override
-    default List<T> peek(@NonNull Consumer<? super T> action) {
+    default List<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -1344,7 +1344,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> prependAll(@NonNull Iterable<? extends T> elements) {
+    default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? ofAll(elements) : ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
@@ -1368,7 +1368,7 @@ public interface List<T> extends LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     @SuppressWarnings("unchecked")
-    default List<T> push(T @NonNull ... elements) {
+    default List<T> push(T ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
@@ -1385,7 +1385,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a new {@code List} instance, containing the new elements on top of this List
      * @throws NullPointerException if elements is null
      */
-    default List<T> pushAll(@NonNull Iterable<T> elements) {
+    default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
@@ -1418,7 +1418,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> removeFirst(@NonNull Predicate<T> predicate) {
+    default List<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> init = empty();
         List<T> tail = this;
@@ -1434,7 +1434,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> removeLast(@NonNull Predicate<T> predicate) {
+    default List<T> removeLast(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> removedAndReversed = reverse().removeFirst(predicate);
         return removedAndReversed.length() == length() ? this : removedAndReversed.reverse();
@@ -1467,13 +1467,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> removeAll(@NonNull Iterable<? extends T> elements) {
+    default List<T> removeAll(Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
     }
 
     @Override
     @Deprecated
-    default List<T> removeAll(@NonNull Predicate<? super T> predicate) {
+    default List<T> removeAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
@@ -1514,7 +1514,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    default List<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
@@ -1534,17 +1534,17 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> List<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U extends @Nullable Object> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, Iterator::toList);
     }
 
     @Override
-    default <U> List<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U extends @Nullable Object> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, Iterator::toList);
     }
 
@@ -1573,7 +1573,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Iterator<List<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    default Iterator<List<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(List::ofAll);
     }
 
@@ -1593,23 +1593,23 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> sorted(@NonNull Comparator<? super T> comparator) {
+    default List<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
     @Override
-    default <U extends Comparable<? super U>> List<T> sortBy(@NonNull Function<? super T, ? extends U> mapper) {
+    default <U extends Comparable<? super U>> List<T> sortBy(Function<? super T, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    default <U> List<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> List<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         return Collections.sortBy(this, comparator, mapper, collector());
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> span(@NonNull Predicate<? super T> predicate) {
+    default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
         return Tuple.of(ofAll(itt._1), ofAll(itt._2));
@@ -1632,7 +1632,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(@NonNull Predicate<? super T> predicate) {
+    default Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1646,7 +1646,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAtInclusive(@NonNull Predicate<? super T> predicate) {
+    default Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1717,13 +1717,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    default List<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    default List<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+    default List<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> result = Nil.instance();
         for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
@@ -1744,13 +1744,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> takeRightUntil(@NonNull Predicate<? super T> predicate) {
+    default List<T> takeRightUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeRightWhile(predicate.negate());
     }
 
     @Override
-    default List<T> takeRightWhile(@NonNull Predicate<? super T> predicate) {
+    default List<T> takeRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reverse().takeWhile(predicate).reverse();
     }
@@ -1763,14 +1763,14 @@ public interface List<T> extends LinearSeq<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(@NonNull Function<? super List<T>, ? extends U> f) {
+    default <U extends @Nullable Object> U transform(Function<? super List<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<List<T1>, List<T2>> unzip(
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
@@ -1783,8 +1783,8 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    default <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
@@ -1826,25 +1826,25 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    default List<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    default <U extends @Nullable Object> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    default <U, R> List<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    default <U extends @Nullable Object, R extends @Nullable Object> List<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    default <U extends @Nullable Object> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1855,7 +1855,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> List<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    default <U extends @Nullable Object> List<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1865,7 +1865,7 @@ public interface List<T> extends LinearSeq<T> {
      *
      * @param <T> Component type of the List.
      */
-    final class Nil<T> implements List<T>, Serializable {
+    final class Nil<T extends @Nullable Object> implements List<T>, Serializable {
 
         @Serial
         private static final long serialVersionUID = 1L;
@@ -1883,7 +1883,7 @@ public interface List<T> extends LinearSeq<T> {
          * @return the singleton instance of the linked list.
          */
         @SuppressWarnings("unchecked")
-        public static <T> Nil<T> instance() {
+        public static <T extends @Nullable Object> Nil<T> instance() {
             return (Nil<T>) INSTANCE;
         }
 
@@ -1908,7 +1908,7 @@ public interface List<T> extends LinearSeq<T> {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return Collections.equals(this, o);
         }
 
@@ -1940,7 +1940,7 @@ public interface List<T> extends LinearSeq<T> {
      * @param <T> Component type of the List.
      */
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> implements List<T>, Serializable {
+    final class Cons<T extends @Nullable Object> implements List<T>, Serializable {
 
         @Serial
         private static final long serialVersionUID = 1L;
@@ -1983,7 +1983,7 @@ public interface List<T> extends LinearSeq<T> {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return Collections.equals(this, o);
         }
 
@@ -2031,7 +2031,7 @@ public interface List<T> extends LinearSeq<T> {
          */
         // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
         // classes. Also, it may not be compatible with circular object graphs.
-        private static final class SerializationProxy<T> implements Serializable {
+        private static final class SerializationProxy<T extends @Nullable Object> implements Serializable {
 
             @Serial
             private static final long serialVersionUID = 1L;
@@ -2111,7 +2111,7 @@ interface ListModule {
 
     interface Combinations {
 
-        static <T> List<List<T>> apply(List<T> elements, int k) {
+        static <T extends @Nullable Object> List<List<T>> apply(List<T> elements, int k) {
             if (k == 0) {
                 return List.of(List.empty());
             } else {
@@ -2124,7 +2124,7 @@ interface ListModule {
 
     interface SplitAt {
 
-        static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, @NonNull Predicate<? super T> predicate) {
+        static <T extends @Nullable Object> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
             List<T> tail = source;

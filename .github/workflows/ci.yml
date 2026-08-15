@@ -35,9 +35,24 @@ jobs:
           directory: 'vavr/target'
           java-version: '21'
 
+  nullness:
+    runs-on: ubuntu-latest
+    name: Verify JSpecify nullness contract
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Run NullAway
+        run: ./mvnw -B -Pnullaway compile
+
   deploy-snapshot:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, nullness]
     if: github.ref == 'refs/heads/main'
 
     steps:

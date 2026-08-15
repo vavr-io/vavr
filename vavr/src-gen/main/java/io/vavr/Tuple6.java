@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A tuple of 6 elements which can be seen as cartesian product of 6 components.
@@ -41,7 +41,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T6> type of the 6th element
  * @author Daniel Dietrich
  */
-public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<Tuple6<T1, T2, T3, T4, T5, T6>>, Serializable {
+public final class Tuple6<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object> implements Tuple, Comparable<Tuple6<T1, T2, T3, T4, T5, T6>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -100,7 +100,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
         this._6 = t6;
     }
 
-    public static <T1, T2, T3, T4, T5, T6> Comparator<Tuple6<T1, T2, T3, T4, T5, T6>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp) {
+    public static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object> Comparator<Tuple6<T1, T2, T3, T4, T5, T6>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp) {
         return (Comparator<Tuple6<T1, T2, T3, T4, T5, T6>> & Serializable) (t1, t2) -> {
             final int check1 = t1Comp.compare(t1._1, t2._1);
             if (check1 != 0) {
@@ -313,7 +313,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @return A new Tuple of same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
-    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<U1, U2, U3, U4, U5, U6>> mapper) {
+    public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object, U5 extends @Nullable Object, U6 extends @Nullable Object> Tuple6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<U1, U2, U3, U4, U5, U6>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapper.apply(_1, _2, _3, _4, _5, _6);
     }
@@ -336,7 +336,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @return A new Tuple of same arity.
      * @throws NullPointerException if one of the arguments is null
      */
-    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(@NonNull Function<? super T1, ? extends U1> f1, @NonNull Function<? super T2, ? extends U2> f2, @NonNull Function<? super T3, ? extends U3> f3, @NonNull Function<? super T4, ? extends U4> f4, @NonNull Function<? super T5, ? extends U5> f5, @NonNull Function<? super T6, ? extends U6> f6) {
+    public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object, U5 extends @Nullable Object, U6 extends @Nullable Object> Tuple6<U1, U2, U3, U4, U5, U6> map(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2, Function<? super T3, ? extends U3> f3, Function<? super T4, ? extends U4> f4, Function<? super T5, ? extends U5> f5, Function<? super T6, ? extends U6> f6) {
         Objects.requireNonNull(f1, "f1 is null");
         Objects.requireNonNull(f2, "f2 is null");
         Objects.requireNonNull(f3, "f3 is null");
@@ -353,7 +353,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 1st component
      */
-    public <U> Tuple6<U, T2, T3, T4, T5, T6> map1(Function<? super T1, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<U, T2, T3, T4, T5, T6> map1(Function<? super T1, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_1);
         return Tuple.of(u, _2, _3, _4, _5, _6);
@@ -366,7 +366,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 2nd component
      */
-    public <U> Tuple6<T1, U, T3, T4, T5, T6> map2(Function<? super T2, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<T1, U, T3, T4, T5, T6> map2(Function<? super T2, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_2);
         return Tuple.of(_1, u, _3, _4, _5, _6);
@@ -379,7 +379,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 3rd component
      */
-    public <U> Tuple6<T1, T2, U, T4, T5, T6> map3(Function<? super T3, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<T1, T2, U, T4, T5, T6> map3(Function<? super T3, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_3);
         return Tuple.of(_1, _2, u, _4, _5, _6);
@@ -392,7 +392,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 4th component
      */
-    public <U> Tuple6<T1, T2, T3, U, T5, T6> map4(Function<? super T4, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<T1, T2, T3, U, T5, T6> map4(Function<? super T4, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_4);
         return Tuple.of(_1, _2, _3, u, _5, _6);
@@ -405,7 +405,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 5th component
      */
-    public <U> Tuple6<T1, T2, T3, T4, U, T6> map5(Function<? super T5, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<T1, T2, T3, T4, U, T6> map5(Function<? super T5, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_5);
         return Tuple.of(_1, _2, _3, _4, u, _6);
@@ -418,7 +418,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 6th component
      */
-    public <U> Tuple6<T1, T2, T3, T4, T5, U> map6(Function<? super T6, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple6<T1, T2, T3, T4, T5, U> map6(Function<? super T6, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_6);
         return Tuple.of(_1, _2, _3, _4, _5, u);
@@ -432,7 +432,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U apply(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends U> f) {
+    public <U extends @Nullable Object> U apply(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5, _6);
     }
@@ -449,7 +449,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param t7 the value to append
      * @return a new Tuple with the value appended
      */
-    public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> append(T7 t7) {
+    public <T7 extends @Nullable Object> Tuple7<T1, T2, T3, T4, T5, T6, T7> append(T7 t7) {
         return Tuple.of(_1, _2, _3, _4, _5, _6, t7);
     }
 
@@ -461,7 +461,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(@NonNull Tuple1<T7> tuple) {
+    public <T7 extends @Nullable Object> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple1<T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1);
     }
@@ -475,7 +475,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple2<T7, T8> tuple) {
+    public <T7 extends @Nullable Object, T8 extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple2<T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1, tuple._2);
     }
@@ -483,7 +483,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) {
             return true;
         } else if (!(o instanceof Tuple6)) {

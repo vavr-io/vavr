@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.PriorityQueueBase.*;
 
@@ -33,7 +33,7 @@ import static io.vavr.collection.PriorityQueueBase.*;
  * @param <T> Component type
  * @author Pap Lőrinc
  */
-public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {
+public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,7 +53,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public <R> PriorityQueue<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R extends @Nullable Object> PriorityQueue<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(Comparators.naturalComparator(), iterator().<R> collect(partialFunction));
     }
 
@@ -181,7 +181,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param <T>        Component type
      * @return The empty PriorityQueue.
      */
-    public static <T> PriorityQueue<T> empty(Comparator<? super T> comparator) {
+    public static <T extends @Nullable Object> PriorityQueue<T> empty(Comparator<? super T> comparator) {
         return new PriorityQueue<>(comparator, io.vavr.collection.List.empty(), 0);
     }
 
@@ -192,7 +192,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param <T> Component type of the {@code PriorityQueue}.
      * @return A {@code PriorityQueue<T>} Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
+    public static <T extends @Nullable Object> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -213,7 +213,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return the same queue viewed as {@code PriorityQueue<T>}
      */
     @SuppressWarnings("unchecked")
-    public static <T> PriorityQueue<T> narrow(PriorityQueue<? extends T> queue) {
+    public static <T extends @Nullable Object> PriorityQueue<T> narrow(PriorityQueue<? extends T> queue) {
         return (PriorityQueue<T>) queue;
     }
 
@@ -249,7 +249,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param <T>        Component type
      * @return A new PriorityQueue instance containing the given element
      */
-    public static <T> PriorityQueue<T> of(Comparator<? super T> comparator, T element) {
+    public static <T extends @Nullable Object> PriorityQueue<T> of(Comparator<? super T> comparator, T element) {
         return ofAll(comparator, io.vavr.collection.List.of(element));
     }
 
@@ -263,7 +263,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @throws NullPointerException if comparator or elements is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> PriorityQueue<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... elements) {
+    public static <T extends @Nullable Object> PriorityQueue<T> of(Comparator<? super T> comparator, T ... elements) {
         return ofAll(comparator, io.vavr.collection.List.of(elements));
     }
 
@@ -275,7 +275,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A PriorityQueue containing the given elements in priority order.
      * @throws NullPointerException if elements is null
      */
-    public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(@NonNull Iterable<? extends T> elements) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
         return ofAll(Comparators.naturalComparator(), elements);
     }
 
@@ -289,7 +289,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @throws NullPointerException if comparator or elements is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> PriorityQueue<T> ofAll(@NonNull Comparator<? super T> comparator, @NonNull Iterable<? extends T> elements) {
+    public static <T extends @Nullable Object> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof PriorityQueue && ((PriorityQueue<?>) elements).comparator == comparator) {
             return (PriorityQueue<T>) elements;
@@ -323,7 +323,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param <T>        Component type of the Stream.
      * @return A PriorityQueue containing the given elements in priority order.
      */
-    public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
+    public static <T extends @Nullable Object> PriorityQueue<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
         return ofAll(comparator, io.vavr.collection.Iterator.ofAll(javaStream.iterator()));
     }
 
@@ -337,7 +337,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A {@link PriorityQueue} consisting of elements {@code function(0),function(1), ..., function(size - 1)}
      * @throws NullPointerException if {@code function} is null
      */
-    public static <T> PriorityQueue<T> tabulate(int size, @NonNull Function<? super Integer, ? extends T> function) {
+    public static <T extends @Nullable Object> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
         Objects.requireNonNull(function, "function is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
         return io.vavr.collection.Collections.tabulate(size, function, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
@@ -352,7 +352,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A {@link PriorityQueue} of size {@code size}, where each element contains the result supplied by {@code supplier}.
      * @throws NullPointerException if {@code supplier} is null
      */
-    public static <T> PriorityQueue<T> fill(int size, @NonNull Supplier<? extends T> supplier) {
+    public static <T extends @Nullable Object> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
         return io.vavr.collection.Collections.fill(size, supplier, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
@@ -366,7 +366,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param element The element
      * @return A {@link PriorityQueue} of size {@code size}, where each element is the given {@code element}.
      */
-    public static <T> PriorityQueue<T> fill(int size, T element) {
+    public static <T extends @Nullable Object> PriorityQueue<T> fill(int size, T element) {
         final Comparator<? super T> comparator = Comparators.naturalComparator();
         return io.vavr.collection.Collections.fillObject(size, element, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
     }
@@ -388,13 +388,13 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(comparator));
     }
 
     @Override
-    public <U> PriorityQueue<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> PriorityQueue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(keyExtractor));
     }
@@ -422,7 +422,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    public PriorityQueue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> result = this;
         while (!result.isEmpty() && predicate.test(result.head())) {
@@ -432,7 +432,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> filter(@NonNull Predicate<? super T> predicate) {
+    public PriorityQueue<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
@@ -442,7 +442,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public <U> PriorityQueue<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U extends @Nullable Object> PriorityQueue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return flatMap(Comparators.naturalComparator(), mapper);
     }
 
@@ -456,7 +456,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A new PriorityQueue
      * @throws NullPointerException if comparator or mapper is null
      */
-    public <U> PriorityQueue<U> flatMap(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U extends @Nullable Object> PriorityQueue<U> flatMap(Comparator<U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(comparator, iterator().flatMap(mapper));
@@ -474,14 +474,14 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @throws NullPointerException if {@code f} is null
      */
     @Override
-    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> accumulator) {
+    public <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> accumulator) {
         Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(accumulator, "accumulator is null");
         return toList().foldRight(zero, accumulator);
     }
 
     @Override
-    public <C> Map<C, ? extends PriorityQueue<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+    public <C extends @Nullable Object> Map<C, ? extends PriorityQueue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, (elements) -> ofAll(comparator, elements));
     }
 
@@ -543,19 +543,19 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public <U> PriorityQueue<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> PriorityQueue<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map(Comparators.naturalComparator(), mapper);
     }
 
     @Override
-    public <U> PriorityQueue<U> mapTo(U value) {
+    public <U extends @Nullable Object> PriorityQueue<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    public PriorityQueue<Void> mapToVoid() {
-        return map(ignored -> null);
+    public PriorityQueue<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     /**
@@ -568,7 +568,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A new PriorityQueue
      * @throws NullPointerException if comparator or mapper is null
      */
-    public <U> PriorityQueue<U> map(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> PriorityQueue<U> map(Comparator<U> comparator, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(comparator, iterator().map(mapper));
@@ -596,12 +596,12 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * otherwise {@code PriorityQueue} created from result of evaluating supplier, using existing comparator.
      */
     @Override
-    public PriorityQueue<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    public PriorityQueue<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(comparator, supplier.get()) : this;
     }
 
     @Override
-    public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> partition(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> left = empty(comparator), right = left;
         for (T t : this) {
@@ -616,36 +616,36 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> replace(@NonNull T currentElement, @NonNull T newElement) {
+    public PriorityQueue<T> replace(T currentElement, T newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
         return ofAll(comparator, iterator().replace(currentElement, newElement));
     }
 
     @Override
-    public PriorityQueue<T> replaceAll(@NonNull T currentElement, @NonNull T newElement) {
+    public PriorityQueue<T> replaceAll(T currentElement, T newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
         return ofAll(comparator, iterator().replaceAll(currentElement, newElement));
     }
 
     @Override
-    public PriorityQueue<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public PriorityQueue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, it -> ofAll(comparator, it));
     }
 
     @Override
-    public <U> PriorityQueue<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U extends @Nullable Object> PriorityQueue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, it -> ofAll(Comparators.naturalComparator(), it));
     }
 
     @Override
-    public <U> PriorityQueue<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U extends @Nullable Object> PriorityQueue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, it -> ofAll(Comparators.naturalComparator(), it));
     }
 
     @Override
-    public io.vavr.collection.Iterator<? extends PriorityQueue<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    public io.vavr.collection.Iterator<? extends PriorityQueue<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(v -> ofAll(comparator, v));
     }
 
@@ -660,7 +660,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> span(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
@@ -688,39 +688,39 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    public PriorityQueue<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() ? this : ofAll(comparator, iterator().takeUntil(predicate));
     }
 
     @Override
-    public <T1, T2> Tuple2<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<io.vavr.collection.Iterator<T1>, io.vavr.collection.Iterator<T2>> unzip = iterator().unzip(unzipper);
         return Tuple.of(ofAll(Comparators.naturalComparator(), unzip._1), ofAll(Comparators.naturalComparator(), unzip._2));
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>, ? extends PriorityQueue<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>, ? extends PriorityQueue<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<io.vavr.collection.Iterator<T1>, io.vavr.collection.Iterator<T2>, io.vavr.collection.Iterator<T3>> unzip3 = iterator().unzip3(unzipper);
         return Tuple.of(ofAll(Comparators.naturalComparator(), unzip3._1), ofAll(Comparators.naturalComparator(), unzip3._2), ofAll(Comparators.naturalComparator(), unzip3._3));
     }
 
     @Override
-    public <U> PriorityQueue<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    public <U extends @Nullable Object> PriorityQueue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> PriorityQueue<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U extends @Nullable Object, R extends @Nullable Object> PriorityQueue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
-    public <U> PriorityQueue<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U extends @Nullable Object> PriorityQueue<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -731,7 +731,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public <U> PriorityQueue<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U extends @Nullable Object> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
     }
@@ -742,7 +742,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o == this || o instanceof PriorityQueue && io.vavr.collection.Collections.areEqual(this, (Iterable<?>) o);
     }
 
@@ -767,7 +767,7 @@ final class PriorityQueueBase {
      * *     val (ts',xs') = split ([],[],c)
      * *     in fold insert xs' (meld (ts, ts')) end
      **/
-    static <T> Tuple2<T, Seq<Node<T>>> deleteMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+    static <T extends @Nullable Object> Tuple2<T, Seq<Node<T>>> deleteMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
         /* get the minimum tree and the rest of the forest */
         final Node<T> minTree = findMin(comparator, forest);
         final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
@@ -782,7 +782,7 @@ final class PriorityQueueBase {
      * *     else                      Node (x,0,[]) :: ts
      * * | insert (x, ts) =            Node (x,0,[]) :: ts
      **/
-    static <T> Seq<Node<T>> insert(Comparator<? super T> comparator, T element, Seq<Node<T>> forest) {
+    static <T extends @Nullable Object> Seq<Node<T>> insert(Comparator<? super T> comparator, T element, Seq<Node<T>> forest) {
         final Node<T> tree = Node.of(element, 0, io.vavr.collection.List.empty());
         if (forest.size() >= 2) {
             final Seq<Node<T>> tail = forest.tail();
@@ -795,7 +795,7 @@ final class PriorityQueueBase {
     }
 
     /** fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts') */
-    static <T> Seq<Node<T>> meld(Comparator<? super T> comparator, Seq<Node<T>> source, Seq<Node<T>> target) {
+    static <T extends @Nullable Object> Seq<Node<T>> meld(Comparator<? super T> comparator, Seq<Node<T>> source, Seq<Node<T>> target) {
         return meldUnique(comparator, uniqify(comparator, source), uniqify(comparator, target));
     }
 
@@ -808,7 +808,7 @@ final class PriorityQueueBase {
      * *     let val x = findMin ts
      * *     in if Elem.leq (root t, x) then root t else x end
      */
-    static <T> Node<T> findMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+    static <T extends @Nullable Object> Node<T> findMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
         final io.vavr.collection.Iterator<Node<T>> iterator = forest.iterator();
         Node<T> min = iterator.next();
         for (Node<T> node : iterator) {
@@ -827,7 +827,7 @@ final class PriorityQueueBase {
      * *     if rank t = 0 then split (ts,root t :: xs,c)
      * *     else               split (t :: ts,xs,c)
      */
-    private static <T> Seq<Node<T>> rebuild(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+    private static <T extends @Nullable Object> Seq<Node<T>> rebuild(Comparator<? super T> comparator, Seq<Node<T>> forest) {
         Seq<Node<T>> nonZeroRank = io.vavr.collection.List.empty(), zeroRank = io.vavr.collection.List.empty();
         for (; !forest.isEmpty(); forest = forest.tail()) {
             final Node<T> initialForestHead = forest.head();
@@ -844,7 +844,7 @@ final class PriorityQueueBase {
      * fun uniqify [] = []
      * *  | uniqify (t :: ts) = ins (t, ts) (∗ eliminate initial duplicate ∗)
      **/
-    private static <T> Seq<Node<T>> uniqify(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+    private static <T extends @Nullable Object> Seq<Node<T>> uniqify(Comparator<? super T> comparator, Seq<Node<T>> forest) {
         return forest.isEmpty()
                ? forest
                : ins(comparator, forest.head(), forest.tail());
@@ -856,7 +856,7 @@ final class PriorityQueueBase {
      * *     if rank t < rank t' then t :: t' :: ts
      * *     else                     ins (link (t, t'), ts)
      */
-    private static <T> Seq<Node<T>> ins(Comparator<? super T> comparator, Node<T> tree, Seq<Node<T>> forest) {
+    private static <T extends @Nullable Object> Seq<Node<T>> ins(Comparator<? super T> comparator, Node<T> tree, Seq<Node<T>> forest) {
         while (!forest.isEmpty() && tree.rank == forest.head().rank) {
             tree = tree.link(comparator, forest.head());
             forest = forest.tail();
@@ -872,7 +872,7 @@ final class PriorityQueueBase {
      * *      else if rank t2 < rank t1 then t2 :: meldUniq (t1 :: ts1, ts2)
      * *      else                           ins (link (t1, t2), meldUniq (ts1, ts2))
      **/
-    private static <T> Seq<Node<T>> meldUnique(Comparator<? super T> comparator, Seq<Node<T>> forest1, Seq<Node<T>> forest2) {
+    private static <T extends @Nullable Object> Seq<Node<T>> meldUnique(Comparator<? super T> comparator, Seq<Node<T>> forest1, Seq<Node<T>> forest2) {
         if (forest1.isEmpty()) {
             return forest2;
         } else if (forest2.isEmpty()) {
@@ -897,7 +897,7 @@ final class PriorityQueueBase {
     }
 
     /* Based on http://www.brics.dk/RS/96/37/BRICS-RS-96-37.pdf */
-    static final class Node<T> implements Serializable {
+    static final class Node<T extends @Nullable Object> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -912,7 +912,7 @@ final class PriorityQueueBase {
             this.children = children;
         }
 
-        static <T> Node<T> of(T value, int rank, Seq<Node<T>> children) {
+        static <T extends @Nullable Object> Node<T> of(T value, int rank, Seq<Node<T>> children) {
             return new Node<>(value, rank, children);
         }
 
