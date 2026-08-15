@@ -105,7 +105,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @return {@code Invalid(error)}
      * @throws NullPointerException if error is null
      */
-    static <E extends @Nullable Object, T extends @Nullable Object> Validation<E, T> invalid(E error) {
+    static <E extends @Nullable Object, T extends @Nullable Object> Validation<E, T> invalid(@NonNull E error) {
         Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
     }

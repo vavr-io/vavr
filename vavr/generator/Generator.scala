@@ -183,6 +183,7 @@ def genAPIAliases(im: ImportManager): String = {
   val CheckedFunction0Type = im.getType("io.vavr.CheckedFunction0")
   val TryType = im.getType("io.vavr.control.Try")
   val ValidationType = im.getType("io.vavr.control.Validation")
+  val NonNullType = im.getType("org.jspecify.annotations.NonNull")
   val CharSeqType = im.getType("io.vavr.collection.CharSeq")
   val ArrayType = im.getType("io.vavr.collection.Array")
   val VectorType = im.getType("io.vavr.collection.Vector")
@@ -702,7 +703,7 @@ def genAPIAliases(im: ImportManager): String = {
      * @throws NullPointerException if error is null
      */
     @SuppressWarnings("unchecked")
-    public static <E $nullableBound, T $nullableBound> $ValidationType.Invalid<E, T> Invalid(E error) {
+    public static <E $nullableBound, T $nullableBound> $ValidationType.Invalid<E, T> Invalid(@$NonNullType E error) {
         return ($ValidationType.Invalid<E, T>) $ValidationType.invalid(error);
     }
 
