@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a function with 5 arguments.
@@ -44,7 +44,7 @@ import org.jspecify.annotations.NonNull;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
+public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> extends Serializable {
 
     /**
      * The serial version UID for serialization.
@@ -64,7 +64,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @param value the value to be returned
      * @return a function always returning the given value
      */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> constant(R value) {
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, R> constant(R value) {
         return (t1, t2, t3, t4, t5) -> value;
     }
 
@@ -106,7 +106,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @param <T5> 5th argument
      * @return a {@code Function5}
      */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> of(@NonNull Function5<T1, T2, T3, T4, T5, R> methodReference) {
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, R> of(Function5<T1, T2, T3, T4, T5, R> methodReference) {
         return methodReference;
     }
 
@@ -123,7 +123,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Option<R>> lift(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, Option<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5)).toOption();
     }
 
@@ -140,7 +140,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Try<R>> liftTry(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, Try<R>> liftTry(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5));
     }
 
@@ -157,7 +157,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return the given {@code f} instance as narrowed type {@code Function5<T1, T2, T3, T4, T5, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> narrow(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, R> narrow(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         return (Function5<T1, T2, T3, T4, T5, R>) f;
     }
 
@@ -306,7 +306,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function5<T1, T2, T3, T4, T5, V> andThen(@NonNull Function<? super R, ? extends V> after) {
+    default <V extends @Nullable Object> Function5<T1, T2, T3, T4, T5, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
@@ -320,7 +320,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function5<S, T2, T3, T4, T5, R> compose1(@NonNull Function1<? super S, ? extends T1> before) {
+    default <S extends @Nullable Object> Function5<S, T2, T3, T4, T5, R> compose1(Function1<? super S, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return (S s, T2 t2, T3 t3, T4 t4, T5 t5) -> apply(before.apply(s), t2, t3, t4, t5);
     }
@@ -334,7 +334,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function5<T1, S, T3, T4, T5, R> compose2(@NonNull Function1<? super S, ? extends T2> before) {
+    default <S extends @Nullable Object> Function5<T1, S, T3, T4, T5, R> compose2(Function1<? super S, ? extends T2> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, S s, T3 t3, T4 t4, T5 t5) -> apply(t1, before.apply(s), t3, t4, t5);
     }
@@ -348,7 +348,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function5<T1, T2, S, T4, T5, R> compose3(@NonNull Function1<? super S, ? extends T3> before) {
+    default <S extends @Nullable Object> Function5<T1, T2, S, T4, T5, R> compose3(Function1<? super S, ? extends T3> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, S s, T4 t4, T5 t5) -> apply(t1, t2, before.apply(s), t4, t5);
     }
@@ -362,7 +362,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function5<T1, T2, T3, S, T5, R> compose4(@NonNull Function1<? super S, ? extends T4> before) {
+    default <S extends @Nullable Object> Function5<T1, T2, T3, S, T5, R> compose4(Function1<? super S, ? extends T4> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, S s, T5 t5) -> apply(t1, t2, t3, before.apply(s), t5);
     }
@@ -376,7 +376,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function5<T1, T2, T3, T4, S, R> compose5(@NonNull Function1<? super S, ? extends T5> before) {
+    default <S extends @Nullable Object> Function5<T1, T2, T3, T4, S, R> compose5(Function1<? super S, ? extends T5> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, T4 t4, S s) -> apply(t1, t2, t3, t4, before.apply(s));
     }

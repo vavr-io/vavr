@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a function with no arguments.
@@ -37,7 +37,7 @@ import org.jspecify.annotations.NonNull;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function0<R> extends Serializable, Supplier<R> {
+public interface Function0<R extends @Nullable Object> extends Serializable, Supplier<R> {
 
     /**
      * The serial version UID for serialization.
@@ -53,7 +53,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @param value the value to be returned
      * @return a function always returning the given value
      */
-    static <R> Function0<R> constant(R value) {
+    static <R extends @Nullable Object> Function0<R> constant(R value) {
         return () -> value;
     }
 
@@ -90,7 +90,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @param <R> return type
      * @return a {@code Function0}
      */
-    static <R> Function0<R> of(@NonNull Function0<R> methodReference) {
+    static <R extends @Nullable Object> Function0<R> of(Function0<R> methodReference) {
         return methodReference;
     }
 
@@ -102,7 +102,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <R> Function0<Option<R>> lift(@NonNull Supplier<? extends R> partialFunction) {
+    static <R extends @Nullable Object> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::get).toOption();
     }
 
@@ -114,7 +114,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(@NonNull Supplier<? extends R> partialFunction) {
+    static <R extends @Nullable Object> Function0<Try<R>> liftTry(Supplier<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::get);
     }
 
@@ -126,7 +126,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return the given {@code f} instance as narrowed type {@code Function0<R>}
      */
     @SuppressWarnings("unchecked")
-    static <R> Function0<R> narrow(Function0<? extends R> f) {
+    static <R extends @Nullable Object> Function0<R> narrow(Function0<? extends R> f) {
         return (Function0<R>) f;
     }
 
@@ -218,7 +218,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function0<V> andThen(@NonNull Function<? super R, ? extends V> after) {
+    default <V extends @Nullable Object> Function0<V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }

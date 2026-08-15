@@ -20,7 +20,7 @@ package io.vavr;
 
 import io.vavr.control.Option;
 import java.util.function.Function;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a partial function {@code T -> R} that may not be defined for all input values of type {@code T}.
@@ -35,7 +35,7 @@ import org.jspecify.annotations.NonNull;
  * @param <R> the type of the function output (the <em>codomain</em>)
  * @author Daniel Dietrich
  */
-public interface PartialFunction<T, R> extends Function1<T, R> {
+public interface PartialFunction<T extends @Nullable Object, R extends @Nullable Object> extends Function1<T, R> {
 
     /**
      * The serial version UID for serialization.
@@ -54,7 +54,7 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @param <R> the type of the function output (the <em>codomain</em>)
      * @return a partial function that is defined only for inputs for which the {@code totalFunction} returns a defined {@code Option}
      */
-    static <T, R> PartialFunction<T, R> unlift(@NonNull Function<? super T, ? extends Option<? extends R>> totalFunction) {
+    static <T extends @Nullable Object, R extends @Nullable Object> PartialFunction<T, R> unlift(Function<? super T, ? extends Option<? extends R>> totalFunction) {
         return new PartialFunction<T, R>() {
 
             private static final long serialVersionUID = 1L;
@@ -82,7 +82,7 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @param <V> the type of the input {@code Value} (the <em>domain</em> of the function)
      * @return a partial function that maps a non-empty {@code Value} to its underlying value
      */
-    static <T, V extends Value<T>> PartialFunction<V, T> getIfDefined() {
+    static <T extends @Nullable Object, V extends Value<T>> PartialFunction<V, T> getIfDefined() {
         return new PartialFunction<V, T>() {
 
             private static final long serialVersionUID = 1L;

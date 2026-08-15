@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A tuple of 8 elements which can be seen as cartesian product of 8 components.
@@ -43,7 +43,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T8> type of the 8th element
  * @author Daniel Dietrich
  */
-public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
+public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -118,7 +118,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
         this._8 = t8;
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp, Comparator<? super T8> t8Comp) {
+    public static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp, Comparator<? super T8> t8Comp) {
         return (Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> & Serializable) (t1, t2) -> {
             final int check1 = t1Comp.compare(t1._1, t2._1);
             if (check1 != 0) {
@@ -391,7 +391,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @return A new Tuple of same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
-    public <U1, U2, U3, U4, U5, U6, U7, U8> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> mapper) {
+    public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object, U5 extends @Nullable Object, U6 extends @Nullable Object, U7 extends @Nullable Object, U8 extends @Nullable Object> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapper.apply(_1, _2, _3, _4, _5, _6, _7, _8);
     }
@@ -418,7 +418,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @return A new Tuple of same arity.
      * @throws NullPointerException if one of the arguments is null
      */
-    public <U1, U2, U3, U4, U5, U6, U7, U8> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(@NonNull Function<? super T1, ? extends U1> f1, @NonNull Function<? super T2, ? extends U2> f2, @NonNull Function<? super T3, ? extends U3> f3, @NonNull Function<? super T4, ? extends U4> f4, @NonNull Function<? super T5, ? extends U5> f5, @NonNull Function<? super T6, ? extends U6> f6, @NonNull Function<? super T7, ? extends U7> f7, @NonNull Function<? super T8, ? extends U8> f8) {
+    public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object, U5 extends @Nullable Object, U6 extends @Nullable Object, U7 extends @Nullable Object, U8 extends @Nullable Object> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2, Function<? super T3, ? extends U3> f3, Function<? super T4, ? extends U4> f4, Function<? super T5, ? extends U5> f5, Function<? super T6, ? extends U6> f6, Function<? super T7, ? extends U7> f7, Function<? super T8, ? extends U8> f8) {
         Objects.requireNonNull(f1, "f1 is null");
         Objects.requireNonNull(f2, "f2 is null");
         Objects.requireNonNull(f3, "f3 is null");
@@ -437,7 +437,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 1st component
      */
-    public <U> Tuple8<U, T2, T3, T4, T5, T6, T7, T8> map1(Function<? super T1, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<U, T2, T3, T4, T5, T6, T7, T8> map1(Function<? super T1, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_1);
         return Tuple.of(u, _2, _3, _4, _5, _6, _7, _8);
@@ -450,7 +450,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 2nd component
      */
-    public <U> Tuple8<T1, U, T3, T4, T5, T6, T7, T8> map2(Function<? super T2, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, U, T3, T4, T5, T6, T7, T8> map2(Function<? super T2, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_2);
         return Tuple.of(_1, u, _3, _4, _5, _6, _7, _8);
@@ -463,7 +463,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 3rd component
      */
-    public <U> Tuple8<T1, T2, U, T4, T5, T6, T7, T8> map3(Function<? super T3, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, U, T4, T5, T6, T7, T8> map3(Function<? super T3, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_3);
         return Tuple.of(_1, _2, u, _4, _5, _6, _7, _8);
@@ -476,7 +476,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 4th component
      */
-    public <U> Tuple8<T1, T2, T3, U, T5, T6, T7, T8> map4(Function<? super T4, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, T3, U, T5, T6, T7, T8> map4(Function<? super T4, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_4);
         return Tuple.of(_1, _2, _3, u, _5, _6, _7, _8);
@@ -489,7 +489,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 5th component
      */
-    public <U> Tuple8<T1, T2, T3, T4, U, T6, T7, T8> map5(Function<? super T5, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, T3, T4, U, T6, T7, T8> map5(Function<? super T5, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_5);
         return Tuple.of(_1, _2, _3, _4, u, _6, _7, _8);
@@ -502,7 +502,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 6th component
      */
-    public <U> Tuple8<T1, T2, T3, T4, T5, U, T7, T8> map6(Function<? super T6, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, U, T7, T8> map6(Function<? super T6, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_6);
         return Tuple.of(_1, _2, _3, _4, _5, u, _7, _8);
@@ -515,7 +515,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 7th component
      */
-    public <U> Tuple8<T1, T2, T3, T4, T5, T6, U, T8> map7(Function<? super T7, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, T6, U, T8> map7(Function<? super T7, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_7);
         return Tuple.of(_1, _2, _3, _4, _5, _6, u, _8);
@@ -528,7 +528,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 8th component
      */
-    public <U> Tuple8<T1, T2, T3, T4, T5, T6, T7, U> map8(Function<? super T8, ? extends U> mapper) {
+    public <U extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, T6, T7, U> map8(Function<? super T8, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final U u = mapper.apply(_8);
         return Tuple.of(_1, _2, _3, _4, _5, _6, _7, u);
@@ -542,7 +542,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U apply(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends U> f) {
+    public <U extends @Nullable Object> U apply(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5, _6, _7, _8);
     }
@@ -555,7 +555,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) {
             return true;
         } else if (!(o instanceof Tuple8)) {

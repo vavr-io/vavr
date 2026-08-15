@@ -18,7 +18,7 @@
  */
 package io.vavr;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.CheckedRunnableModule.sneakyThrow;
 
@@ -48,7 +48,7 @@ public interface CheckedRunnable {
      * @return a new {@code CheckedRunnable} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static CheckedRunnable of(@NonNull CheckedRunnable methodReference) {
+    static CheckedRunnable of(CheckedRunnable methodReference) {
         return methodReference;
     }
 
@@ -81,7 +81,7 @@ interface CheckedRunnableModule {
 
     // DEV-NOTE: we do not plan to expose this as public API
     @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    static <T extends Throwable, R extends @Nullable Object> R sneakyThrow(Throwable t) throws T {
         throw (T) t;
     }
 

@@ -22,7 +22,7 @@ import io.vavr.control.Try;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
 
@@ -74,7 +74,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * @param <T> the type of the value that completes the underlying {@code Future}
  * @author Daniel Dietrich
  */
-public interface Promise<T> {
+public interface Promise<T extends @Nullable Object> {
 
     /**
      * Creates a {@code Promise} that is already completed with a failure, using the 
@@ -85,7 +85,7 @@ public interface Promise<T> {
      * @return a {@code Promise} completed with the given failure
      * @throws NullPointerException if {@code exception} is null
      */
-    static <T> Promise<T> failed(@NonNull Throwable exception) {
+    static <T extends @Nullable Object> Promise<T> failed(Throwable exception) {
         Objects.requireNonNull(exception, "exception is null");
         return failed(DEFAULT_EXECUTOR, exception);
     }
@@ -100,7 +100,7 @@ public interface Promise<T> {
      * @return a {@code Promise} completed with the given failure
      * @throws NullPointerException if {@code executor} or {@code exception} is null
      */
-    static <T> Promise<T> failed(@NonNull Executor executor, @NonNull Throwable exception) {
+    static <T extends @Nullable Object> Promise<T> failed(Executor executor, Throwable exception) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(exception, "exception is null");
         return Promise.<T> make(executor).failure(exception);
@@ -115,7 +115,7 @@ public interface Promise<T> {
      * @return a {@code Promise} already completed with the given {@code Try} result
      * @throws NullPointerException if {@code result} is null
      */
-    static <T> Promise<T> fromTry(@NonNull Try<? extends T> result) {
+    static <T extends @Nullable Object> Promise<T> fromTry(Try<? extends T> result) {
         return fromTry(DEFAULT_EXECUTOR, result);
     }
 
@@ -129,7 +129,7 @@ public interface Promise<T> {
      * @return a {@code Promise} already completed with the given {@code Try} result
      * @throws NullPointerException if {@code executor} or {@code result} is null
      */
-    static <T> Promise<T> fromTry(@NonNull Executor executor, @NonNull Try<? extends T> result) {
+    static <T extends @Nullable Object> Promise<T> fromTry(Executor executor, Try<? extends T> result) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(result, "result is null");
         return Promise.<T> make(executor).complete(result);
@@ -141,7 +141,7 @@ public interface Promise<T> {
      * @param <T> the type of the value that will complete the {@code Promise}
      * @return a new, uncompleted {@code Promise}
      */
-    static <T> Promise<T> make() {
+    static <T extends @Nullable Object> Promise<T> make() {
         return make(DEFAULT_EXECUTOR);
     }
 
@@ -154,7 +154,7 @@ public interface Promise<T> {
      * @return a new, uncompleted {@code Promise}
      * @throws NullPointerException if {@code executor} is null
      */
-    static <T> Promise<T> make(@NonNull Executor executor) {
+    static <T extends @Nullable Object> Promise<T> make(Executor executor) {
         Objects.requireNonNull(executor, "executor is null");
         return new PromiseImpl<>(FutureImpl.of(executor));
     }
@@ -168,7 +168,7 @@ public interface Promise<T> {
      * @return the same {@code promise} instance, cast to {@code Promise<T>}
      */
     @SuppressWarnings("unchecked")
-    static <T> Promise<T> narrow(Promise<? extends T> promise) {
+    static <T extends @Nullable Object> Promise<T> narrow(Promise<? extends T> promise) {
         return (Promise<T>) promise;
     }
 
@@ -180,7 +180,7 @@ public interface Promise<T> {
      * @param <T>    the type of the value
      * @return a {@code Promise} already completed with the given result
      */
-    static <T> Promise<T> successful(T result) {
+    static <T extends @Nullable Object> Promise<T> successful(T result) {
         return successful(DEFAULT_EXECUTOR, result);
     }
 
@@ -194,7 +194,7 @@ public interface Promise<T> {
      * @return a {@code Promise} already completed with the given result
      * @throws NullPointerException if {@code executor} is null
      */
-    static <T> Promise<T> successful(@NonNull Executor executor, T result) {
+    static <T extends @Nullable Object> Promise<T> successful(Executor executor, T result) {
         Objects.requireNonNull(executor, "executor is null");
         return Promise.<T> make(executor).success(result);
     }
@@ -245,7 +245,7 @@ public interface Promise<T> {
      * @return this {@code Promise}
      * @throws IllegalStateException if this {@code Promise} has already been completed
      */
-    default Promise<T> complete(@NonNull Try<? extends T> value) {
+    default Promise<T> complete(Try<? extends T> value) {
         if (tryComplete(value)) {
             return this;
         } else {
@@ -260,7 +260,7 @@ public interface Promise<T> {
      * @return {@code true} if the {@code Promise} was completed successfully, 
      *         {@code false} if it was already completed
      */
-    boolean tryComplete(@NonNull Try<? extends T> value);
+    boolean tryComplete(Try<? extends T> value);
 
     /**
      * Completes this {@code Promise} with the result of the given {@code Future} once it is completed.
@@ -268,7 +268,7 @@ public interface Promise<T> {
      * @param other the {@code Future} whose result or failure will complete this {@code Promise}
      * @return this {@code Promise}
      */
-    default Promise<T> completeWith(@NonNull Future<? extends T> other) {
+    default Promise<T> completeWith(Future<? extends T> other) {
         return tryCompleteWith(other);
     }
 
@@ -279,7 +279,7 @@ public interface Promise<T> {
      * @return {@code true} if this {@code Promise} was completed by {@code other}, 
      *         {@code false} if it was already completed
      */
-    default Promise<T> tryCompleteWith(@NonNull Future<? extends T> other) {
+    default Promise<T> tryCompleteWith(Future<? extends T> other) {
         other.onComplete(this::tryComplete);
         return this;
     }
@@ -313,7 +313,7 @@ public interface Promise<T> {
      * @return this {@code Promise}
      * @throws IllegalStateException if this {@code Promise} has already been completed
      */
-    default Promise<T> failure(@NonNull Throwable exception) {
+    default Promise<T> failure(Throwable exception) {
         return complete(Try.failure(exception));
     }
 
@@ -324,7 +324,7 @@ public interface Promise<T> {
      * @return {@code true} if the {@code Promise} was completed successfully, 
      *         {@code false} if it was already completed
      */
-    default boolean tryFailure(@NonNull Throwable exception) {
+    default boolean tryFailure(Throwable exception) {
         return tryComplete(Try.failure(exception));
     }
 }
@@ -335,7 +335,7 @@ public interface Promise<T> {
  * @param <T> result type
  * @author Daniel Dietrich
  */
-final class PromiseImpl<T> implements Promise<T> {
+final class PromiseImpl<T extends @Nullable Object> implements Promise<T> {
 
     private final FutureImpl<T> future;
 
@@ -360,7 +360,7 @@ final class PromiseImpl<T> implements Promise<T> {
     }
 
     @Override
-    public boolean tryComplete(@NonNull Try<? extends T> value) {
+    public boolean tryComplete(Try<? extends T> value) {
         return future.tryComplete(value);
     }
 

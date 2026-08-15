@@ -23,6 +23,7 @@ package io.vavr.collection;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -31,12 +32,12 @@ import java.util.Collection;
  *
  * @author Pap Lőrinc
  */
-interface ArrayType<T> extends Serializable {
+interface ArrayType<T extends @Nullable Object> extends Serializable {
 
     long serialVersionUID = 1L;
 
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
+    static <T extends @Nullable Object> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 
     Class<T> type();
     int lengthOf(Object array);
@@ -47,10 +48,10 @@ interface ArrayType<T> extends Serializable {
     Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
-    static <T> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
+    static <T extends @Nullable Object> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
+    static <T extends @Nullable Object> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> ofPrimitive(Class<T> type) {
+    static <T extends @Nullable Object> ArrayType<T> ofPrimitive(Class<T> type) {
         if (boolean.class == type) {
             return (ArrayType<T>) BooleanArrayType.INSTANCE;
         } else if (byte.class == type) {
@@ -136,7 +137,7 @@ interface ArrayType<T> extends Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+    static <T extends @Nullable Object> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
         final Object[] array = Array.ofAll(values).toJavaArray();
         final ArrayType<T> type = of((Class<T>) primitiveClass);
         final Object results = type.newInstance(array.length);

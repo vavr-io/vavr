@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Supplier;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A tuple of no elements which can be seen as cartesian product of no components.
@@ -84,7 +84,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U apply(@NonNull Supplier<? extends U> f) {
+    public <U extends @Nullable Object> U apply(Supplier<? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.get();
     }
@@ -101,7 +101,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @param t1 the value to append
      * @return a new Tuple with the value appended
      */
-    public <T1> Tuple1<T1> append(T1 t1) {
+    public <T1 extends @Nullable Object> Tuple1<T1> append(T1 t1) {
         return Tuple.of(t1);
     }
 
@@ -113,7 +113,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1> Tuple1<T1> concat(@NonNull Tuple1<T1> tuple) {
+    public <T1 extends @Nullable Object> Tuple1<T1> concat(Tuple1<T1> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1);
     }
@@ -127,7 +127,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2> Tuple2<T1, T2> concat(@NonNull Tuple2<T1, T2> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<T1, T2> concat(Tuple2<T1, T2> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2);
     }
@@ -142,7 +142,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3> Tuple3<T1, T2, T3> concat(@NonNull Tuple3<T1, T2, T3> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<T1, T2, T3> concat(Tuple3<T1, T2, T3> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3);
     }
@@ -158,7 +158,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> concat(@NonNull Tuple4<T1, T2, T3, T4> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object> Tuple4<T1, T2, T3, T4> concat(Tuple4<T1, T2, T3, T4> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3, tuple._4);
     }
@@ -175,7 +175,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> concat(@NonNull Tuple5<T1, T2, T3, T4, T5> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object> Tuple5<T1, T2, T3, T4, T5> concat(Tuple5<T1, T2, T3, T4, T5> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5);
     }
@@ -193,7 +193,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(@NonNull Tuple6<T1, T2, T3, T4, T5, T6> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object> Tuple6<T1, T2, T3, T4, T5, T6> concat(Tuple6<T1, T2, T3, T4, T5, T6> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tuple._6);
     }
@@ -212,7 +212,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(@NonNull Tuple7<T1, T2, T3, T4, T5, T6, T7> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple7<T1, T2, T3, T4, T5, T6, T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tuple._6, tuple._7);
     }
@@ -232,7 +232,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> tuple) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tuple._6, tuple._7, tuple._8);
     }
@@ -240,7 +240,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o == this;
     }
 

@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
@@ -41,7 +41,7 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the Vector.
  * @author Ruslan Sennov, Pap Lőrinc
  */
-public final class Vector<T> implements IndexedSeq<T>, Serializable {
+public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Vector<?> EMPTY = new Vector<>(BitMappedTrie.empty());
@@ -50,13 +50,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private Vector(BitMappedTrie<T> trie) { this.trie = trie; }
 
     @SuppressWarnings("ObjectEquality")
-    private Vector<T> wrap(@NonNull BitMappedTrie<T> trie) {
+    private Vector<T> wrap(BitMappedTrie<T> trie) {
         return (trie == this.trie)
                ? this
                : ofAll(trie);
     }
 
-    private static <T> Vector<T> ofAll(@NonNull BitMappedTrie<T> trie) {
+    private static <T extends @Nullable Object> Vector<T> ofAll(BitMappedTrie<T> trie) {
         return (trie.length() == 0)
                ? empty()
                : new Vector<>(trie);
@@ -69,7 +69,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return The empty Vector.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> empty() { return (Vector<T>) EMPTY; }
+    public static <T extends @Nullable Object> Vector<T> empty() { return (Vector<T>) EMPTY; }
 
     /**
      * Returns a {@link Collector} which may be used in conjunction with
@@ -78,7 +78,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @param <T> Component type of the Vector.
      * @return A io.vavr.collection.List Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
+    public static <T extends @Nullable Object> Collector<T, ArrayList<T>, Vector<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -99,7 +99,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return the same vector viewed as {@code Vector<T>}
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> narrow(Vector<? extends T> vector) { return (Vector<T>) vector; }
+    public static <T extends @Nullable Object> Vector<T> narrow(Vector<? extends T> vector) { return (Vector<T>) vector; }
 
     /**
      * Returns a singleton {@code Vector}, i.e. a {@code Vector} of one element.
@@ -108,7 +108,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @param <T>     The component type
      * @return A new Vector instance containing the given element
      */
-    public static <T> Vector<T> of(T element) {
+    public static <T extends @Nullable Object> Vector<T> of(T element) {
         return ofAll(BitMappedTrie.ofAll(new Object[]{element}));
     }
 
@@ -122,7 +122,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> Vector<T> of(T @NonNull ... elements) {
+    public static <T extends @Nullable Object> Vector<T> of(T ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -137,7 +137,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A Vector consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Vector<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T extends @Nullable Object> Vector<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Vector::of);
     }
@@ -151,7 +151,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A Vector of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Vector<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T extends @Nullable Object> Vector<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Vector::of);
     }
@@ -164,7 +164,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @param element The element
      * @return A Vector of size {@code n}, where each element is the given {@code element}.
      */
-    public static <T> Vector<T> fill(int n, T element) {
+    public static <T extends @Nullable Object> Vector<T> fill(int n, T element) {
         return io.vavr.collection.Collections.fillObject(n, element, empty(), Vector::of);
     }
 
@@ -180,7 +180,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> ofAll(@NonNull Iterable<? extends T> iterable) {
+    public static <T extends @Nullable Object> Vector<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Traversable && io.vavr.collection.Collections.isEmpty(iterable)) {
             return empty();
@@ -203,7 +203,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @param <T>        Component type of the Stream.
      * @return A Vector containing the given elements in the same order.
      */
-    public static <T> Vector<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
+    public static <T extends @Nullable Object> Vector<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }
@@ -215,7 +215,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Boolean> ofAll(boolean @NonNull ... elements) {
+    public static Vector<Boolean> ofAll(boolean ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -227,7 +227,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Byte> ofAll(byte @NonNull ... elements) {
+    public static Vector<Byte> ofAll(byte ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -239,7 +239,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Character values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Character> ofAll(char @NonNull ... elements) {
+    public static Vector<Character> ofAll(char ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -251,7 +251,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Double values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Double> ofAll(double @NonNull ... elements) {
+    public static Vector<Double> ofAll(double ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -263,7 +263,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Float values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Float> ofAll(float @NonNull ... elements) {
+    public static Vector<Float> ofAll(float ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -275,7 +275,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Integer> ofAll(int @NonNull ... elements) {
+    public static Vector<Integer> ofAll(int ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -287,7 +287,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Long values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Long> ofAll(long @NonNull ... elements) {
+    public static Vector<Long> ofAll(long ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -299,7 +299,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector of Short values
      * @throws NullPointerException if elements is null
      */
-    public static Vector<Short> ofAll(short @NonNull ... elements) {
+    public static Vector<Short> ofAll(short ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(BitMappedTrie.ofAll(elements));
     }
@@ -644,7 +644,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
      * }
      */
-    public static <T> Vector<Vector<T>> transpose(@NonNull Vector<Vector<T>> matrix) {
+    public static <T extends @Nullable Object> Vector<Vector<T>> transpose(Vector<Vector<T>> matrix) {
         return io.vavr.collection.Collections.transpose(matrix, Vector::ofAll, Vector::of);
     }
 
@@ -673,7 +673,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Vector<U> unfoldRight(T seed, @NonNull Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T extends @Nullable Object, U extends @Nullable Object> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toVector();
     }
 
@@ -702,7 +702,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Vector<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T extends @Nullable Object, U extends @Nullable Object> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toVector();
     }
 
@@ -730,7 +730,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Vector<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T extends @Nullable Object> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();
     }
 
@@ -738,7 +738,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> append(T element) { return appendAll(io.vavr.collection.List.of(element)); }
 
     @Override
-    public Vector<T> appendAll(@NonNull Iterable<? extends T> iterable) {
+    public Vector<T> appendAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (isEmpty()) {
             return ofAll(iterable);
@@ -755,7 +755,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
+    public Vector<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
@@ -765,12 +765,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
+    public Vector<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
-    public <R> Vector<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R extends @Nullable Object> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -787,27 +787,27 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> distinct() { return distinctBy(Function.identity()); }
 
     @Override
-    public Vector<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    public Vector<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    public <U> Vector<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> Vector<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>(length());
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    public Vector<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator) {
+    public Vector<T> distinctByKeepLast(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(iterator().distinctByKeepLast(comparator));
     }
 
     @Override
-    public <U> Vector<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> Vector<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(iterator().distinctByKeepLast(keyExtractor));
     }
@@ -818,12 +818,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> dropUntil(Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.dropUntil(this, predicate);
     }
 
     @Override
-    public Vector<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropUntil(predicate.negate());
     }
@@ -834,30 +834,30 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> dropRightUntil(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> dropRightUntil(Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.dropRightUntil(this, predicate);
     }
 
     @Override
-    public Vector<T> dropRightWhile(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
-    public Vector<T> filter(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return wrap(trie.filter(predicate));
     }
 
     @Override
-    public Vector<T> reject(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);
     }
 
     @Override
-    public <U> Vector<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U extends @Nullable Object> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Iterator<? extends U> results = iterator().flatMap(mapper);
         return ofAll(results);
@@ -883,7 +883,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <C> Map<C, Vector<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) { return io.vavr.collection.Collections.groupBy(this, classifier, Vector::ofAll); }
+    public <C extends @Nullable Object> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) { return io.vavr.collection.Collections.groupBy(this, classifier, Vector::ofAll); }
 
     @Override
     public Iterator<Vector<T>> grouped(int size) { return sliding(size, size); }
@@ -917,7 +917,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> insert(int index, T element) { return insertAll(index, Iterator.of(element)); }
 
     @Override
-    public Vector<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if ((index >= 0) && (index <= length())) {
             final Vector<T> begin = take(index).appendAll(elements);
@@ -960,7 +960,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public boolean isTraversableAgain() { return true; }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty()
                          : trie.iterator();
     }
@@ -979,28 +979,28 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public int length() { return trie.length(); }
 
     @Override
-    public <U> Vector<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> Vector<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(trie.map(mapper));
     }
 
     @Override
-    public <U> Vector<U> mapTo(U value) {
+    public <U extends @Nullable Object> Vector<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    public Vector<Void> mapToVoid() {
-        return map(ignored -> null);
+    public Vector<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
-    public Vector<T> orElse(@NonNull Iterable<? extends T> other) {
+    public Vector<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    public Vector<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    public Vector<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
@@ -1024,7 +1024,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    public Vector<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
 
@@ -1035,7 +1035,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> partition(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final ArrayList<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
@@ -1046,7 +1046,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> peek(@NonNull Consumer<? super T> action) {
+    public Vector<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -1075,7 +1075,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> prepend(T element) { return prependAll(io.vavr.collection.List.of(element)); }
 
     @Override
-    public Vector<T> prependAll(@NonNull Iterable<? extends T> iterable) {
+    public Vector<T> prependAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (isEmpty()) {
             return ofAll(iterable);
@@ -1097,7 +1097,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeFirst(@NonNull Predicate<T> predicate) {
+    public Vector<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < length(); i++) {
             if (predicate.test(get(i))) {
@@ -1108,7 +1108,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeLast(@NonNull Predicate<T> predicate) {
+    public Vector<T> removeLast(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = length() - 1; i >= 0; i--) {
             if (predicate.test(get(i))) {
@@ -1137,13 +1137,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeAll(@NonNull Iterable<? extends T> elements) {
+    public Vector<T> removeAll(Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
     @Override
     @Deprecated
-    public Vector<T> removeAll(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> removeAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
@@ -1169,7 +1169,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    public Vector<T> retainAll(Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.retainAll(this, elements);
     }
 
@@ -1189,17 +1189,17 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Vector<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U extends @Nullable Object> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
-    public <U> Vector<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U extends @Nullable Object> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
@@ -1220,7 +1220,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Iterator<Vector<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    public Iterator<Vector<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(Vector::ofAll);
     }
 
@@ -1247,23 +1247,23 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> sorted(@NonNull Comparator<? super T> comparator) {
+    public Vector<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
     @Override
-    public <U extends Comparable<? super U>> Vector<T> sortBy(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends Comparable<? super U>> Vector<T> sortBy(Function<? super T, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    public <U> Vector<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> Vector<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         return Collections.sortBy(this, comparator, mapper, collector());
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> span(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
@@ -1274,14 +1274,14 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> splitAt(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> splitAt(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Vector<T> init = takeWhile(predicate.negate());
         return Tuple.of(init, drop(init.size()));
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> splitAtInclusive(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<Vector<T>, Vector<T>> splitAtInclusive(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
@@ -1326,12 +1326,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> takeUntil(Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.takeUntil(this, predicate);
     }
 
     @Override
-    public Vector<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
@@ -1342,12 +1342,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> takeRightUntil(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> takeRightUntil(Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public Vector<T> takeRightWhile(@NonNull Predicate<? super T> predicate) {
+    public Vector<T> takeRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
@@ -1360,13 +1360,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(@NonNull Function<? super Vector<T>, ? extends U> f) {
+    public <U extends @Nullable Object> U transform(Function<? super Vector<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
-    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Vector<T1> xs = empty();
         Vector<T2> ys = empty();
@@ -1379,7 +1379,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Vector<T1> xs = empty();
         Vector<T2> ys = empty();
@@ -1403,25 +1403,25 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    public Vector<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    public <U extends @Nullable Object> Vector<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> Vector<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U extends @Nullable Object, R extends @Nullable Object> Vector<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U extends @Nullable Object> Vector<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1432,7 +1432,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U extends @Nullable Object> Vector<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1440,7 +1440,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private Object readResolve() { return isEmpty() ? EMPTY : this; }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return io.vavr.collection.Collections.equals(this, o);
     }
 
@@ -1458,7 +1458,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
 interface VectorModule {
     final class Combinations {
-        static <T> Vector<Vector<T>> apply(Vector<T> elements, int k) {
+        static <T extends @Nullable Object> Vector<Vector<T>> apply(Vector<T> elements, int k) {
             return (k == 0)
                    ? Vector.of(Vector.empty())
                    : elements.zipWithIndex().flatMap(

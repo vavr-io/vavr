@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable {@link SortedMap} implementation backed by a Red-Black tree.
@@ -41,7 +41,7 @@ import org.jspecify.annotations.NonNull;
  * @author Daniel Dietrich
  */
 // DEV-NOTE: prefer entries.min().get() over iterator().next() for better performance
-public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
+public final class TreeMap<K extends @Nullable Object, V extends @Nullable Object> implements SortedMap<K, V>, Serializable {
 
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +63,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A {@link TreeMap} Collector.
      */
-    public static <K extends Comparable<? super K>, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector() {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector() {
         return createCollector(EntryComparator.natural());
     }
 
@@ -77,7 +77,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A {@link TreeMap} Collector.
      */
-    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector(@NonNull Comparator<? super K> keyComparator) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector(Comparator<? super K> keyComparator) {
         return createCollector(EntryComparator.of(keyComparator));
     }
 
@@ -93,8 +93,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <T> Initial {@link java.util.stream.Stream} elements type
      * @return A {@link TreeMap} Collector.
      */
-    public static <K extends Comparable<? super K>, V, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
-      @NonNull Function<? super T, ? extends K> keyMapper) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+      Function<? super T, ? extends K> keyMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         return createCollector(EntryComparator.natural(), keyMapper, v -> v);
     }
@@ -112,9 +112,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <T> Initial {@link java.util.stream.Stream} elements type
      * @return A {@link TreeMap} Collector.
      */
-    public static <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
-      @NonNull Function<? super T, ? extends K> keyMapper,
-      @NonNull Function<? super T, ? extends V> valueMapper) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object, T extends @Nullable Object> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+      Function<? super T, ? extends K> keyMapper,
+      Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createCollector(EntryComparator.natural(), keyMapper, valueMapper);
@@ -131,9 +131,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A {@link TreeMap} Collector.
      */
-    public static <K, V, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
-      @NonNull Comparator<? super K> keyComparator,
-      @NonNull Function<? super T, ? extends K> keyMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+      Comparator<? super K> keyComparator,
+      Function<? super T, ? extends K> keyMapper) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         return createCollector(EntryComparator.of(keyComparator), keyMapper, v -> v);
@@ -151,9 +151,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A {@link TreeMap} Collector.
      */
-    public static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
-      @NonNull Comparator<? super K> keyComparator,
-      @NonNull Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object, T extends @Nullable Object> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+      Comparator<? super K> keyComparator,
+      Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
@@ -167,7 +167,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new empty TreeMap.
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> empty() {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> empty() {
         return new TreeMap<>(RedBlackTree.empty(EntryComparator.natural()));
     }
 
@@ -179,7 +179,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A new empty TreeMap.
      */
-    public static <K, V> TreeMap<K, V> empty(@NonNull Comparator<? super K> keyComparator) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> empty(Comparator<? super K> keyComparator) {
         return new TreeMap<>(RedBlackTree.empty(EntryComparator.of(keyComparator)));
     }
 
@@ -196,7 +196,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @return the same map viewed as {@code TreeMap<K, V>}
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
         return (TreeMap<K, V>) treeMap;
     }
 
@@ -209,7 +209,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param entry A map entry.
      * @return A new TreeMap containing the given entry.
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(@NonNull Tuple2<? extends K, ? extends V> entry) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return createFromTuple(EntryComparator.natural(), entry);
     }
@@ -223,7 +223,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param entry         A map entry.
      * @return A new TreeMap containing the given entry.
      */
-    public static <K, V> TreeMap<K, V> of(@NonNull Comparator<? super K> keyComparator, @NonNull Tuple2<? extends K, ? extends V> entry) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return createFromTuple(EntryComparator.of(keyComparator), entry);
     }
@@ -236,7 +236,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given map
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.@NonNull Map<? extends K, ? extends V> map) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         return createFromMap(EntryComparator.natural(), map);
     }
@@ -252,9 +252,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>         The value type
      * @return A new Map
      */
-    public static <T, K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                                              @NonNull Function<? super T, ? extends K> keyMapper,
-                                                                              @NonNull Function<? super T, ? extends V> valueMapper) {
+    public static <T extends @Nullable Object, K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                                              Function<? super T, ? extends K> keyMapper,
+                                                                              Function<? super T, ? extends V> valueMapper) {
         return Maps.ofStream(TreeMap.<K, V> empty(), stream, keyMapper, valueMapper);
     }
 
@@ -270,10 +270,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map
      */
-    public static <T, K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
-                                                java.util.stream.@NonNull Stream<? extends T> stream,
-                                                @NonNull Function<? super T, ? extends K> keyMapper,
-                                                @NonNull Function<? super T, ? extends V> valueMapper) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
+                                                java.util.stream.Stream<? extends T> stream,
+                                                Function<? super T, ? extends K> keyMapper,
+                                                Function<? super T, ? extends V> valueMapper) {
         return Maps.ofStream(empty(keyComparator), stream, keyMapper, valueMapper);
     }
 
@@ -287,8 +287,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>         The value type
      * @return A new Map
      */
-    public static <T, K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                                              @NonNull Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+    public static <T extends @Nullable Object, K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                                              Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
         return Maps.ofStream(TreeMap.<K, V> empty(), stream, entryMapper);
     }
 
@@ -303,9 +303,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>         The value type
      * @return A new Map
      */
-    public static <T, K, V> TreeMap<K, V> ofAll(@NonNull Comparator<? super K> keyComparator,
-                                                java.util.stream.@NonNull Stream<? extends T> stream,
-                                                @NonNull Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
+                                                java.util.stream.Stream<? extends T> stream,
+                                                Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
         return Maps.ofStream(empty(keyComparator), stream, entryMapper);
     }
 
@@ -318,7 +318,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given map
      */
-    public static <K, V> TreeMap<K, V> ofAll(@NonNull Comparator<? super K> keyComparator, java.util.@NonNull Map<? extends K, ? extends V> map) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         return createFromMap(EntryComparator.of(keyComparator), map);
     }
@@ -332,7 +332,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>   The value type
      * @return A new Map containing the given entry
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K key, V value) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K key, V value) {
         return createFromPairs(EntryComparator.natural(), key, value);
     }
 
@@ -347,7 +347,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2);
     }
 
@@ -364,7 +364,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3);
     }
 
@@ -383,7 +383,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4);
     }
 
@@ -404,7 +404,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
     }
 
@@ -427,7 +427,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
     }
 
@@ -452,7 +452,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
     }
 
@@ -479,7 +479,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
     }
 
@@ -508,7 +508,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
     }
 
@@ -539,7 +539,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
     }
 
@@ -553,7 +553,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entry
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
         return createFromPairs(EntryComparator.of(keyComparator), key, value);
     }
 
@@ -569,7 +569,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2);
     }
 
@@ -587,7 +587,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3);
     }
 
@@ -607,7 +607,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4);
     }
 
@@ -629,7 +629,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
     }
 
@@ -653,7 +653,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
     }
 
@@ -679,7 +679,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
     }
 
@@ -707,7 +707,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
     }
 
@@ -737,7 +737,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
     }
 
@@ -769,7 +769,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param <V>           The value type
      * @return A new Map containing the given entries
      */
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
         return createFromPairs(EntryComparator.of(keyComparator), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
     }
 
@@ -785,7 +785,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code keyComparator} or {@code f} are null
      */
-    public static <K, V> TreeMap<K, V> tabulate(Comparator<? super K> keyComparator, int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return createTreeMap(EntryComparator.of(keyComparator), Collections.tabulate(n, f));
     }
@@ -802,7 +802,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> tabulate(int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return createTreeMap(EntryComparator.natural(), Collections.tabulate(n, f));
     }
@@ -819,7 +819,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @throws NullPointerException if {@code keyComparator} or {@code s} are null
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> fill(@NonNull Comparator<? super K> keyComparator, int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> fill(Comparator<? super K> keyComparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
         return createTreeMap(EntryComparator.of(keyComparator), Collections.fill(n, s));
     }
@@ -835,7 +835,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> fill(int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
         return createTreeMap(EntryComparator.natural(), Collections.fill(n, s));
     }
@@ -850,7 +850,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(@NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> ... entries) {
         return createFromTuples(EntryComparator.natural(), entries);
     }
 
@@ -865,7 +865,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      */
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <K, V> TreeMap<K, V> ofEntries(@NonNull Comparator<? super K> keyComparator, @NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> ... entries) {
         return createFromTuples(EntryComparator.of(keyComparator), entries);
     }
 
@@ -879,7 +879,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> ... entries) {
         return createFromMapEntries(EntryComparator.natural(), entries);
     }
 
@@ -894,7 +894,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> TreeMap<K, V> ofEntries(@NonNull Comparator<? super K> keyComparator, java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, java.util.Map.Entry<? extends K, ? extends V> ... entries) {
         return createFromMapEntries(EntryComparator.of(keyComparator), entries);
     }
 
@@ -906,7 +906,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(@NonNull Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         return createTreeMap(EntryComparator.natural(), entries);
     }
 
@@ -919,36 +919,47 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * @param entries       Map entries
      * @return A new TreeMap containing the given entries.
      */
-    public static <K, V> TreeMap<K, V> ofEntries(@NonNull Comparator<? super K> keyComparator, @NonNull Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         return createTreeMap(EntryComparator.of(keyComparator), entries);
     }
 
     // -- TreeMap API
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull Function<? super V, ? extends V2> valueMapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         return bimap(this, EntryComparator.natural(), keyMapper, valueMapper);
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> bimap(@NonNull Comparator<? super K2> keyComparator,
-                                          @NonNull Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
+                                          Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         return bimap(this, EntryComparator.of(keyComparator), keyMapper, valueMapper);
     }
 
     @Override
-    public Tuple2<V, TreeMap<K, V>> computeIfAbsent(K key, @NonNull Function<? super K, ? extends V> mappingFunction) {
+    public Tuple2<V, TreeMap<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
         return Maps.computeIfAbsent(this, key, mappingFunction);
     }
 
     @Override
-    public Tuple2<Option<V>, TreeMap<K, V>> computeIfPresent(K key, @NonNull BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    public Tuple2<Option<V>, TreeMap<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         return Maps.computeIfPresent(this, key, remappingFunction);
+    }
+
+    /**
+     * Creates a lookup-only entry for the given key.
+     * <p>
+     * {@code entries} is ordered by key alone, so the value of the probe is never read -- it only
+     * has to be type-compatible. Kept in one place so the null value is justified exactly once.
+     */
+    @SuppressWarnings("NullAway")
+    private static <K extends @Nullable Object, V extends @Nullable Object> Tuple2<K, V> lookupEntry(K key) {
+        return new Tuple2<>(key, null);
     }
 
     @Override
     public boolean containsKey(K key) {
-        return entries.contains(new Tuple2<>(key, /*ignored*/null));
+        return entries.contains(lookupEntry(key));
     }
 
     @Override
@@ -957,12 +968,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator) {
+    public TreeMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         return Maps.distinctBy(this, this::createFromEntries, comparator);
     }
 
     @Override
-    public <U> TreeMap<K, V> distinctBy(@NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> TreeMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         return Maps.distinctBy(this, this::createFromEntries, keyExtractor);
     }
 
@@ -977,70 +988,69 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.dropUntil(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.dropWhile(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    public TreeMap<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
         return Maps.filter(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    public TreeMap<K, V> reject(BiPredicate<? super K, ? super V> predicate) {
         return Maps.reject(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.filter(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.reject(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> filterKeys(@NonNull Predicate<? super K> predicate) {
+    public TreeMap<K, V> filterKeys(Predicate<? super K> predicate) {
         return Maps.filterKeys(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate) {
+    public TreeMap<K, V> rejectKeys(Predicate<? super K> predicate) {
         return Maps.rejectKeys(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> filterValues(@NonNull Predicate<? super V> predicate) {
+    public TreeMap<K, V> filterValues(Predicate<? super V> predicate) {
         return Maps.filterValues(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> rejectValues(@NonNull Predicate<? super V> predicate) {
+    public TreeMap<K, V> rejectValues(Predicate<? super V> predicate) {
         return Maps.rejectValues(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMap(@NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return flatMap(this, EntryComparator.natural(), mapper);
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMap(@NonNull Comparator<? super K2> keyComparator,
-                                            @NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> flatMap(Comparator<? super K2> keyComparator,
+                                            BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return flatMap(this, EntryComparator.of(keyComparator), mapper);
     }
 
     @Override
     public Option<V> get(K key) {
-        final V ignored = null;
-        return entries.find(new Tuple2<>(key, ignored)).map(Tuple2::_2);
+        return entries.find(TreeMap.<K, V>lookupEntry(key)).map(Tuple2::_2);
     }
 
     @Override
@@ -1049,7 +1059,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public <C> Map<C, TreeMap<K, V>> groupBy(@NonNull Function<? super Tuple2<K, V>, ? extends C> classifier) {
+    public <C extends @Nullable Object> Map<C, TreeMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Maps.groupBy(this, this::createFromEntries, classifier);
     }
 
@@ -1117,7 +1127,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<Tuple2<K, V>> iterator() {
+    public Iterator<Tuple2<K, V>> iterator() {
         return entries.iterator();
     }
 
@@ -1161,43 +1171,43 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> map(@NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         return map(this, EntryComparator.natural(), mapper);
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> map(@NonNull Comparator<? super K2> keyComparator,
-                                        @NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+    public <K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> map(Comparator<? super K2> keyComparator,
+                                        BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         return map(this, EntryComparator.of(keyComparator), mapper);
     }
 
     @Override
-    public <K2> TreeMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper) {
+    public <K2 extends @Nullable Object> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
     }
 
     @Override
-    public <K2> TreeMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull BiFunction<? super V, ? super V, ? extends V> valueMerge) {
+    public <K2 extends @Nullable Object> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         final Comparator<K2> comparator = Comparators.naturalComparator();
         return Collections.mapKeys(this, TreeMap.<K2, V> empty(comparator), keyMapper, valueMerge);
     }
 
     @Override
-    public <W> TreeMap<K, W> mapValues(@NonNull Function<? super V, ? extends W> valueMapper) {
+    public <W extends @Nullable Object> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map(comparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     @Override
-    public TreeMap<K, V> merge(@NonNull Map<? extends K, ? extends V> that) {
+    public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
         return Maps.merge(this, this::createFromEntries, that);
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> merge(@NonNull Map<? extends K, U> that,
-                                             @NonNull BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         return Maps.merge(this, this::createFromEntries, that, collisionResolution);
     }
 
@@ -1210,7 +1220,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * otherwise {@code TreeMap} created from iterable, using existing comparator.
      */
     @Override
-    public TreeMap<K, V> orElse(@NonNull Iterable<? extends Tuple2<K, V>> other) {
+    public TreeMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
         return isEmpty() ? ofEntries(comparator(), other) : this;
     }
 
@@ -1223,22 +1233,22 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      * otherwise {@code TreeMap} created from result of evaluating supplier, using existing comparator.
      */
     @Override
-    public TreeMap<K, V> orElse(@NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
+    public TreeMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
         return isEmpty() ? ofEntries(comparator(), supplier.get()) : this;
     }
 
     @Override
-    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.partition(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action) {
+    public TreeMap<K, V> peek(Consumer<? super Tuple2<K, V>> action) {
         return Maps.peek(this, action);
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> put(K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
+    public <U extends V> TreeMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, key, value, merge);
     }
 
@@ -1248,20 +1258,19 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry) {
+    public TreeMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         return Maps.put(this, entry);
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> put(@NonNull Tuple2<? extends K, U> entry,
-                                           @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
+    public <U extends V> TreeMap<K, V> put(Tuple2<? extends K, U> entry,
+                                           BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, entry, merge);
     }
 
     @Override
     public TreeMap<K, V> remove(K key) {
-        final V ignored = null;
-        final Tuple2<K, V> entry = new Tuple2<>(key, ignored);
+        final Tuple2<K, V> entry = lookupEntry(key);
         if (entries.contains(entry)) {
             return new TreeMap<>(entries.delete(entry));
         } else {
@@ -1271,17 +1280,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     @Deprecated
-    public TreeMap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    public TreeMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
 
     @Override
-    public TreeMap<K, V> removeAll(@NonNull Iterable<? extends K> keys) {
-        final V ignored = null;
+    public TreeMap<K, V> removeAll(Iterable<? extends K> keys) {
         RedBlackTree<Tuple2<K, V>> removed = entries;
         for (K key : keys) {
-            final Tuple2<K, V> entry = new Tuple2<>(key, ignored);
+            final Tuple2<K, V> entry = lookupEntry(key);
             if (removed.contains(entry)) {
                 removed = removed.delete(entry);
             }
@@ -1295,25 +1303,25 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     @Deprecated
-    public TreeMap<K, V> removeKeys(@NonNull Predicate<? super K> predicate) {
+    public TreeMap<K, V> removeKeys(Predicate<? super K> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return rejectKeys(predicate);
     }
 
     @Override
     @Deprecated
-    public TreeMap<K, V> removeValues(@NonNull Predicate<? super V> predicate) {
+    public TreeMap<K, V> removeValues(Predicate<? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return rejectValues(predicate);
     }
 
     @Override
-    public TreeMap<K, V> replace(@NonNull Tuple2<K, V> currentElement, @NonNull Tuple2<K, V> newElement) {
+    public TreeMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return Maps.replace(this, currentElement, newElement);
     }
 
     @Override
-    public TreeMap<K, V> replaceAll(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+    public TreeMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return Maps.replaceAll(this, currentElement, newElement);
     }
 
@@ -1328,12 +1336,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> replaceAll(@NonNull BiFunction<? super K, ? super V, ? extends V> function) {
+    public TreeMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
         return Maps.replaceAll(this, function);
     }
 
     @Override
-    public TreeMap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements) {
+    public TreeMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entries.comparator());
         for (Tuple2<K, V> entry : elements) {
@@ -1346,8 +1354,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public TreeMap<K, V> scan(
-      @NonNull Tuple2<K, V> zero,
-      @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+      Tuple2<K, V> zero,
+      BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         return Maps.scan(this, zero, operation, this::createFromEntries);
     }
 
@@ -1357,7 +1365,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<TreeMap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier) {
+    public Iterator<TreeMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
         return Maps.slideBy(this, this::createFromEntries, classifier);
     }
 
@@ -1372,7 +1380,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> span(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.span(this, this::createFromEntries, predicate);
     }
 
@@ -1402,12 +1410,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.takeUntil(this, this::createFromEntries, predicate);
     }
 
     @Override
-    public TreeMap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    public TreeMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.takeWhile(this, this::createFromEntries, predicate);
     }
 
@@ -1424,7 +1432,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return Collections.equals(this, o);
     }
 
@@ -1445,20 +1453,20 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     // -- private helpers
 
-    private static <K, K2, V, V2> TreeMap<K2, V2> bimap(@NonNull TreeMap<K, V> map, @NonNull EntryComparator<K2, V2> entryComparator,
+    private static <K extends @Nullable Object, K2 extends @Nullable Object, V extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> bimap(TreeMap<K, V> map, EntryComparator<K2, V2> entryComparator,
             Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createTreeMap(entryComparator, map.entries, entry -> entry.map(keyMapper, valueMapper));
     }
 
-    private static <K, V, K2, V2> TreeMap<K2, V2> flatMap(@NonNull TreeMap<K, V> map, @NonNull EntryComparator<K2, V2> entryComparator,
+    private static <K extends @Nullable Object, V extends @Nullable Object, K2 extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> flatMap(TreeMap<K, V> map, EntryComparator<K2, V2> entryComparator,
             BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(entryComparator, map.entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
     }
 
-    private static <K, K2, V, V2> TreeMap<K2, V2> map(@NonNull TreeMap<K, V> map, @NonNull EntryComparator<K2, V2> entryComparator,
+    private static <K extends @Nullable Object, K2 extends @Nullable Object, V extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> map(TreeMap<K, V> map, EntryComparator<K2, V2> entryComparator,
             BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(entryComparator, map.entries, entry -> entry.map(mapper));
@@ -1466,7 +1474,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     // -- internal factory methods
 
-    private static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> createCollector(@NonNull EntryComparator<K, V> entryComparator) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> createCollector(EntryComparator<K, V> entryComparator) {
         final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
@@ -1477,9 +1485,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
-    private static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> createCollector(
-      @NonNull EntryComparator<K, V> entryComparator,
-      @NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    private static <K extends @Nullable Object, V extends @Nullable Object, T extends @Nullable Object> Collector<T, ArrayList<T>, TreeMap<K, V>> createCollector(
+      EntryComparator<K, V> entryComparator,
+      Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -1492,8 +1500,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createTreeMap(@NonNull EntryComparator<K, V> entryComparator,
-                                                      @NonNull Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createTreeMap(EntryComparator<K, V> entryComparator,
+                                                      Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (Tuple2<K, V> entry : (Iterable<Tuple2<K, V>>) entries) {
@@ -1502,8 +1510,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return new TreeMap<>(tree);
     }
 
-    private static <K, K2, V, V2> TreeMap<K2, V2> createTreeMap(@NonNull EntryComparator<K2, V2> entryComparator,
-                                                                @NonNull Iterable<Tuple2<K, V>> entries, Function<Tuple2<K, V>, Tuple2<K2, V2>> entryMapper) {
+    private static <K extends @Nullable Object, K2 extends @Nullable Object, V extends @Nullable Object, V2 extends @Nullable Object> TreeMap<K2, V2> createTreeMap(EntryComparator<K2, V2> entryComparator,
+                                                                Iterable<Tuple2<K, V>> entries, Function<Tuple2<K, V>, Tuple2<K2, V2>> entryMapper) {
         RedBlackTree<Tuple2<K2, V2>> tree = RedBlackTree.empty(entryComparator);
         for (Tuple2<K, V> entry : entries) {
             tree = tree.insert(entryMapper.apply(entry));
@@ -1512,7 +1520,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createFromMap(@NonNull EntryComparator<K, V> entryComparator, java.util.@NonNull Map<? extends K, ? extends V> map) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createFromMap(EntryComparator<K, V> entryComparator, java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (java.util.Map.Entry<K, V> entry : ((java.util.Map<K, V>) map).entrySet()) {
@@ -1522,13 +1530,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createFromTuple(@NonNull EntryComparator<K, V> entryComparator, @NonNull Tuple2<? extends K, ? extends V> entry) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createFromTuple(EntryComparator<K, V> entryComparator, Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return new TreeMap<>(RedBlackTree.of(entryComparator, (Tuple2<K, V>) entry));
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createFromTuples(@NonNull EntryComparator<K, V> entryComparator, @NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createFromTuples(EntryComparator<K, V> entryComparator, Tuple2<? extends K, ? extends V> ... entries) {
         Objects.requireNonNull(entries, "entries is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -1538,7 +1546,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SafeVarargs
-    private static <K, V> TreeMap<K, V> createFromMapEntries(@NonNull EntryComparator<K, V> entryComparator, java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createFromMapEntries(EntryComparator<K, V> entryComparator, java.util.Map.Entry<? extends K, ? extends V> ... entries) {
         Objects.requireNonNull(entries, "entries is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
@@ -1550,7 +1558,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createFromPairs(@NonNull EntryComparator<K, V> entryComparator, @NonNull Object @NonNull ... pairs) {
+    private static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> createFromPairs(EntryComparator<K, V> entryComparator, Object ... pairs) {
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (int i = 0; i < pairs.length; i += 2) {
             final K key = (K) pairs[i];
@@ -1560,7 +1568,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return new TreeMap<>(tree);
     }
 
-    private TreeMap<K, V> createFromEntries(@NonNull Iterable<Tuple2<K, V>> tuples) {
+    private TreeMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
         return createTreeMap((EntryComparator<K, V>) entries.comparator(), tuples);
     }
 
@@ -1575,16 +1583,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     // -- internal types
 
-    private interface EntryComparator<K, V> extends Comparator<Tuple2<K, V>>, Serializable {
+    private interface EntryComparator<K extends @Nullable Object, V extends @Nullable Object> extends Comparator<Tuple2<K, V>>, Serializable {
 
         long serialVersionUID = 1L;
 
-        static <K, V> EntryComparator<K, V> of(@NonNull Comparator<? super K> keyComparator) {
+        static <K extends @Nullable Object, V extends @Nullable Object> EntryComparator<K, V> of(Comparator<? super K> keyComparator) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             return new Specific<>(keyComparator);
         }
 
-        static <K, V> EntryComparator<K, V> natural() {
+        static <K extends @Nullable Object, V extends @Nullable Object> EntryComparator<K, V> natural() {
             return Natural.instance();
         }
 
@@ -1592,7 +1600,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
         // -- internal impls
 
-        final class Specific<K, V> implements EntryComparator<K, V> {
+        final class Specific<K extends @Nullable Object, V extends @Nullable Object> implements EntryComparator<K, V> {
 
             private static final long serialVersionUID = 1L;
 
@@ -1615,7 +1623,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             }
         }
 
-        final class Natural<K, V> implements EntryComparator<K, V> {
+        final class Natural<K extends @Nullable Object, V extends @Nullable Object> implements EntryComparator<K, V> {
 
             private static final long serialVersionUID = 1L;
 
@@ -1626,7 +1634,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             }
 
             @SuppressWarnings("unchecked")
-            public static <K, V> Natural<K, V> instance() {
+            public static <K extends @Nullable Object, V extends @Nullable Object> Natural<K, V> instance() {
                 return (Natural<K, V>) INSTANCE;
             }
 
@@ -1644,7 +1652,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 return obj instanceof Natural;
             }
 

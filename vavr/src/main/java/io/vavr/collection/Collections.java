@@ -26,7 +26,7 @@ import io.vavr.control.Option;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Internal class, containing helpers.
@@ -47,7 +47,7 @@ final class Collections {
         return iter1.hasNext() == iter2.hasNext();
     }
 
-    static <T, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
+    static <T extends @Nullable Object, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
         Objects.requireNonNull(action, "action is null");
         final ListView<T, C> view = JavaConverters.asJava(source, changePolicy);
         action.accept(view);
@@ -55,7 +55,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
+    static <T extends @Nullable Object, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
         if (power < 0) {
             return Iterator.empty();
         } else {
@@ -68,7 +68,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
+    static <T extends @Nullable Object, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = seq.length() - 1; i >= 0; i--) {
             if (predicate.test(seq.get(i))) {
@@ -82,7 +82,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends IndexedSeq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
+    static <T extends @Nullable Object, S extends IndexedSeq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
@@ -93,7 +93,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <K, V> boolean equals(Map<K, V> source, Object object) {
+    static <K extends @Nullable Object, V extends @Nullable Object> boolean equals(Map<K, V> source, @Nullable Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Map) {
@@ -113,7 +113,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <K, V> boolean equals(Multimap<K, V> source, Object object) {
+    static <K extends @Nullable Object, V extends @Nullable Object> boolean equals(Multimap<K, V> source, @Nullable Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Multimap) {
@@ -133,7 +133,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <V> boolean equals(Seq<V> source, Object object) {
+    static <V extends @Nullable Object> boolean equals(Seq<V> source, @Nullable Object object) {
         if (object == source) {
             return true;
         } else if (source != null && object instanceof Seq) {
@@ -145,7 +145,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <V> boolean equals(Set<V> source, Object object) {
+    static <V extends @Nullable Object> boolean equals(Set<V> source, @Nullable Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Set) {
@@ -164,12 +164,12 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
+    static <T extends @Nullable Object> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return tabulate(n, ignored -> supplier.get());
     }
 
-    static <T> Iterator<T> fillObject(int n, T element) {
+    static <T extends @Nullable Object> Iterator<T> fillObject(int n, T element) {
         if (n <= 0) {
             return Iterator.empty();
         } else {
@@ -177,14 +177,14 @@ final class Collections {
         }
     }
 
-    static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
         Objects.requireNonNull(s, "s is null");
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
         return tabulate(n, anything -> s.get(), empty, of);
     }
 
-    static <C extends Traversable<T>, T> C fillObject(int n, T element, @NonNull C empty, @NonNull Function<T[], C> of) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C fillObject(int n, T element, C empty, Function<T[], C> of) {
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
         if (n <= 0) {
@@ -197,7 +197,7 @@ final class Collections {
         }
     }
 
-    static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
+    static <T extends @Nullable Object, C extends @Nullable Object, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
         Map<C, R> results = LinkedHashMap.empty();
@@ -208,7 +208,7 @@ final class Collections {
 
     }
 
-    private static <T, C> java.util.Set<java.util.Map.Entry<C, Collection<T>>> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier) {
+    private static <T extends @Nullable Object, C extends @Nullable Object> java.util.Set<java.util.Map.Entry<C, Collection<T>>> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier) {
         final java.util.Map<C, Collection<T>> results = new java.util.LinkedHashMap<>(source.isTraversableAgain() ? source.size() : 16);
         for (T value : source) {
             final C key = classifier.apply(value);
@@ -250,17 +250,17 @@ final class Collections {
                 || !iterable.iterator().hasNext();
     }
 
-    static <T> boolean isTraversableAgain(Iterable<? extends T> iterable) {
+    static <T extends @Nullable Object> boolean isTraversableAgain(Iterable<? extends T> iterable) {
         return (iterable instanceof Collection) ||
                 (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
     }
 
-    static <T> T last(Traversable<T> source){
+    static <T extends @Nullable Object> T last(Traversable<T> source){
         if (source.isEmpty()) {
             throw new NoSuchElementException("last of empty " + source.stringPrefix());
         } else {
             final Iterator<T> it = source.iterator();
-            T result = null;
+            T result = it.next();
             while (it.hasNext()) {
                 result = it.next();
             }
@@ -269,7 +269,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
+    static <K extends @Nullable Object, V extends @Nullable Object, K2 extends @Nullable Object, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMerge, "valueMerge is null");
@@ -282,7 +282,7 @@ final class Collections {
         });
     }
 
-    static <C extends Traversable<T>, T> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
+    static <C extends Traversable<T>, T extends @Nullable Object> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
                                                                 Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new java.util.ArrayList<>();
@@ -294,7 +294,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C removeAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
@@ -305,7 +305,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C reject(C source, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (source.isEmpty()) {
             return source;
@@ -315,7 +315,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C removeAll(C source, T element) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C removeAll(C source, T element) {
         if (source.isEmpty()) {
             return source;
         } else {
@@ -324,7 +324,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C retainAll(C source, Iterable<? extends T> elements) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C retainAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
@@ -334,7 +334,7 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> reverseIterator(Iterable<T> iterable) {
+    static <T extends @Nullable Object> Iterator<T> reverseIterator(Iterable<T> iterable) {
         if (iterable instanceof java.util.List) {
             return reverseListIterator((java.util.List<T>) iterable);
         } else if (iterable instanceof Seq) {
@@ -344,7 +344,7 @@ final class Collections {
         }
     }
 
-    private static <T> Iterator<T> reverseListIterator(java.util.List<T> list) {
+    private static <T extends @Nullable Object> Iterator<T> reverseListIterator(java.util.List<T> list) {
         return new Iterator<T>() {
             private final java.util.ListIterator<T> delegate = list.listIterator(list.size());
 
@@ -361,7 +361,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, C extends Seq<T>> C rotateLeft(C source, int n) {
+    static <T extends @Nullable Object, C extends Seq<T>> C rotateLeft(C source, int n) {
         if (source.isEmpty() || n == 0) {
             return source;
         } else if (n < 0) {
@@ -378,7 +378,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, C extends Seq<T>> C rotateRight(C source, int n) {
+    static <T extends @Nullable Object, C extends Seq<T>> C rotateRight(C source, int n) {
         if (source.isEmpty() || n == 0) {
             return source;
         } else if (n < 0) {
@@ -394,21 +394,21 @@ final class Collections {
         }
     }
 
-    static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
+    static <T extends @Nullable Object, U extends @Nullable Object, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
                                                        U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<U> iterator = source.iterator().scanLeft(zero, operation);
         return finisher.apply(iterator);
     }
 
-    static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
+    static <T extends @Nullable Object, U extends @Nullable Object, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
                                                         U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
     }
 
-    static <T, U, R extends Seq<T>> R sortBy(Seq<? extends T> source, Comparator<? super U> comparator, Function<? super T, ? extends U> mapper, Collector<T, ?, R> collector) {
+    static <T extends @Nullable Object, U extends @Nullable Object, R extends Seq<T>> R sortBy(Seq<? extends T> source, Comparator<? super U> comparator, Function<? super T, ? extends U> mapper, Collector<T, ?, R> collector) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return source.toJavaStream()
@@ -416,7 +416,7 @@ final class Collections {
                 .collect(collector);
     }
 
-    static <T, S extends Seq<T>> S shuffle(S source, Function<? super Iterable<T>, S> ofAll) {
+    static <T extends @Nullable Object, S extends Seq<T>> S shuffle(S source, Function<? super Iterable<T>, S> ofAll) {
         if (source.length() <= 1) {
             return source;
         }
@@ -434,7 +434,7 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    static <T extends @Nullable Object> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (n <= 0) {
             return Iterator.empty();
@@ -456,7 +456,7 @@ final class Collections {
         }
     }
 
-    static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
+    static <C extends Traversable<T>, T extends @Nullable Object> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
         Objects.requireNonNull(f, "f is null");
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
@@ -476,7 +476,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends IndexedSeq<T>> S takeRightUntil(S seq, Predicate<? super T> predicate) {
+    static <T extends @Nullable Object, S extends IndexedSeq<T>> S takeRightUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = seq.length() - 1; i >= 0; i--) {
             if (predicate.test(seq.get(i))) {
@@ -490,7 +490,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends IndexedSeq<T>> S takeUntil(S seq, Predicate<? super T> predicate) {
+    static <T extends @Nullable Object, S extends IndexedSeq<T>> S takeUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
@@ -500,7 +500,7 @@ final class Collections {
         return seq;
     }
 
-    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+    static <T extends @Nullable Object, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
         Objects.requireNonNull(matrix, "matrix is null");
         if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
             return matrix;
@@ -509,7 +509,7 @@ final class Collections {
         }
     }
 
-    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+    private static <T extends @Nullable Object, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
         final int newHeight = matrix.head().size(), newWidth = matrix.size();
         @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];
 
@@ -530,11 +530,11 @@ final class Collections {
         return rowFactory.apply(Iterator.of(results).map(columnFactory));
     }
 
-    static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
+    static <T extends @Nullable Object> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
         return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
     }
 
-    private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
+    private static <T extends @Nullable Object> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
         if (iterable instanceof Collection) {
             return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
         } else {
@@ -542,7 +542,7 @@ final class Collections {
         }
     }
 
-    static class IterableWithSize<T> {
+    static class IterableWithSize<T extends @Nullable Object> {
         private final Iterable<? extends T> iterable;
         private final int size;
 

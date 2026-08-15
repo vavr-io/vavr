@@ -25,7 +25,7 @@ import io.vavr.control.Option;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface for immutable, linear sequences.
@@ -35,7 +35,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T> component type
  * @author Daniel Dietrich
  */
-public interface LinearSeq<T> extends Seq<T> {
+public interface LinearSeq<T extends @Nullable Object> extends Seq<T> {
 
     long serialVersionUID = 1L;
 
@@ -49,7 +49,7 @@ public interface LinearSeq<T> extends Seq<T> {
      * @return the given {@code linearSeq} instance as narrowed type {@code LinearSeq<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> LinearSeq<T> narrow(LinearSeq<? extends T> linearSeq) {
+    static <T extends @Nullable Object> LinearSeq<T> narrow(LinearSeq<? extends T> linearSeq) {
         return (LinearSeq<T>) linearSeq;
     }
 
@@ -59,13 +59,13 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> append(T element);
 
     @Override
-    LinearSeq<T> appendAll(@NonNull Iterable<? extends T> elements);
+    LinearSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    LinearSeq<T> asJava(@NonNull Consumer<? super java.util.List<T>> action);
+    LinearSeq<T> asJava(Consumer<? super java.util.List<T>> action);
 
     @Override
-    LinearSeq<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action);
+    LinearSeq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 
     @Override
     default PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException {
@@ -84,7 +84,7 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
-    <R> LinearSeq<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction);
+    <R extends @Nullable Object> LinearSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     LinearSeq<? extends LinearSeq<T>> combinations();
@@ -99,58 +99,58 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> distinct();
 
     @Override
-    LinearSeq<T> distinctBy(@NonNull Comparator<? super T> comparator);
+    LinearSeq<T> distinctBy(Comparator<? super T> comparator);
 
     @Override
-    <U> LinearSeq<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> LinearSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    LinearSeq<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator);
+    LinearSeq<T> distinctByKeepLast(Comparator<? super T> comparator);
 
     @Override
-    <U> LinearSeq<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> LinearSeq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     LinearSeq<T> drop(int n);
 
     @Override
-    LinearSeq<T> dropUntil(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> dropUntil(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> dropWhile(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> dropRight(int n);
 
     @Override
-    LinearSeq<T> dropRightUntil(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> dropRightUntil(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> dropRightWhile(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> dropRightWhile(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> filter(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> reject(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> reject(Predicate<? super T> predicate);
 
     @Override
-    <U> LinearSeq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U extends @Nullable Object> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <C> Map<C, ? extends LinearSeq<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
+    <C extends @Nullable Object> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
     Iterator<? extends LinearSeq<T>> grouped(int size);
 
     @Override
-    default int indexOfSlice(@NonNull Iterable<? extends T> that, int from) {
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
         Objects.requireNonNull(that, "that is null");
         return LinearSeqModule.Slice.indexOfSlice(this, that, from);
     }
 
     @Override
-    default int indexWhere(@NonNull Predicate<? super T> predicate, int from) {
+    default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         LinearSeq<T> these = drop(from);
@@ -174,7 +174,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> insert(int index, T element);
 
     @Override
-    LinearSeq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
+    LinearSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> intersperse(T element);
@@ -187,13 +187,13 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
-    default int lastIndexOfSlice(@NonNull Iterable<? extends T> that, int end) {
+    default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
         Objects.requireNonNull(that, "that is null");
         return LinearSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
-    default int lastIndexWhere(@NonNull Predicate<? super T> predicate, int end) {
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this;
@@ -209,35 +209,35 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
-    <U> LinearSeq<U> map(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    default <U> LinearSeq<U> mapTo(U value) {
+    default <U extends @Nullable Object> LinearSeq<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default LinearSeq<Void> mapToVoid() {
-        return map(ignored -> null);
+    default LinearSeq<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
-    LinearSeq<T> orElse(@NonNull Iterable<? extends T> other);
+    LinearSeq<T> orElse(Iterable<? extends T> other);
 
     @Override
-    LinearSeq<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier);
+    LinearSeq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
     LinearSeq<T> padTo(int length, T element);
 
     @Override
-    LinearSeq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
+    LinearSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
-    Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> peek(@NonNull Consumer<? super T> action);
+    LinearSeq<T> peek(Consumer<? super T> action);
 
     @Override
     LinearSeq<? extends LinearSeq<T>> permutations();
@@ -246,16 +246,16 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> prepend(T element);
 
     @Override
-    LinearSeq<T> prependAll(@NonNull Iterable<? extends T> elements);
+    LinearSeq<T> prependAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> remove(T element);
 
     @Override
-    LinearSeq<T> removeFirst(@NonNull Predicate<T> predicate);
+    LinearSeq<T> removeFirst(Predicate<T> predicate);
 
     @Override
-    LinearSeq<T> removeLast(@NonNull Predicate<T> predicate);
+    LinearSeq<T> removeLast(Predicate<T> predicate);
 
     @Override
     LinearSeq<T> removeAt(int index);
@@ -264,11 +264,11 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeAll(T element);
 
     @Override
-    LinearSeq<T> removeAll(@NonNull Iterable<? extends T> elements);
+    LinearSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     @Deprecated
-    LinearSeq<T> removeAll(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> removeAll(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> replace(T currentElement, T newElement);
@@ -277,7 +277,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    LinearSeq<T> retainAll(@NonNull Iterable<? extends T> elements);
+    LinearSeq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> reverse();
@@ -297,16 +297,16 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> shuffle();
 
     @Override
-    LinearSeq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> LinearSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U extends @Nullable Object> LinearSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> LinearSeq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U extends @Nullable Object> LinearSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    default int segmentLength(@NonNull Predicate<? super T> predicate, int from) {
+    default int segmentLength(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this.drop(from);
@@ -321,7 +321,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
-    Iterator<? extends LinearSeq<T>> slideBy(@NonNull Function<? super T, ?> classifier);
+    Iterator<? extends LinearSeq<T>> slideBy(Function<? super T, ?> classifier);
 
     @Override
     Iterator<? extends LinearSeq<T>> sliding(int size);
@@ -333,16 +333,16 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> sorted();
 
     @Override
-    LinearSeq<T> sorted(@NonNull Comparator<? super T> comparator);
+    LinearSeq<T> sorted(Comparator<? super T> comparator);
 
     @Override
-    <U extends Comparable<? super U>> LinearSeq<T> sortBy(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends Comparable<? super U>> LinearSeq<T> sortBy(Function<? super T, ? extends U> mapper);
 
     @Override
-    <U> LinearSeq<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> LinearSeq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
 
     @Override
-    Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> subSequence(int beginIndex);
@@ -360,43 +360,43 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> take(int n);
 
     @Override
-    LinearSeq<T> takeUntil(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> takeUntil(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> takeWhile(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> takeRight(int n);
 
     @Override
-    LinearSeq<T> takeRightUntil(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> takeRightUntil(Predicate<? super T> predicate);
 
     @Override
-    LinearSeq<T> takeRightWhile(@NonNull Predicate<? super T> predicate);
+    LinearSeq<T> takeRightWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
     LinearSeq<T> update(int index, T element);
 
     @Override
-    LinearSeq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
+    LinearSeq<T> update(int index, Function<? super T, ? extends T> updater);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
+    <U extends @Nullable Object> LinearSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U, R> LinearSeq<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+    <U extends @Nullable Object, R extends @Nullable Object> LinearSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem);
+    <U extends @Nullable Object> LinearSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     LinearSeq<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> LinearSeq<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper);
+    <U extends @Nullable Object> LinearSeq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a linear search. The sequence must already be sorted into
@@ -430,7 +430,7 @@ public interface LinearSeq<T> extends Seq<T> {
      * the return value will be &gt;= 0 if and only if the element is found.
      */
     @Override
-    default int search(T element, @NonNull Comparator<? super T> comparator) {
+    default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final ToIntFunction<T> comparison = current -> comparator.compare(element, current);
         return LinearSeqModule.Search.linearSearch(this, comparison);
@@ -442,7 +442,7 @@ interface LinearSeqModule {
 
     class Slice {
         
-        static <T> int indexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int from) {
+        static <T extends @Nullable Object> int indexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int from) {
             if (source.isEmpty()) {
                 return from == 0 && Collections.isEmpty(slice) ? 0 : -1;
             }
@@ -450,7 +450,7 @@ interface LinearSeqModule {
             return findFirstSlice(source, _slice, Math.max(from, 0));
         }
 
-        static <T> int lastIndexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int end) {
+        static <T extends @Nullable Object> int lastIndexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
             } else if (source.isEmpty()) {
@@ -478,7 +478,7 @@ interface LinearSeqModule {
             return result;
         }
 
-        private static <T> int findFirstSlice(LinearSeq<T> source, LinearSeq<T> slice, int from) {
+        private static <T extends @Nullable Object> int findFirstSlice(LinearSeq<T> source, LinearSeq<T> slice, int from) {
             int index = 0;
             final int sliceLength = slice.length();
             // DEV-NOTE: we can't compute the length of an infinite Stream but it may contain a slice
@@ -493,7 +493,7 @@ interface LinearSeqModule {
             return -1;
         }
 
-        private static <T> Tuple2<LinearSeq<T>, Integer> findNextSlice(LinearSeq<T> source, LinearSeq<T> slice) {
+        private static <T extends @Nullable Object> @Nullable Tuple2<LinearSeq<T>, Integer> findNextSlice(LinearSeq<T> source, LinearSeq<T> slice) {
             int index = 0;
             while (source.length() >= slice.length()) {
                 if (source.startsWith(slice)) {
@@ -506,14 +506,14 @@ interface LinearSeqModule {
         }
 
         @SuppressWarnings("unchecked")
-        private static <T> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
+        private static <T extends @Nullable Object> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
             return (iterable instanceof LinearSeq) ? (LinearSeq<T>) iterable : List.ofAll(iterable);
         }
     }
 
     interface Search {
         
-        static <T> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
+        static <T extends @Nullable Object> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
             int idx = 0;
             for (T current : seq) {
                 final int cmp = comparison.applyAsInt(current);

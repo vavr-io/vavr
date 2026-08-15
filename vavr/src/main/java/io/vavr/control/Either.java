@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a value of one of two possible types: {@link Left} or {@link Right}.
@@ -66,7 +67,7 @@ import org.jspecify.annotations.NonNull;
  *
  * @author Daniel Dietrich, Grzegorz Piwowarek, Adam Kopeć
  */
-public interface Either<L, R> extends Value<R>, Serializable {
+public interface Either<L extends @Nullable Object, R extends @Nullable Object> extends Value<R>, Serializable {
 
     /**
      * The serial version UID for serialization.
@@ -81,7 +82,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <R>   the type of the right value
      * @return a new {@code Right} instance
      */
-    static <L, R> Either<L, R> right(R right) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, R> right(R right) {
         return new Right<>(right);
     }
 
@@ -93,7 +94,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <R>  the type of the right value
      * @return a new {@code Left} instance
      */
-    static <L, R> Either<L, R> left(L left) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, R> left(L left) {
         return new Left<>(left);
     }
 
@@ -107,7 +108,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return the same {@code either} instance cast to {@code Either<L, R>}
      */
     @SuppressWarnings("unchecked")
-    static <L, R> Either<L, R> narrow(Either<? extends L, ? extends R> either) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, R> narrow(Either<? extends L, ? extends R> either) {
         return (Either<L, R>) either;
     }
 
@@ -126,7 +127,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return an {@code Either<L, R>} containing the left or right value depending on {@code test}
      * @throws NullPointerException if any argument is null
      */
-    static <L, R> Either<L, R> cond(boolean test, @NonNull Supplier<? extends R> right, @NonNull Supplier<? extends L> left) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, R> cond(boolean test, Supplier<? extends R> right, Supplier<? extends L> left) {
         Objects.requireNonNull(right, "right is null");
         Objects.requireNonNull(left, "left is null");
 
@@ -148,7 +149,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return an {@code Either<L, R>} containing either the left or right value depending on {@code test}
      * @throws NullPointerException if any argument is null
      */
-    static <L, R> Either<L, R> cond(boolean test, @NonNull R right, @NonNull L left) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, R> cond(boolean test, @NonNull R right, @NonNull L left) {
         Objects.requireNonNull(right, "right is null");
         Objects.requireNonNull(left, "left is null");
 
@@ -214,7 +215,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <Y>         the type of the right value in the resulting {@code Either}
      * @return a new {@code Either} instance with the transformed value
      */
-    default <X, Y> Either<X, Y> bimap(@NonNull Function<? super L, ? extends X> leftMapper, @NonNull Function<? super R, ? extends Y> rightMapper) {
+    default <X extends @Nullable Object, Y extends @Nullable Object> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
         Objects.requireNonNull(leftMapper, "leftMapper is null");
         Objects.requireNonNull(rightMapper, "rightMapper is null");
         if (isRight()) {
@@ -236,7 +237,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <U>         the type of the resulting value
      * @return a value of type {@code U} obtained by applying the appropriate function
      */
-    default <U> U fold(@NonNull Function<? super L, ? extends U> leftMapper, @NonNull Function<? super R, ? extends U> rightMapper) {
+    default <U extends @Nullable Object> U fold(Function<? super L, ? extends U> leftMapper, Function<? super R, ? extends U> rightMapper) {
         Objects.requireNonNull(leftMapper, "leftMapper is null");
         Objects.requireNonNull(rightMapper, "rightMapper is null");
         if (isRight()) {
@@ -274,7 +275,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @throws NullPointerException if {@code eithers} is null
      */
     @SuppressWarnings("unchecked")
-    static <L, R> Either<Seq<L>, Seq<R>> sequence(@NonNull Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<Seq<L>, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
         Objects.requireNonNull(eithers, "eithers is null");
         return Iterator.ofAll((Iterable<Either<L, R>>) eithers)
           .partition(Either::isLeft)
@@ -300,7 +301,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return a single {@code Either} containing a {@link Seq} of left or right results
      * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
-    static <L, R, T> Either<Seq<L>, Seq<R>> traverse(@NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
+    static <L extends @Nullable Object, R extends @Nullable Object, T extends @Nullable Object> Either<Seq<L>, Seq<R>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -332,7 +333,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return an {@code Either} containing either the first left value if present, or a {@link Seq} of all right values
      * @throws NullPointerException if {@code eithers} is null
      */
-    static <L, R> Either<L, Seq<R>> sequenceRight(@NonNull Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+    static <L extends @Nullable Object, R extends @Nullable Object> Either<L, Seq<R>> sequenceRight(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
         Objects.requireNonNull(eithers, "eithers is null");
         Vector<R> rightValues = Vector.empty();
         for (Either<? extends L, ? extends R> either : eithers) {
@@ -361,7 +362,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return a single {@code Either} containing a {@link Seq} of left or right results
      * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
-    static <L, R, T> Either<L, Seq<R>> traverseRight(@NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
+    static <L extends @Nullable Object, R extends @Nullable Object, T extends @Nullable Object> Either<L, Seq<R>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequenceRight(Iterator.ofAll(values).map(mapper));
@@ -373,7 +374,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param other a function that converts a left value to an alternative right value
      * @return the right value if present, otherwise the alternative value produced by applying {@code other} to the left value
      */
-    default R getOrElseGet(@NonNull Function<? super L, ? extends R> other) {
+    default R getOrElseGet(Function<? super L, ? extends R> other) {
         Objects.requireNonNull(other, "other is null");
         if (isRight()) {
             return get();
@@ -387,7 +388,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param action a consumer that processes the left value
      */
-    default void orElseRun(@NonNull Consumer<? super L> action) {
+    default void orElseRun(Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
         if (isLeft()) {
             action.accept(getLeft());
@@ -402,7 +403,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return the right value if present
      * @throws X if this {@code Either} is a {@link Either.Left}, using the exception produced by {@code exceptionFunction}
      */
-    default <X extends Throwable> R getOrElseThrow(@NonNull Function<? super L, X> exceptionFunction) throws X {
+    default <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
         Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
         if (isRight()) {
             return get();
@@ -439,7 +440,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Either<L, U> flatMap(@NonNull Function<? super R, ? extends Either<L, ? extends U>> mapper) {
+    default <U extends @Nullable Object> Either<L, U> flatMap(Function<? super R, ? extends Either<L, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isRight()) {
             return (Either<L, U>) mapper.apply(get());
@@ -470,7 +471,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Either<L, U> map(@NonNull Function<? super R, ? extends U> mapper) {
+    default <U extends @Nullable Object> Either<L, U> map(Function<? super R, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isRight()) {
             return Either.right(mapper.apply(get()));
@@ -500,7 +501,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @throws NullPointerException if {@code leftMapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Either<U, R> mapLeft(@NonNull Function<? super L, ? extends U> leftMapper) {
+    default <U extends @Nullable Object> Either<U, R> mapLeft(Function<? super L, ? extends U> leftMapper) {
         Objects.requireNonNull(leftMapper, "leftMapper is null");
         if (isLeft()) {
             return Either.left(leftMapper.apply(getLeft()));
@@ -527,7 +528,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return the result of applying {@code f} to this {@code Either}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(@NonNull Function<? super Either<L, R>, ? extends U> f) {
+    default <U extends @Nullable Object> U transform(Function<? super Either<L, R>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -569,7 +570,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @throws NullPointerException if {@code predicate} is null
      * @see #filterOrElse(Predicate, Function)
      */
-    default Option<Either<L, R>> filter(@NonNull Predicate<? super R> predicate) {
+    default Option<Either<L, R>> filter(Predicate<? super R> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isLeft() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
@@ -600,7 +601,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return an {@code Either} containing the right value if the predicate matches, or a left value otherwise
      * @throws NullPointerException if {@code predicate} or {@code zero} is null
      */
-    default Either<L, R> filterOrElse(@NonNull Predicate<? super R> predicate, @NonNull Function<? super R, ? extends L> zero) {
+    default Either<L, R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(zero, "zero is null");
         if (isLeft() || predicate.test(get())) {
@@ -631,7 +632,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return this {@code Either} if it is a {@code Right}, otherwise {@code other}
      */
     @SuppressWarnings("unchecked")
-    default Either<L, R> orElse(@NonNull Either<? extends L, ? extends R> other) {
+    default Either<L, R> orElse(Either<? extends L, ? extends R> other) {
         Objects.requireNonNull(other, "other is null");
         return isRight() ? this : (Either<L, R>) other;
     }
@@ -643,19 +644,19 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @return this {@code Either} if it is a {@code Right}, otherwise the result of {@code supplier}
      */
     @SuppressWarnings("unchecked")
-    default Either<L, R> orElse(@NonNull Supplier<? extends Either<? extends L, ? extends R>> supplier) {
+    default Either<L, R> orElse(Supplier<? extends Either<? extends L, ? extends R>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isRight() ? this : (Either<L, R>) supplier.get();
     }
 
     @Override
-    default <U> Either<L, U> mapTo(U value) {
+    default <U extends @Nullable Object> Either<L, U> mapTo(U value) {
         return this.map(__ -> value);
     }
 
     @Override
-    default Either<L, Void> mapToVoid() {
-        return this.mapTo(null);
+    default Either<L, @Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>mapTo(null);
     }
 
     /**
@@ -689,7 +690,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     @Override
-    default @NonNull Iterator<R> iterator() {
+    default Iterator<R> iterator() {
         if (isRight()) {
             return Iterator.of(get());
         } else {
@@ -698,7 +699,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     @Override
-    default Either<L, R> peek(@NonNull Consumer<? super R> action) {
+    default Either<L, R> peek(Consumer<? super R> action) {
         Objects.requireNonNull(action, "action is null");
         if (isRight()) {
             action.accept(get());
@@ -714,7 +715,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param action a consumer that processes the left value
      * @return this {@code Either}
      */
-    default Either<L, R> peekLeft(@NonNull Consumer<? super L> action) {
+    default Either<L, R> peekLeft(Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
         if (isLeft()) {
             action.accept(getLeft());
@@ -741,7 +742,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
     // -- Object.*
 
     @Override
-    boolean equals(Object o);
+    boolean equals(@Nullable Object o);
 
     @Override
     int hashCode();
@@ -760,7 +761,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
-    final class LeftProjection<L, R> implements Value<L> {
+    final class LeftProjection<L extends @Nullable Object, R extends @Nullable Object> implements Value<L> {
 
         private final Either<L, R> either;
 
@@ -782,7 +783,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @param <R2>        the type of the right value in the resulting projection
          * @return a new {@code LeftProjection} with the transformed values
          */
-        public <L2, R2> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, @NonNull Function<? super R, ? extends R2> rightMapper) {
+        public <L2 extends @Nullable Object, R2 extends @Nullable Object> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2>bimap(leftMapper, rightMapper).left();
         }
 
@@ -844,7 +845,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this projection if the underlying {@code Either} is a {@code Left}, otherwise {@code other}
          */
         @SuppressWarnings("unchecked")
-        public LeftProjection<L, R> orElse(@NonNull LeftProjection<? extends L, ? extends R> other) {
+        public LeftProjection<L, R> orElse(LeftProjection<? extends L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             return either.isLeft() ? this : (LeftProjection<L, R>) other;
         }
@@ -856,7 +857,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this projection if the underlying {@code Either} is a {@code Left}, otherwise the result of {@code supplier}
          */
         @SuppressWarnings("unchecked")
-        public LeftProjection<L, R> orElse(@NonNull Supplier<? extends LeftProjection<? extends L, ? extends R>> supplier) {
+        public LeftProjection<L, R> orElse(Supplier<? extends LeftProjection<? extends L, ? extends R>> supplier) {
             Objects.requireNonNull(supplier, "supplier is null");
             return either.isLeft() ? this : (LeftProjection<L, R>) supplier.get();
         }
@@ -883,7 +884,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return the left value, if the underlying Either is a Left or else the alternative Left value provided by
          * {@code other} by applying the Right value.
          */
-        public L getOrElseGet(@NonNull Function<? super R, ? extends L> other) {
+        public L getOrElseGet(Function<? super R, ? extends L> other) {
             Objects.requireNonNull(other, "other is null");
             if (either.isLeft()) {
                 return either.getLeft();
@@ -897,7 +898,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param action an action which consumes a Right value
          */
-        public void orElseRun(@NonNull Consumer<? super R> action) {
+        public void orElseRun(Consumer<? super R> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
                 action.accept(either.get());
@@ -915,7 +916,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @throws X if the projected Either is a Right
          */
-        public <X extends Throwable> L getOrElseThrow(@NonNull Function<? super R, X> exceptionFunction) throws X {
+        public <X extends Throwable> L getOrElseThrow(Function<? super R, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isLeft()) {
                 return either.getLeft();
@@ -942,7 +943,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @return A new Option
          */
-        public Option<LeftProjection<L, R>> filter(@NonNull Predicate<? super L> predicate) {
+        public Option<LeftProjection<L, R>> filter(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isRight() || predicate.test(either.getLeft()) ? Option.some(this) : Option.none();
         }
@@ -958,7 +959,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMap(@NonNull Function<? super L, ? extends LeftProjection<? extends U, R>> mapper) {
+        public <U extends @Nullable Object> LeftProjection<U, R> flatMap(Function<? super L, ? extends LeftProjection<? extends U, R>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
                 return (LeftProjection<U, R>) mapper.apply(either.getLeft());
@@ -977,7 +978,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U> LeftProjection<U, R> map(@NonNull Function<? super L, ? extends U> mapper) {
+        public <U extends @Nullable Object> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
                 return either.mapLeft((Function<L, U>) mapper).left();
@@ -994,7 +995,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this LeftProjection
          */
         @Override
-        public LeftProjection<L, R> peek(@NonNull Consumer<? super L> action) {
+        public LeftProjection<L, R> peek(Consumer<? super L> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isLeft()) {
                 action.accept(either.getLeft());
@@ -1012,13 +1013,13 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @throws NullPointerException if {@code f} is null
          */
-        public <U> U transform(@NonNull Function<? super LeftProjection<L, R>, ? extends U> f) {
+        public <U extends @Nullable Object> U transform(Function<? super LeftProjection<L, R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }
 
         @Override
-        public @NonNull Iterator<L> iterator() {
+        public Iterator<L> iterator() {
             if (either.isLeft()) {
                 return Iterator.of(either.getLeft());
             } else {
@@ -1027,7 +1028,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj == this) || (obj instanceof LeftProjection && Objects.equals(either, ((LeftProjection<?, ?>) obj).either));
         }
 
@@ -1056,7 +1057,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
-    final class RightProjection<L, R> implements Value<R> {
+    final class RightProjection<L extends @Nullable Object, R extends @Nullable Object> implements Value<R> {
 
         private final Either<L, R> either;
 
@@ -1078,7 +1079,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @param <R2>        the type of the right value in the resulting projection
          * @return a new {@code RightProjection} with the transformed values
          */
-        public <L2, R2> RightProjection<L2, R2> bimap(@NonNull Function<? super L, ? extends L2> leftMapper, @NonNull Function<? super R, ? extends R2> rightMapper) {
+        public <L2 extends @Nullable Object, R2 extends @Nullable Object> RightProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2>bimap(leftMapper, rightMapper).right();
         }
 
@@ -1140,7 +1141,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this projection if the underlying {@code Either} is a {@code Right}, otherwise {@code other}
          */
         @SuppressWarnings("unchecked")
-        public RightProjection<L, R> orElse(@NonNull RightProjection<? extends L, ? extends R> other) {
+        public RightProjection<L, R> orElse(RightProjection<? extends L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             return either.isRight() ? this : (RightProjection<L, R>) other;
         }
@@ -1152,7 +1153,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this projection if the underlying {@code Either} is a {@code Right}, otherwise the result of {@code supplier}
          */
         @SuppressWarnings("unchecked")
-        public RightProjection<L, R> orElse(@NonNull Supplier<? extends RightProjection<? extends L, ? extends R>> supplier) {
+        public RightProjection<L, R> orElse(Supplier<? extends RightProjection<? extends L, ? extends R>> supplier) {
             Objects.requireNonNull(supplier, "supplier is null");
             return either.isRight() ? this : (RightProjection<L, R>) supplier.get();
         }
@@ -1179,7 +1180,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
          * {@code other} by applying the Left value.
          */
-        public R getOrElseGet(@NonNull Function<? super L, ? extends R> other) {
+        public R getOrElseGet(Function<? super L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             return either.getOrElseGet(other);
         }
@@ -1189,7 +1190,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param action an action which consumes a Left value
          */
-        public void orElseRun(@NonNull Consumer<? super L> action) {
+        public void orElseRun(Consumer<? super L> action) {
             Objects.requireNonNull(action, "action is null");
             either.orElseRun(action);
         }
@@ -1205,7 +1206,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @throws X if the projected Either is a Left
          */
-        public <X extends Throwable> R getOrElseThrow(@NonNull Function<? super L, X> exceptionFunction) throws X {
+        public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             return either.getOrElseThrow(exceptionFunction);
         }
@@ -1228,7 +1229,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @return A new Option
          */
-        public Option<RightProjection<L, R>> filter(@NonNull Predicate<? super R> predicate) {
+        public Option<RightProjection<L, R>> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isLeft() || predicate.test(either.get()) ? Option.some(this) : Option.none();
         }
@@ -1244,7 +1245,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatMap(@NonNull Function<? super R, ? extends RightProjection<L, ? extends U>> mapper) {
+        public <U extends @Nullable Object> RightProjection<L, U> flatMap(Function<? super R, ? extends RightProjection<L, ? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
                 return (RightProjection<L, U>) mapper.apply(either.get());
@@ -1263,7 +1264,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U> RightProjection<L, U> map(@NonNull Function<? super R, ? extends U> mapper) {
+        public <U extends @Nullable Object> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
                 return either.map((Function<R, U>) mapper).right();
@@ -1280,7 +1281,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * @return this {@code Either} instance
          */
         @Override
-        public RightProjection<L, R> peek(@NonNull Consumer<? super R> action) {
+        public RightProjection<L, R> peek(Consumer<? super R> action) {
             Objects.requireNonNull(action, "action is null");
             if (either.isRight()) {
                 action.accept(either.get());
@@ -1298,18 +1299,18 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @throws NullPointerException if {@code f} is null
          */
-        public <U> U transform(@NonNull Function<? super RightProjection<L, R>, ? extends U> f) {
+        public <U extends @Nullable Object> U transform(Function<? super RightProjection<L, R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }
 
         @Override
-        public @NonNull Iterator<R> iterator() {
+        public Iterator<R> iterator() {
             return either.iterator();
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj == this) || (obj instanceof RightProjection && Objects.equals(either, ((RightProjection<?, ?>) obj).either));
         }
 
@@ -1337,7 +1338,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @author Daniel Dietrich
      */
-    final class Left<L, R> implements Either<L, R>, Serializable {
+    final class Left<L extends @Nullable Object, R extends @Nullable Object> implements Either<L, R>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1374,7 +1375,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj == this) || (obj instanceof Left && Objects.equals(value, ((Left<?, ?>) obj).value));
         }
 
@@ -1402,7 +1403,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @author Daniel Dietrich
      */
-    final class Right<L, R> implements Either<L, R>, Serializable {
+    final class Right<L extends @Nullable Object, R extends @Nullable Object> implements Either<L, R>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1439,7 +1440,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj == this) || (obj instanceof Right && Objects.equals(value, ((Right<?, ?>) obj).value));
         }
 
