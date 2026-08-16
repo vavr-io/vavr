@@ -48,6 +48,9 @@ import static io.vavr.control.TryModule.sneakyThrow;
  *     <li>{@linkplain VirtualMachineError}, including {@linkplain OutOfMemoryError} and {@linkplain StackOverflowError}</li>
  * </ul>
  * <p>
+ * These fatal throwables are never captured in a {@link Failure}: every factory method and combinator below that
+ * would otherwise wrap a thrown exception instead rethrows a fatal one sneakily (i.e. without declaring it).
+ * <p>
  * <strong>Note:</strong> Methods such as {@code get()} may re-throw exceptions without declaring them. When used
  * within a {@link java.lang.reflect.InvocationHandler} of a dynamic proxy, such exceptions will be wrapped in
  * {@link java.lang.reflect.UndeclaredThrowableException}. See 
@@ -65,7 +68,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Creates a {@link Try} instance from a {@link CheckedFunction0}.
      * <p>
      * If the supplier executes without throwing an exception, a {@link Success} containing the result is returned.
-     * If an exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned.
+     * If a non-fatal exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param supplier the checked supplier to execute
      * @param <T>      the type of the value returned by the supplier
@@ -86,7 +90,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Creates a {@link Try} instance from a {@link Supplier}.
      * <p>
      * If the supplier executes without throwing an exception, a {@link Success} containing the result is returned.
-     * If an exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned.
+     * If a non-fatal exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param supplier the supplier to execute
      * @param <T>      the type of the value returned by the supplier
@@ -102,7 +107,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Creates a {@link Try} instance from a {@link Callable}.
      * <p>
      * If the callable executes without throwing an exception, a {@link Success} containing the result is returned.
-     * If an exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned.
+     * If a non-fatal exception occurs during execution, a {@link Failure} wrapping the thrown exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param callable the callable to execute
      * @param <T>      the type of the value returned by the callable
@@ -118,8 +124,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Creates a {@link Try} instance from a {@link CheckedRunnable}.
      * <p>
      * If the runnable executes without throwing an exception, a {@link Success} containing {@code null} (representing
-     * the absence of a value) is returned. If an exception occurs during execution, a {@link Failure} wrapping the
-     * thrown exception is returned.
+     * the absence of a value) is returned. If a non-fatal exception occurs during execution, a {@link Failure}
+     * wrapping the thrown exception is returned; fatal throwables (see the class-level documentation) are rethrown
+     * instead.
      *
      * @param runnable the checked runnable to execute
      * @return a {@link Success} with {@code null} if the runnable completes successfully, or a {@link Failure} if an exception is thrown
@@ -139,8 +146,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Creates a {@link Try} instance from a {@link Runnable}.
      * <p>
      * If the runnable executes without throwing an exception, a {@link Success} containing {@code null} (representing
-     * the absence of a value) is returned. If an exception occurs during execution, a {@link Failure} wrapping the
-     * thrown exception is returned.
+     * the absence of a value) is returned. If a non-fatal exception occurs during execution, a {@link Failure}
+     * wrapping the thrown exception is returned; fatal throwables (see the class-level documentation) are rethrown
+     * instead.
      *
      * @param runnable the runnable to execute
      * @return a {@link Success} with {@code null} if the runnable completes successfully, or a {@link Failure} if an exception is thrown
@@ -212,11 +220,13 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Creates a {@link Failure} containing the given {@code exception}.
      * <p>
-     * This is a convenience method equivalent to {@code new Failure<>(exception)}.
+     * This is a convenience method equivalent to {@code new Failure<>(exception)}. If {@code exception} is fatal
+     * (see the class-level documentation), it is rethrown sneakily instead of being wrapped.
      *
      * @param exception the exception to wrap in a {@link Failure}
      * @param <T>       the component type of the {@code Try}
      * @return a new {@link Failure} containing {@code exception}
+     * @throws NullPointerException if {@code exception} is {@code null}
      */
     static <T extends @Nullable Object> Try<T> failure(Throwable exception) {
         return new Failure<>(exception);
@@ -239,8 +249,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Performs the given {@link Consumer} on the value of this {@code Try} if it is a {@link Success}.
      * <p>
-     * This is a shortcut for {@code andThenTry(consumer::accept)}. If this {@code Try} is a {@link Failure}, 
-     * it is returned unchanged. If the consumer throws an exception, a {@link Failure} is returned.
+     * This is a shortcut for {@code andThenTry(consumer::accept)}. If this {@code Try} is a {@link Failure},
+     * it is returned unchanged. If the consumer throws a non-fatal exception, a {@link Failure} is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param consumer the consumer to execute on the value
      * @return this {@code Try} if it is a {@link Failure} or the consumer succeeds, otherwise a {@link Failure} of the consumer
@@ -256,8 +267,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Passes the result of this {@code Try} to the given {@link CheckedConsumer} if this is a {@link Success}.
      * <p>
-     * This allows chaining of operations that may throw checked exceptions. If this {@code Try} is a {@link Failure}, 
-     * it is returned unchanged. If the consumer throws an exception, a {@link Failure} containing that exception is returned.
+     * This allows chaining of operations that may throw checked exceptions. If this {@code Try} is a {@link Failure},
+     * it is returned unchanged. If the consumer throws a non-fatal exception, a {@link Failure} containing that
+     * exception is returned; fatal throwables (see the class-level documentation) are rethrown instead.
      * <p>
      * Example usage:
      * <pre>{@code
@@ -287,7 +299,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Performs the given {@link Runnable} if this {@code Try} is a {@link Success}.
      * <p>
      * This is a shortcut for {@code andThenTry(runnable::run)}. If this {@code Try} is a {@link Failure}, it is returned unchanged.
-     * If the runnable throws an exception, a {@link Failure} containing that exception is returned.
+     * If the runnable throws a non-fatal exception, a {@link Failure} containing that exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param runnable the runnable to execute
      * @return this {@code Try} if it is a {@link Failure} or the runnable succeeds, otherwise a {@link Failure} of the runnable
@@ -304,8 +317,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Executes the given {@link CheckedRunnable} if this {@code Try} is a {@link Success}; 
      * otherwise, returns this {@code Failure}.
      * <p>
-     * This allows chaining of runnables that may throw checked exceptions. If the runnable throws an exception,
-     * a {@link Failure} containing that exception is returned.
+     * This allows chaining of runnables that may throw checked exceptions. If the runnable throws a non-fatal
+     * exception, a {@link Failure} containing that exception is returned; fatal throwables (see the class-level
+     * documentation) are rethrown instead.
      * <p>
      * Example usage with method references:
      * <pre>{@code
@@ -393,7 +407,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      *
      * @param predicate         the predicate to test the value
      * @param throwableSupplier a supplier providing a throwable if the predicate fails
-     * @return this {@code Try} if the predicate passes, otherwise a {@link Failure} from the throwable supplier
+     * @return this {@code Try} if the predicate passes; otherwise a {@link Failure} from the throwable supplier,
+     *         or wrapping the thrown exception if the predicate or supplier throws
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is {@code null}
      */
     default Try<T> filter(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
@@ -410,7 +425,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      *
      * @param predicate     the predicate to test the value
      * @param errorProvider a function providing a throwable if the predicate fails
-     * @return this {@code Try} if the predicate passes, otherwise a {@link Failure} from the error provider
+     * @return this {@code Try} if the predicate passes; otherwise a {@link Failure} from the error provider,
+     *         or wrapping the thrown exception if the predicate or provider throws
      * @throws NullPointerException if {@code predicate} or {@code errorProvider} is {@code null}
      */
     default Try<T> filter(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
@@ -437,13 +453,16 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Returns {@code this} if this {@code Try} is a {@link Failure} or if it is a {@link Success} and the value
      * satisfies the given checked predicate.
      * <p>
-     * If this is a {@link Success} and the predicate returns {@code false}, or if evaluating the predicate
-     * throws an exception, a new {@link Failure} is returned. The returned failure wraps a {@link Throwable}
-     * provided by the given {@code throwableSupplier}.
+     * If this is a {@link Success} and the predicate returns {@code false}, a new {@link Failure} is returned,
+     * wrapping the {@link Throwable} provided by the given {@code throwableSupplier}. If evaluating the predicate
+     * (or the {@code throwableSupplier}) throws an exception, a new {@link Failure} wrapping that thrown exception
+     * is returned instead.
      *
      * @param predicate         the checked predicate to test the value
      * @param throwableSupplier a supplier providing the {@link Throwable} for the failure if the predicate does not hold
-     * @return this {@code Try} if it is a {@link Failure} or the predicate passes, otherwise a {@link Failure} from the supplier
+     * @return this {@code Try} if it is a {@link Failure} or the predicate passes; a {@link Failure} from the supplier
+     *         if the predicate returns {@code false}; a {@link Failure} wrapping the thrown exception if the predicate
+     *         or the supplier throws
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is {@code null}
      */
     default Try<T> filterTry(CheckedPredicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
@@ -519,7 +538,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Transforms the value of this {@code Try} using the given {@link CheckedFunction1} if it is a {@link Success},
      * or returns this {@link Failure}.
      * <p>
-     * If applying the mapper throws an exception, a {@link Failure} containing the exception is returned.
+     * If applying the mapper throws a non-fatal exception, a {@link Failure} containing the exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      *
      * @param mapper a checked function mapping the value to another {@code Try}
      * @param <U>    the type of the resulting {@code Try}
@@ -621,7 +641,7 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction1)}.
      *
      * @param <U>    The new component type
-     * @param mapper A checked function
+     * @param mapper a function to apply to the value
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
      */
@@ -664,7 +684,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Applies the given checked function to the value of this {@link Success}, or returns this {@link Failure} unchanged.
      * <p>
-     * If the function throws an exception, a new {@link Failure} containing the exception is returned.
+     * If the function throws a non-fatal exception, a new {@link Failure} containing the exception is returned;
+     * fatal throwables (see the class-level documentation) are rethrown instead.
      * This allows chaining of computations that may throw checked exceptions.
      * <p>
      * Example:
@@ -893,8 +914,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Attempts to recover from a failure if the cause is an instance of the specified exception type.
      * <p>
      * If this {@code Try} is a {@link Success}, it is returned unchanged. If this is a {@link Failure} and the cause
-     * is assignable from {@code exceptionType}, the recovery function {@code f} is applied to the cause inside a new {@code Try}.
-     * Otherwise, the original {@code Failure} is returned.
+     * is an instance of (i.e. assignable to) {@code exceptionType}, the recovery function {@code f} is applied to
+     * the cause inside a new {@code Try}. Otherwise, the original {@code Failure} is returned.
      * <p>
      * Example:
      * <pre>{@code
@@ -913,7 +934,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * @param <X>           the type of exception to handle
      * @param exceptionType the specific exception type that should be recovered
      * @param f             a recovery function taking an exception of type {@code X} and producing a value
-     * @return a {@code Success} with the recovered value if the exception matches, otherwise this {@code Try}
+     * @return a {@code Success} with the recovered value if the exception matches (or a {@code Failure} wrapping the
+     *         thrown exception if {@code f} itself throws), otherwise this {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
     @SuppressWarnings("unchecked")
@@ -933,10 +955,11 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Attempts to recover from a failure by applying the given recovery function if the cause matches the specified exception type.
      * <p>
-     * If this {@code Try} is a {@link Success}, it is returned unchanged. If this is a {@link Failure} and the cause
-     * is assignable from {@code exceptionType}, the recovery function {@code f} is applied to the cause and returns a new {@code Try}.
-     * If the returned {@code Try} is a {@link Try#isFailure()}, the recovery is considered unsuccessful.
-     * Otherwise, the original {@code Failure} is returned.
+     * If this {@code Try} is a {@link Success}, or if this is a {@link Failure} whose cause does not match
+     * {@code exceptionType}, it is returned unchanged. If this is a {@link Failure} and the cause is an instance
+     * of (i.e. assignable to) {@code exceptionType}, the recovery function {@code f} is applied to the cause and
+     * its result is returned as-is: a {@link Failure} returned by {@code f} means the recovery was unsuccessful;
+     * if {@code f} throws, a new {@link Failure} wrapping that exception is returned instead.
      * <p>
      * Example:
      * <pre>{@code
@@ -1016,8 +1039,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Recovers this {@code Try} with the given {@code value} if this is a {@link Try.Failure}
      * and the underlying cause matches the specified {@code exceptionType}.
      * <p>
-     * If this {@code Try} is a {@link Success}, or if the cause is not assignable from {@code exceptionType},
-     * the original {@code Try} is returned unchanged.
+     * If this {@code Try} is a {@link Success}, or if the cause is not an instance of (i.e. not assignable to)
+     * {@code exceptionType}, the original {@code Try} is returned unchanged.
      * <p>
      * Example:
      * <pre>{@code
@@ -1080,9 +1103,9 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * Recovers this {@code Try} if it is a {@link Try.Failure} by applying the given recovery function {@code f}
      * to the underlying exception. The recovery function returns a new {@code Try} instance. 
      * <p>
-     * If this {@code Try} is already a {@link Success}, it is returned unchanged. 
-     * If an exception occurs while executing the recovery function, a new {@link Try.Failure} is returned 
-     * wrapping that exception.
+     * If this {@code Try} is already a {@link Success}, it is returned unchanged.
+     * If a non-fatal exception occurs while executing the recovery function, a new {@link Try.Failure} is returned
+     * wrapping that exception; fatal throwables (see the class-level documentation) are rethrown instead.
      * <p>
      * Example:
      * <pre>{@code
@@ -1231,7 +1254,7 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * @param <U>             the type of the invalid value
      * @param throwableMapper a function to convert the failure {@link Throwable} to type {@code U}
      * @return a {@code Validation} representing this {@code Try}
-     * @throws NullPointerException if {@code throwableMapper} is null
+     * @throws NullPointerException if {@code throwableMapper} is null, or if it returns {@code null} for the failure cause
      */
     default <U extends @Nullable Object> Validation<U, T> toValidation(Function<? super Throwable, ? extends U> throwableMapper) {
         Objects.requireNonNull(throwableMapper, "throwableMapper is null");
@@ -1261,11 +1284,14 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      *
      * <p>If this {@code Try} is already a {@link Try.Failure} and the runnable also throws, the
      * original failure is preserved and the runnable's exception is added as
-     * {@linkplain Throwable#addSuppressed(Throwable) suppressed}, consistent with Java's
-     * {@code try-finally} semantics.</p>
+     * {@linkplain Throwable#addSuppressed(Throwable) suppressed} — analogous to how Java's
+     * {@code try}-with-resources attaches an exception thrown by {@code close()} to the primary
+     * exception (JLS §14.20.3).</p>
      *
      * @param runnable a final action to perform
-     * @return this {@code Try} unchanged if the runnable succeeds, or a new {@link Try.Failure} if it throws
+     * @return this {@code Try} if the runnable succeeds; if the runnable throws, this same {@code Try} with the
+     *         exception added as {@linkplain Throwable#addSuppressed(Throwable) suppressed} when this was already
+     *         a {@link Try.Failure}, or a new {@link Try.Failure} wrapping the exception when this was a {@link Success}
      * @throws NullPointerException if {@code runnable} is null
      */
     default Try<T> andFinally(Runnable runnable) {
@@ -1279,11 +1305,14 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      *
      * <p>If this {@code Try} is already a {@link Try.Failure} and the runnable also throws, the
      * original failure is preserved and the runnable's exception is added as
-     * {@linkplain Throwable#addSuppressed(Throwable) suppressed}, consistent with Java's
-     * {@code try-finally} semantics.</p>
+     * {@linkplain Throwable#addSuppressed(Throwable) suppressed} — analogous to how Java's
+     * {@code try}-with-resources attaches an exception thrown by {@code close()} to the primary
+     * exception (JLS §14.20.3).</p>
      *
      * @param runnable a checked final action to perform
-     * @return this {@code Try} unchanged if the runnable succeeds, or a new {@link Try.Failure} if it throws
+     * @return this {@code Try} if the runnable succeeds; if the runnable throws, this same {@code Try} with the
+     *         exception added as {@linkplain Throwable#addSuppressed(Throwable) suppressed} when this was already
+     *         a {@link Try.Failure}, or a new {@link Try.Failure} wrapping the exception when this was a {@link Success}
      * @throws NullPointerException if {@code runnable} is null
      */
     default Try<T> andFinallyTry(CheckedRunnable runnable) {
@@ -1316,7 +1345,7 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * and hold the resulting value of type {@code T}.
      *
      * <pre>{@code
-     * Try<Integer> success = new Try.Success<>(42);
+     * Try<Integer> success = Try.success(42);
      * success.isSuccess(); // true
      * success.get();       // 42
      * }</pre>
@@ -1393,7 +1422,7 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * and do not contain a successful value.
      *
      * <pre>{@code
-     * Try<Integer> failure = new Try.Failure<>(new RuntimeException("error"));
+     * Try<Integer> failure = Try.failure(new RuntimeException("error"));
      * failure.isFailure();  // true
      * failure.getCause();   // RuntimeException: error
      * }</pre>
