@@ -1132,7 +1132,8 @@ public interface Value<T extends @Nullable Object> extends Iterable<T> {
      *
      * @param left A left value for the {@link Either}
      * @param <L>  Either left component type
-     * @return A new {@link Either}.
+     * @return this {@link Either} unchanged if it already is a {@code Right}, otherwise a new {@link Either.Left}
+     * containing {@code left} if this value is empty, or a new {@link Either.Right} containing this value.
      */
     default <L extends @Nullable Object> Either<L, T> toEither(L left) {
         if (this instanceof Either) {
@@ -1146,8 +1147,10 @@ public interface Value<T extends @Nullable Object> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
-     * @param <L>          Validation error component type
-     * @return A new {@link Either}.
+     * @param <L>          Either left component type
+     * @return this {@link Either} unchanged if it already is a {@code Right}, otherwise a new {@link Either.Left}
+     * containing the value supplied by {@code leftSupplier} if this value is empty, or a new {@link Either.Right}
+     * containing this value.
      */
     default <L extends @Nullable Object> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
         Objects.requireNonNull(leftSupplier, "leftSupplier is null");
