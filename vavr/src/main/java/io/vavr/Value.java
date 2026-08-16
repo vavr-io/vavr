@@ -1117,7 +1117,8 @@ public interface Value<T extends @Nullable Object> extends Iterable<T> {
     /**
      * Converts this to an {@link Option}.
      *
-     * @return A new {@link Option}.
+     * @return this instance if it already is an {@link Option}, otherwise {@link Option#none()} if this value is
+     * empty, or a new {@link Option} wrapping the value.
      */
     default Option<T> toOption() {
         if (this instanceof Option) {

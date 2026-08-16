@@ -416,7 +416,9 @@ public interface Option<T extends @Nullable Object> extends Value<T>, Serializab
      *
      * @param <U>    the type of the resulting {@code Try}'s value
      * @param mapper a checked function to transform the contained value
-     * @return a {@code Try} containing the mapped value if this {@code Option} is defined, otherwise a {@link Try.Failure}
+     * @return a {@link Try.Success} containing the mapped value if this {@code Option} is defined and {@code mapper}
+     * completes normally, a {@link Try.Failure} wrapping the exception thrown by {@code mapper} if it throws, or a
+     * {@link Try.Failure} holding a {@link java.util.NoSuchElementException} if this is {@code None}
      * @throws NullPointerException if {@code mapper} is null
      */
     default <U extends @Nullable Object> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
@@ -486,8 +488,8 @@ public interface Option<T extends @Nullable Object> extends Value<T>, Serializab
 
     /**
      * Some represents a defined {@link Option}. It contains a value which may be null. However, to
-     * create an Option containing null, {@code new Some(null)} has to be called. In all other cases
-     * {@link Option#of(Object)} is sufficient.
+     * create an Option containing null, {@link Option#some(Object) Option.some(null)} has to be called.
+     * In all other cases {@link Option#of(Object)} is sufficient.
      *
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
