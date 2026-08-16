@@ -100,7 +100,8 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
 
     /**
      * Narrows a {@code Either<? extends L, ? extends R>} to {@code Either<L, R>} via a type-safe cast.
-     * This is safe because immutable or read-only collections are covariant.
+     * This is safe because {@code Either} is immutable and its contents are read-only, so it is covariant
+     * in both {@code L} and {@code R}.
      *
      * @param either the {@code Either} to narrow
      * @param <L>    the type of the left value
@@ -347,19 +348,21 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
     }
 
     /**
-     * Transforms an {@link Iterable} of values into a single {@code Either<Seq<L>, Seq<R>>} by applying a mapping 
+     * Transforms an {@link Iterable} of values into a single {@code Either<L, Seq<R>>} by applying a mapping
      * function that returns an {@code Either} for each element.
      * <p>
-     * If the mapper returns any {@link Either.Left}, the resulting {@code Either} is a {@link Either.Left}
-     * containing a {@link Seq} of all left values. Otherwise, the result is a {@link Either.Right} containing 
-     * a {@link Seq} of all right values.
+     * If the mapper returns any {@link Either.Left}, the result is a {@link Either.Left} containing the first
+     * left value encountered in iteration order.
+     * <p>
+     * If the mapper returns only {@link Either.Right}s, the result is a {@link Either.Right} containing a
+     * (possibly empty) {@link Seq} of all right values.
      *
      * @param values an {@code Iterable} of values to map
      * @param mapper a function mapping each value to an {@code Either<L, R>}
      * @param <L>    the type of left values
      * @param <R>    the type of right values
-     * @param <T>    the type of input values
-     * @return a single {@code Either} containing a {@link Seq} of left or right results
+     * @param <T>    the type of the input values
+     * @return an {@code Either} containing either the first left value if present, or a {@link Seq} of all right values
      * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
     static <L extends @Nullable Object, R extends @Nullable Object, T extends @Nullable Object> Either<L, Seq<R>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
@@ -384,7 +387,8 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
     }
 
     /**
-     * Executes the given action if this projection represents a {@link Either.Left} value.
+     * Executes the given action on the left value if this {@code Either} is a {@link Either.Left}; does nothing
+     * if it is a {@link Either.Right}.
      *
      * @param action a consumer that processes the left value
      */
@@ -458,10 +462,12 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
      * import static io.vavr.API.*;
      *
      * // = Right("A")
-     * Right("a").map(String::toUpperCase);
+     * Either<Integer, String> right = Right("a");
+     * right.map(String::toUpperCase);
      *
      * // = Left(1)
-     * Left(1).map(String::toUpperCase);
+     * Either<Integer, String> left = Left(1);
+     * left.map(String::toUpperCase);
      * }</pre>
      *
      * @param mapper a function to transform the right value
@@ -489,10 +495,12 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
      * import static io.vavr.API.*;
      *
      * // = Left(2)
-     * Left(1).mapLeft(i -> i + 1);
+     * Either<Integer, String> left = Left(1);
+     * left.mapLeft(i -> i + 1);
      *
      * // = Right("a")
-     * Right("a").mapLeft(i -> i + 1);
+     * Either<Integer, String> right = Right("a");
+     * right.mapLeft(i -> i + 1);
      * }</pre>
      *
      * @param leftMapper a function to transform the left value
@@ -620,6 +628,11 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
     @Override
     R get();
 
+    /**
+     * Checks if this {@code Either} is empty.
+     *
+     * @return {@code true} if this is a {@link Either.Left}, {@code false} if this is a {@link Either.Right}
+     */
     @Override
     default boolean isEmpty() {
         return isLeft();
@@ -732,10 +745,20 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
     }
 
+    /**
+     * Converts this {@code Either} to a {@link Try}.
+     * <p>
+     * Returns {@code Try.success(get())} if this is a {@link Either.Right}; otherwise returns a
+     * {@code Try.failure} whose cause is an {@link Either.Failure} wrapping the left value
+     * (not a {@code NoSuchElementException}).
+     *
+     * @return a {@code Success} of the right value, or a {@code Failure} carrying an {@code Either.Failure}
+     * that holds the left value
+     */
     @Override
     default Try<R> toTry() {
-        return isRight() 
-          ? Try.success(get()) 
+        return isRight()
+          ? Try.success(get())
           : Try.failure(new Failure(getLeft()));
     }
 
@@ -868,8 +891,6 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          * @param other an alternative value
          *
          * @return the left value, if the underlying Either is a Left or else {@code other}
-         *
-         * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
         @Override
         public L getOrElse(L other) {
@@ -954,7 +975,7 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          * @param mapper A mapper
          * @param <U>    Component type of the mapped left value
          *
-         * @return this as {@code LeftProjection<L, U>} if a Right is underlying, otherwise a the mapping result of the left value.
+         * @return this as {@code LeftProjection<U, R>} if a Right is underlying, otherwise the mapping result of the left value.
          *
          * @throws NullPointerException if {@code mapper} is null
          */
@@ -974,7 +995,8 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          * @param mapper A mapper which takes a left value and returns a value of type U
          * @param <U>    The new type of a Left value
          *
-         * @return A new LeftProjection
+         * @return a new {@code LeftProjection} with the mapped value if the projected Either is a Left,
+         * otherwise this same {@code LeftProjection<U, R>} unchanged
          */
         @SuppressWarnings("unchecked")
         @Override
@@ -1164,8 +1186,6 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          * @param other an alternative value
          *
          * @return the right value, if the underlying Either is a Right or else {@code other}
-         *
-         * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
         @Override
         public R getOrElse(R other) {
@@ -1260,7 +1280,8 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          * @param mapper A mapper which takes a right value and returns a value of type U
          * @param <U>    The new type of a Right value
          *
-         * @return A new RightProjection
+         * @return a new {@code RightProjection} with the mapped value if the projected Either is a Right,
+         * otherwise this same {@code RightProjection<L, U>} unchanged
          */
         @SuppressWarnings("unchecked")
         @Override
@@ -1278,7 +1299,7 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
          *
          * @param action An action which takes a right value
          *
-         * @return this {@code Either} instance
+         * @return this {@code RightProjection}
          */
         @Override
         public RightProjection<L, R> peek(Consumer<? super R> action) {
