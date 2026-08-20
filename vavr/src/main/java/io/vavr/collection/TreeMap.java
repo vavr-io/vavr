@@ -1189,6 +1189,12 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     @Override
+    public <K2 extends @Nullable Object> TreeMap<K2, V> mapKeysWith(BiFunction<? super K, ? super V, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k, v), v));
+    }
+
+    @Override
     public <K2 extends @Nullable Object> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         final Comparator<K2> comparator = Comparators.naturalComparator();
         return Collections.mapKeys(this, TreeMap.<K2, V> empty(comparator), keyMapper, valueMerge);
@@ -1198,6 +1204,12 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
     public <W extends @Nullable Object> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map(comparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
+    }
+
+    @Override
+    public <W extends @Nullable Object> TreeMap<K, W> mapValuesWith(BiFunction<? super K, ? super V, ? extends W> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map(comparator(), (k, v) -> Tuple.of(k, valueMapper.apply(k, v)));
     }
 
     @Override

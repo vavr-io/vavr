@@ -29,10 +29,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import org.assertj.core.api.IterableAssert;
@@ -690,6 +687,22 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
+    public void shouldReturnModifiedKeysMapUsingKeysAndValues() {
+        final var actual = emptyIntInt()
+            .put(1, 1)
+            .put(2, 2)
+            .put(3, 3)
+            .mapKeysWith(Integer::sum);
+
+        assertThat(actual).isEqualTo(emptyInt().put(2, 1).put(4, 2).put(6, 3));
+    }
+
+    @Test
+    public void shouldThrowWhenMapKeysWithMapperIsNull() {
+        assertThrows(NullPointerException.class, () -> emptyMap().mapKeysWith(null));
+    }
+
+    @Test
     public void shouldReturnModifiedKeysMapWithNonUniqueMapper() {
         final Map<Integer, String> actual = emptyIntString()
                 .put(1, "1").put(2, "2").put(3, "3")
@@ -743,6 +756,22 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnModifiedValuesMap() {
         assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyInt().put(1, 1).put(2, 2));
+    }
+
+    @Test
+    public void shouldReturnModifiedValuesMapUsingKeysAndValues() {
+        final var actual = emptyIntInt()
+                .put(1, 1)
+                .put(2, 2)
+                .put(3, 3)
+                .mapValuesWith(Integer::sum);
+
+        assertThat(actual).isEqualTo(emptyInt().put(1, 2).put(2, 4).put(3, 6));
+    }
+
+    @Test
+    public void shouldThrowWhenZipValuesMapperIsNull() {
+        assertThrows(NullPointerException.class, () -> emptyMap().mapValuesWith(null));
     }
 
     @Test
@@ -998,6 +1027,23 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldThrowIfZipWithThatIsNull() {
         assertThrows(NullPointerException.class, () -> emptyMap().zip(null));
+    }
+
+    // zipWith
+
+    @Test
+    public void shouldZipWithNonNilsOfSameSize() {
+        final Seq<Integer> actual = emptyIntInt()
+                .put(0, 1)
+                .put(2, 3)
+                .put(4, 5)
+                .zipWith(Integer::sum);
+        assertThat(actual).isEqualTo(Stream.of(1, 5, 9));
+    }
+
+    @Test
+    public void shouldThrowIfZipWithIsNull() {
+        assertThrows(NullPointerException.class, () -> emptyMap().zipWith(null));
     }
 
     // -- zipWithIndex
