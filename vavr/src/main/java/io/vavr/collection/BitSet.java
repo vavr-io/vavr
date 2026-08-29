@@ -1233,8 +1233,8 @@ interface BitSetModule {
 
         BitSetIterator(AbstractBitSet<T> bitSet) {
             this.bitSet = bitSet;
-            this.element = bitSet.getWord(0);
-            this.index = 0;
+            element = bitSet.getWord(0);
+            index = 0;
         }
 
         @Override
@@ -1267,7 +1267,7 @@ interface BitSetModule {
         BitSet1(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements) {
             super(fromInt, toInt);
             this.elements = elements;
-            this.len = Long.bitCount(elements);
+            len = Long.bitCount(elements);
         }
 
         @Override
@@ -1334,7 +1334,7 @@ interface BitSetModule {
             super(fromInt, toInt);
             this.elements1 = elements1;
             this.elements2 = elements2;
-            this.len = Long.bitCount(elements1) + Long.bitCount(elements2);
+            len = Long.bitCount(elements1) + Long.bitCount(elements2);
         }
 
         @Override
@@ -1411,7 +1411,7 @@ interface BitSetModule {
         BitSetN(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long[] elements) {
             super(fromInt, toInt);
             this.elements = elements;
-            this.len = calcLength(elements);
+            len = calcLength(elements);
         }
 
         private static int calcLength(long[] elements) {

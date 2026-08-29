@@ -1174,7 +1174,7 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      */
     @Serial
     private Object writeReplace() {
-        return new SerializationProxy<>(this.map);
+        return new SerializationProxy<>(map);
     }
 
     /**
