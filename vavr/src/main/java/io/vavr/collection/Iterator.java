@@ -130,7 +130,6 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @param iterator the iterator to narrow
      * @param <T>      the element type
      * @return the same iterator, viewed as {@code Iterator<T>}
-     * @throws NullPointerException if {@code iterator} is {@code null}
      */
     @SuppressWarnings("unchecked")
     static <T extends @Nullable Object> Iterator<T> narrow(Iterator<? extends T> iterator) {
@@ -511,7 +510,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * </pre>
      *
      * @param from        the first character (inclusive)
-     * @param toExclusive the end character (exclusive) - successor of the last character if {@code step > 0}, or predecessor if {@code step < 0}
+     * @param toExclusive the end character (exclusive); the actual last character yielded is
+     *                    the closest value of the form {@code from + k*step} that lies strictly
+     *                    before {@code toExclusive}, not necessarily its successor/predecessor
      * @param step        the increment between characters; must not be zero
      * @return an iterator over the specified character range, or empty if the step direction
      *         does not match the direction from {@code from} to {@code toExclusive}
@@ -641,8 +642,10 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * </pre>
      *
      * @param from        the first number (inclusive)
-     * @param toExclusive the end number (exclusive)
-     *                     - last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
+     * @param toExclusive the exclusive upper bound (if {@code step > 0}) or exclusive lower
+     *                    bound (if {@code step < 0}); the actual last element yielded is the
+     *                    closest value of the form {@code from + k*step} that lies strictly
+     *                    before {@code toExclusive}
      * @param step        the increment; must not be zero
      * @return an iterator over the specified range, or empty if the step direction does not match the
      *         direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
@@ -685,8 +688,10 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * </pre>
      *
      * @param from        the first number (inclusive)
-     * @param toExclusive the end number (exclusive)
-     *                     - last number + 1 if {@code step > 0}, or last number - 1 if {@code step < 0}
+     * @param toExclusive the exclusive upper bound (if {@code step > 0}) or exclusive lower
+     *                    bound (if {@code step < 0}); the actual last element yielded is the
+     *                    closest value of the form {@code from + k*step} that lies strictly
+     *                    before {@code toExclusive}
      * @param step        the increment; must not be zero
      * @return an iterator over the specified range, or empty if the step direction does not match
      *         the direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
@@ -957,7 +962,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Returns an infinite {@code Iterator} of int values starting from {@code value}
      * and advancing by the specified {@code step}.
      *
-     * <p>The iterator wraps from {@code Integer.MAX_VALUE} to {@code Integer.MIN_VALUE} if overflow occurs.
+     * <p>The iterator uses plain {@code int} arithmetic and wraps around on overflow: from
+     * {@code Integer.MAX_VALUE} to {@code Integer.MIN_VALUE} if {@code step > 0}, or from
+     * {@code Integer.MIN_VALUE} to {@code Integer.MAX_VALUE} if {@code step < 0}.
      *
      * @param value the starting int value
      * @param step  the increment for each iteration
@@ -1009,7 +1016,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Returns an infinite {@code Iterator} of long values starting from {@code value}
      * and advancing by the specified {@code step}.
      *
-     * <p>The iterator wraps from {@code Long.MAX_VALUE} to {@code Long.MIN_VALUE} if overflow occurs.
+     * <p>The iterator uses plain {@code long} arithmetic and wraps around on overflow: from
+     * {@code Long.MAX_VALUE} to {@code Long.MIN_VALUE} if {@code step > 0}, or from
+     * {@code Long.MIN_VALUE} to {@code Long.MAX_VALUE} if {@code step < 0}.
      *
      * @param value the starting long value
      * @param step  the increment for each iteration
@@ -1094,8 +1103,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Returns an infinite {@code Iterator} that generates values by repeatedly
      * applying the given function to the previous value, starting with {@code seed}.
      *
-     * <p>Each call to {@code getNext()} produces the next element by applying {@code f}
-     * to the previous element.
+     * <p>The first element is {@code seed}; each subsequent call to {@code getNext()}
+     * produces the next element by applying {@code f} to the previous element.
      *
      * @param seed the initial value
      * @param f    the function to compute the next value from the previous; must not be {@code null}
@@ -1166,13 +1175,15 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      *
      * <p>Examples:
      * <pre>
-     * Iterator.of(1, 2).concat(Iterator.of(3, 4))  // yields 1, 2, 3, 4
-     * Iterator.empty().concat(Iterator.of(1, 2))   // yields 1, 2
-     * Iterator.of(1, 2).concat(Iterator.empty())   // yields 1, 2
+     * Iterator.of(1, 2).concat(Iterator.of(3, 4))          // yields 1, 2, 3, 4
+     * Iterator.empty().concat(Iterator.of(1, 2))           // yields 1, 2
+     * Iterator.of(1, 2).concat(Iterator.of(3, 4).drop(2))  // yields 1, 2
      * </pre>
      *
      * @param that the iterator whose elements should be appended
-     * @return a new iterator containing elements from both iterators
+     * @return an iterator yielding the elements of this iterator followed by those of
+     *         {@code that}; this instance is returned as-is if {@code that} is empty, and
+     *         {@code that} (as an {@code Iterator}) is returned as-is if this iterator is empty
      * @throws NullPointerException if {@code that} is {@code null}
      */
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
@@ -1343,7 +1354,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Creates an {@code Iterator} by repeatedly applying a function to a seed value.
      * <p>
      * The function takes the current seed and returns {@code None} to signal the end of iteration,
-     * or {@code Some<Tuple2>} containing the next element to yield and the seed for the next step.
+     * or {@code Some<Tuple2>} containing the next seed and the element to yield
+     * (i.e. {@code Tuple2(nextSeed, element)}), matching {@link #unfoldLeft}.
      *
      * <p>Example:
      * <pre>{@code
@@ -1508,7 +1520,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      *
      * <p>Examples:
      * <pre>
-     * Iterator.of("a", "ab", "abc", "b").distinctByKeepLast(String::length)  // yields "abc", "b"
+     * Iterator.of("a", "ab", "abc", "b").distinctByKeepLast(String::length)  // yields "ab", "abc", "b"
      * </pre>
      *
      * @param keyExtractor function used to extract the key from elements
@@ -1532,7 +1544,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Removes up to n elements from this iterator.
      *
      * @param n A number
-     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
+     * @return this iterator, if {@code n <= 0}; the empty iterator, if this iterator is
+     *         empty; otherwise a new iterator without the first {@code n} elements.
      */
     @Override
     default Iterator<T> drop(int n) {
@@ -1678,7 +1691,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      *
      * @param mapper A mapper
      * @param <U>    Component type
-     * @return A new Iterable
+     * @return A new Iterator
      */
     @Override
     default <U extends @Nullable Object> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
@@ -1792,6 +1805,12 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         return true;
     }
 
+    /**
+     * Returns this iterator itself, since an {@code Iterator} is already an
+     * iterator over its own elements.
+     *
+     * @return this instance
+     */
     @Override
     default Iterator<T> iterator() {
         return this;
@@ -1851,6 +1870,14 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         return isEmpty() ? ofAll(other) : this;
     }
 
+    /**
+     * Returns this {@code Iterator} if it is not empty, otherwise returns an {@code Iterator}
+     * over the elements produced by the given {@code supplier}.
+     *
+     * @param supplier an alternative {@code Iterable} supplier
+     * @return this instance, if it is not empty, otherwise an iterator over the elements of {@code supplier.get()}
+     * @throws NullPointerException if this iterator is empty and {@code supplier} is {@code null}
+     */
     @Override
     default Iterator<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
@@ -1867,6 +1894,16 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         }
     }
 
+    /**
+     * Returns a new Iterator that lazily performs the given {@code action} on each
+     * element as it is pulled via {@link #next()}; unlike other lazy {@code Value}
+     * implementations, not even the first element's action runs until the first
+     * element is actually requested.
+     *
+     * @param action a Consumer to apply to each element
+     * @return a new Iterator with the peek action attached
+     * @throws NullPointerException if {@code action} is null
+     */
     @Override
     default Iterator<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
@@ -1979,6 +2016,18 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         return scanLeft(zero, operation);
     }
 
+    /**
+     * Produces a new Iterator containing cumulative results of applying the operator
+     * going left to right, including the initial value.
+     * <p>
+     * Unlike the general {@link Traversable#scanLeft} contract, this lazy implementation
+     * terminates even for infinite iterators: each accumulated value is computed only
+     * when consumed via {@link #next()}.
+     *
+     * @param zero      the initial value
+     * @param operation the associative operation to apply
+     * @return a new Iterator of accumulated values
+     */
     @Override
     default <U extends @Nullable Object> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
@@ -2083,6 +2132,13 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         return "Iterator";
     }
 
+    /**
+     * Consumes and discards the first element from this Iterator and returns this
+     * same (now-advanced) instance — no new Iterator is allocated.
+     *
+     * @return this instance, advanced past the first element
+     * @throws UnsupportedOperationException if this iterator is empty
+     */
     @Override
     default Iterator<T> tail() {
         if (!hasNext()) {
@@ -2093,6 +2149,13 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         }
     }
 
+    /**
+     * Consumes and discards the first element from this Iterator, if any, and
+     * returns {@code Some} of this same (now-advanced) instance.
+     *
+     * @return {@code Some} of this instance, advanced past the first element, or
+     *         {@code None} if this iterator is empty
+     */
     @Override
     default Option<Iterator<T>> tailOption() {
         if (hasNext()) {
@@ -2107,7 +2170,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * Take the first n elements from this iterator.
      *
      * @param n A number
-     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
+     * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new
+     *         iterator consisting of at most the first {@code n} elements of this iterator.
      */
     @Override
     default Iterator<T> take(int n) {
@@ -2214,9 +2278,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
 interface IteratorModule {
 
     /**
-     * Creates two new iterators that both iterates over the same elements as
-     * this iterator and in the same order. The duplicate iterators are
-     * considered equal if they are positioned at the same element.
+     * Creates two new iterators that both iterate over the same elements as the
+     * given {@code iterator} and in the same order.
      * <p>
      * Given that most methods on iterators will make the original iterator
      * unfit for further use, this method provides a reliable way of calling

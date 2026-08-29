@@ -1224,7 +1224,7 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      * [1,2,3,4,5].sliding(2, 3) = [[1,2],[4,5]]
      * [1,2,3,4,5].sliding(2, 4) = [[1,2],[5]]
      * [1,2,3,4,5].sliding(2, 5) = [[1,2]]
-     * [1,2,3,4].sliding(5, 3) = [[1,2,3,4],[4]]
+     * [1,2,3,4].sliding(5, 3) = [[1,2,3,4]]
      * }</pre>
      *
      * @param size a positive window size
