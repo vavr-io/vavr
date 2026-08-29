@@ -682,21 +682,23 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     /**
      * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
+     * <p>If the current thread is interrupted while waiting, this method returns without completing this
+     * {@code Future}. The interrupt status of the current thread remains set. The underlying computation and
+     * other waiters are unaffected. Callers may use {@link #isCompleted()} to distinguish interruption from
+     * completion.</p>
      *
      * @return this {@code Future} instance
      */
     Future<T> await();
 
     /**
-     * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
+     * Blocks the current thread until this {@code Future} is completed or the given timeout elapses,
+     * or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
-     *
-     * <p>If the specified timeout is reached before completion, a failed {@code Future} is returned containing
-     * a {@link TimeoutException}.</p>
+     * <p>Timeout and interruption are local to the waiting thread: they do not complete or fail this
+     * {@code Future}. Other waiters and the underlying computation are unaffected. After return, use
+     * {@link #isCompleted()} to distinguish timeout or interruption from actual completion
+     * ({@code !future.await(timeout, unit).isCompleted()} means the wait ended without completion).</p>
      *
      * @param timeout the maximum time to wait
      * @param unit    the time unit of the timeout argument

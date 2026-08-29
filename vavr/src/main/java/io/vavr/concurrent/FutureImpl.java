@@ -23,12 +23,10 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
@@ -203,9 +201,8 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
      * If timeout = 0 then {@code LockSupport.park()} is called (start, timeout and unit are not used),
      * otherwise {@code LockSupport.park(timeout, unit}} is called.
      * <p>
-     * If a timeout > -1 is specified and the deadline is not met, this Future fails with a {@link TimeoutException}.
-     * <p>
-     * If this Thread was interrupted, this Future fails with a {@link InterruptedException}.
+     * Timeout and interruption are local to the waiting thread: they stop waiting without completing
+     * this Future. The underlying computation and other waiters are unaffected.
      *
      * @param start   the start time in nanos, based on {@linkplain System#nanoTime()}
      * @param timeout a timeout in the given {@code unit} of time
@@ -226,8 +223,11 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
                  * LockSupport.park() / parkNanos() may return when the Thread is permitted to be scheduled again.
                  * If so, the Future's tryComplete() method wasn't called yet. In that case the block() method is
                  * called again. The remaining timeout is recalculated accordingly.
+                 * <p>
+                 * On timeout or interruption of the waiting thread, returns {@code true} to stop blocking without
+                 * completing this Future (those conditions are local to the waiter).
                  *
-                 * @return true, if this Future is completed, false otherwise
+                 * @return true if blocking is no longer needed (completed, timed out, or interrupted), false otherwise
                  */
                 @Override
                 // Invariants NullAway cannot express: this blocker only runs while the Future is
@@ -250,13 +250,15 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
                             final long remainder = duration - delta;
                             LockSupport.parkNanos(remainder); // returns immediately if remainder <= 0
                             if (System.nanoTime() - start > duration) {
-                                tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit.name().toLowerCase())));
+                                // Timeout is local to this waiter; do not poison the shared Future.
+                                return true;
                             }
                         } else {
                             LockSupport.park();
                         }
                         if (waitingThread.isInterrupted()) {
-                            tryComplete(Try.failure(new ExecutionException(new InterruptedException())));
+                            // Interrupt is local to this waiter; do not poison the shared Future.
+                            return true;
                         }
                     } catch (Throwable x) {
                         tryComplete(Try.failure(x));

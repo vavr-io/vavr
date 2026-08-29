@@ -46,7 +46,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -537,9 +536,41 @@ public class FutureTest extends AbstractValueTest {
             });
             final Future<Void> returnedFuture = future.await(timeout, TimeUnit.MILLISECONDS);
             assertThat(returnedFuture).isSameAs(future);
-            assertThat(future.isFailure()).isTrue();
-            assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
-            assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
+            // timeout is local to the waiter; the Future stays incomplete for other consumers
+            assertThat(future.isCompleted()).isFalse();
+        }
+
+        @Test
+        public void shouldNotPoisonFutureWhenShortTimeoutExpires() {
+            final Future<Integer> future = Future.of(() -> {
+                Thread.sleep(500);
+                return 42;
+            });
+            future.await(50, TimeUnit.MILLISECONDS);
+            assertThat(future.isCompleted()).isFalse();
+            // a longer wait (or the computation finishing) can still observe success
+            future.await(2, TimeUnit.SECONDS);
+            assertThat(future.isSuccess()).isTrue();
+            assertThat(future.get()).isEqualTo(42);
+        }
+
+        @Test
+        public void shouldNotPoisonFutureWhenWaitingThreadIsInterrupted() throws InterruptedException {
+            final Future<Integer> future = Future.of(() -> {
+                Thread.sleep(500);
+                return 7;
+            });
+            final Thread waiter = new Thread(() -> future.await());
+            waiter.start();
+            // give the waiter time to park, then interrupt it
+            Thread.sleep(50);
+            waiter.interrupt();
+            waiter.join(1000);
+            assertThat(waiter.isAlive()).isFalse();
+            assertThat(future.isCompleted()).isFalse();
+            future.await(2, TimeUnit.SECONDS);
+            assertThat(future.isSuccess()).isTrue();
+            assertThat(future.get()).isEqualTo(7);
         }
 
         @Test
