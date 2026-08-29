@@ -92,8 +92,8 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
     }
 
     /**
-     * Turns this {@code Map} into a {@link PartialFunction} which is defined at a specific index, if this {@code Map}
-     * contains the given key. When applied to a defined key, the partial function will return
+     * Turns this {@code Map} into a {@link PartialFunction} which is defined at a given key, if this {@code Map}
+     * contains that key. When applied to a defined key, the partial function will return
      * the value of this {@code Map} that is associated with the key.
      *
      * @return a new {@link PartialFunction}
@@ -142,7 +142,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      *
      * @param key             key whose presence in this map is to be tested
      * @param mappingFunction mapping function
-     * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
+     * @return the {@link Tuple2} of the existing or computed value associated with the specified key, and the current or modified map
      */
     Tuple2<V, ? extends Map<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
 
@@ -152,8 +152,8 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      *
      * @param key               key whose presence in this map is to be tested
      * @param remappingFunction remapping function
-     * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
-     * with the specified key, or {@code None} if none
+     * @return the {@link Tuple2} of the {@code Some} of the value associated with the specified key
+     * (or {@code None} if none), and the current or modified map
      */
     Tuple2<Option<V>, ? extends Map<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction);
 
@@ -398,7 +398,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * Order of keys is predictable in {@code TreeMap} (by comparator) and {@code LinkedHashMap} (insertion-order) and not predictable in {@code HashMap}.
      *
      * @param <K2>      the new key type
-     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @param keyMapper a {@code Function} that maps keys of type {@code K} to keys of type {@code K2}
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} is null
      */
@@ -411,7 +411,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * In this case the associated values will be combined using {@code valueMerge}.
      *
      * @param <K2>       the new key type
-     * @param keyMapper  a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @param keyMapper  a {@code Function} that maps keys of type {@code K} to keys of type {@code K2}
      * @param valueMerge a {@code BiFunction} that merges values
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} is null
@@ -657,7 +657,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      *
      * <pre>{@code
      * // = Iterator.of("a", "b", "c")
-     * HashMap.of(1, "a", 2, "b", 3, "c").values()
+     * HashMap.of(1, "a", 2, "b", 3, "c").valuesIterator()
      * }</pre>
      *
      * @return a new {@link Iterator}
@@ -672,7 +672,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * absent from the map.
      *
      * @param defaultFunction function to evaluate for all keys not present in the map
-     * @return a total function from K to T
+     * @return a total function from K to V
      * @deprecated Will be removed
      */
     @Deprecated
@@ -685,7 +685,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * returns defaultValue for all keys absent from the map.
      *
      * @param defaultValue default value to return for all keys not present in the map
-     * @return a total function from K to T
+     * @return a total function from K to V
      * @deprecated Will be removed
      */
     @Deprecated

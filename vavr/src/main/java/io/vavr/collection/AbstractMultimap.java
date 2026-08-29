@@ -451,9 +451,10 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
             return (M) this;
         } else {
             final Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
-                final Traversable<V> thisValues = map.get(key).getOrElse((Traversable<V>) emptyContainer.get());
                 final Traversable<V2> thatValues = that.get(key).get();
-                final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);
+                final Traversable<V> newValues = map.get(key)
+                        .map(thisValues -> collisionResolution.apply(thisValues, thatValues))
+                        .getOrElse((Traversable<V>) thatValues);
                 return map.put(key, newValues);
             });
             return (M) createFromMap(result);
@@ -464,7 +465,7 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
      * Returns this {@code Multimap} if it is nonempty,
      * otherwise {@code Multimap} created from iterable, using existing multimap properties.
      *
-     * @param other An alternative {@code Traversable}
+     * @param other alternative entries (any {@code Iterable} of {@code Tuple2<K, V>}), used only if this multimap is empty
      * @return this {@code Multimap} if it is nonempty,
      * otherwise {@code Multimap} created from iterable, using existing multimap properties.
      */
@@ -478,7 +479,8 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
      * Returns this {@code Multimap} if it is nonempty,
      * otherwise {@code Multimap} created from result of evaluating supplier, using existing multimap properties.
      *
-     * @param supplier An alternative {@code Traversable}
+     * @param supplier a supplier of alternative entries (any {@code Iterable} of {@code Tuple2<K, V>}),
+     *                 evaluated only if this multimap is empty
      * @return this {@code Multimap} if it is nonempty,
      * otherwise {@code Multimap} created from result of evaluating supplier, using existing multimap properties.
      */
@@ -518,9 +520,16 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
         return (M) (contains(currentElement) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public M replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        return replace(currentElement, newElement);
+        Objects.requireNonNull(currentElement, "currentElement is null");
+        Objects.requireNonNull(newElement, "newElement is null");
+        if (!contains(currentElement)) {
+            return (M) this;
+        } else {
+            return (M) createFromEntries(iterator().map(t -> t.equals(currentElement) ? newElement : t));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -632,14 +641,29 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
         return (M) (taken.length() == length() ? this : taken);
     }
 
+    /**
+     * Compares this multimap with the given object for equality. Two multimaps are equal if the other object
+     * is a {@code Multimap} of the same {@link #size()} whose {@code contains} accepts every key-value pair of
+     * this multimap. The comparison is a membership test: it ignores the order of the values under a key and,
+     * for {@code SEQ} containers, the number of times a value occurs under a key.
+     *
+     * @param o an object, may be null
+     * @return {@code true} if {@code o} is a {@code Multimap} equal to this one as described above, {@code false} otherwise
+     */
     @Override
     public boolean equals(@Nullable Object o) {
         return Collections.equals(this, o);
     }
 
+    /**
+     * Returns the order-independent hash of the key-value pairs of this multimap, as specified by
+     * {@link Traversable#hashCode()} for collections with arbitrary iteration order.
+     *
+     * @return the hash code of this multimap
+     */
     @Override
     public int hashCode() {
-        return back.hashCode();
+        return Collections.hashUnordered(this);
     }
 
     @Override

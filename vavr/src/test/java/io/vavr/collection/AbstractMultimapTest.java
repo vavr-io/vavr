@@ -821,6 +821,17 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
           .put(2, 2).put(3, 3).put(4, 4));
     }
 
+    @TestTemplate
+    public void shouldApplyCollisionResolutionOnlyToCollidingKeys() {
+        final Multimap<Integer, Integer> m1 = emptyIntInt().put(1, 1).put(2, 2);
+        final Multimap<Integer, Integer> m2 = emptyIntInt().put(1, 2).put(4, 4);
+        final Multimap<Integer, Integer> actual = m1.merge(m2, (s1, s2) -> s1);
+        assertThat(actual).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(4, 4));
+        assertThat(actual.get(4).get()).containsExactly(4);
+        assertThat(actual.size()).isEqualTo(3);
+        assertThat(actual.iterator().toList()).hasSize(3);
+    }
+
     // -- orElse
 
     // DEV-Note: IntMultimap converts `other` to multimap
@@ -1003,6 +1014,40 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         final Multimap<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
         final Multimap<Integer, String> expected = mapOf(1, "a1").put(2, "b2").put(2, "c2");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @TestTemplate
+    public void shouldReplaceAllOccurrencesOfElement() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(1, "a").put(1, "b").put(2, "a");
+        final Multimap<Integer, String> actual = map.replaceAll(Tuple.of(1, "a"), Tuple.of(1, "c"));
+        assertThat(actual).isEqualTo(mapOf(1, "c").put(1, "c").put(1, "b").put(2, "a"));
+        assertThat(actual.contains(Tuple.of(1, "a"))).isFalse();
+        assertThat(actual.get(1).get().count("c"::equals)).isEqualTo(containerType == Multimap.ContainerType.SEQ ? 2 : 1);
+        assertThat(actual.size()).isEqualTo(map.size());
+    }
+
+    @TestTemplate
+    public void shouldReturnSameInstanceWhenReplacingAllOfNonContainedElement() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        assertThat(map.replaceAll(Tuple.of(1, "x"), Tuple.of(1, "c"))).isSameAs(map);
+    }
+
+    // -- hashCode
+
+    @TestTemplate
+    public void shouldCalculateOrderIndependentHashCodeOfEntries() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(1, "b").put(2, "c");
+        final int expected = 1 + Tuple.of(1, "a").hashCode() + Tuple.of(1, "b").hashCode() + Tuple.of(2, "c").hashCode();
+        assertThat(map.hashCode()).isEqualTo(expected);
+        assertThat(map.hashCode()).isEqualTo(Collections.hashUnordered(map));
+    }
+
+    @TestTemplate
+    public void shouldCalculateSameHashCodeForEqualMultimapsWithDifferentValueOrder() {
+        final Multimap<Integer, String> m1 = mapOf(1, "a").put(1, "b");
+        final Multimap<Integer, String> m2 = mapOf(1, "b").put(1, "a");
+        assertThat(m1).isEqualTo(m2);
+        assertThat(m1.hashCode()).isEqualTo(m2.hashCode());
     }
 
     // -- span

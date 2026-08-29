@@ -30,7 +30,7 @@ import java.util.stream.Collector;
 import org.jspecify.annotations.Nullable;
 
 /**
- * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
+ * An immutable, hash-based {@link Set} implementation with predictable (insertion-order) iteration.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
@@ -131,9 +131,10 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
+     * @param n   The number of times {@code f} is invoked (equal results are deduplicated, so the
+     *            resulting set may contain fewer than {@code n} elements)
      * @param f   The Function computing element values
-     * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A LinkedHashSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
     public static <T extends @Nullable Object> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
@@ -142,12 +143,13 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
     }
 
     /**
-     * Returns a LinkedHashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a LinkedHashSet containing the distinct values returned by {@code n} calls to a given
+     * Supplier {@code s}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
+     * @param n   The number of times {@code s} is invoked
      * @param s   The Supplier computing element values
-     * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A LinkedHashSet of at most {@code n} distinct values supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
     public static <T extends @Nullable Object> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
@@ -160,7 +162,8 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      *
      * @param elements Set elements
      * @param <T>      The value type
-     * @return A new LinkedHashSet containing the given entries
+     * @return A LinkedHashSet containing the given elements; if {@code elements} is already a
+     *         LinkedHashSet, it is returned unchanged.
      */
     @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
@@ -338,9 +341,9 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static LinkedHashSet<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -437,8 +440,8 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static LinkedHashSet<Long> rangeBy(long from, long toExclusive, long step) {
@@ -600,7 +603,7 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -610,12 +613,13 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
     }
 
     /**
-     * Add the given element to this set, replacing existing one if it is already contained.
+     * Adds the given element to this set. If an equal element is already contained, this instance is
+     * returned unchanged and the existing element is retained (the given {@code element} is discarded).
      * <p>
      * Note that this method runs in (amortized) constant time.
      *
      * @param element The element to be added.
-     * @return A new set containing all elements of this set and also {@code element}.
+     * @return A set containing all elements of this set and also {@code element}.
      */
     @Override
     public LinkedHashSet<T> add(T element) {
@@ -623,12 +627,16 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
     }
 
     /**
-     * Adds all of the given elements to this set, replacing existing one if they are not already contained.
+     * Adds all of the given elements that are not already contained in this set, in encounter order.
+     * If no new element is added, this instance is returned unchanged (or, if this set is empty and
+     * {@code elements} is a {@code LinkedHashSet}, the given {@code elements} instance). Whether an
+     * already-contained element is retained or replaced by its equal counterpart from {@code elements}
+     * is unspecified.
      * <p>
      * Note that this method has a worst-case linear complexity.
      *
      * @param elements The elements to be added.
-     * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
+     * @return A set containing all elements of this set and the given {@code elements}.
      */
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
@@ -1031,14 +1039,18 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
     }
 
     /**
-     * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
+     * Adds all of the elements of {@code elements} that are not already contained in this set, forming the union.
+     * If no new element is added, this instance is returned unchanged (or, if this set is empty and
+     * {@code elements} is a {@code LinkedHashSet}, the given {@code elements} instance). Whether an
+     * already-contained element is retained or replaced by its equal counterpart from {@code elements}
+     * is unspecified.
      * <p>
      * Note that this method has a worst-case linear complexity.
      * <p>
      * See also {@link #addAll(Iterable)}.
      *
      * @param elements The set to form the union with.
-     * @return A new set that contains all distinct elements of this and {@code elements} set.
+     * @return A set that contains all distinct elements of this and {@code elements} set.
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -1083,6 +1095,12 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
         return zipWith(that, Tuple::of);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is a {@code Set}, equal results of {@code mapper} are deduplicated, so the resulting
+     * length may be less than the minimum of the lengths of this set and {@code that}.
+     */
     @Override
     public <U extends @Nullable Object, R extends @Nullable Object> LinkedHashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
@@ -1090,6 +1108,12 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
         return LinkedHashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is a {@code Set}, equal pairs (e.g. filler-padded ones) are deduplicated, so the
+     * resulting length may be less than the maximum of the lengths of this set and {@code that}.
+     */
     @Override
     public <U extends @Nullable Object> LinkedHashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
@@ -1167,10 +1191,10 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
     }
 
     /**
-     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
+     * A serialization proxy which, in this context, is used to deserialize immutable LinkedHashSets with final
      * instance fields.
      *
-     * @param <T> The component type of the underlying list.
+     * @param <T> The component type of the underlying set.
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
@@ -1188,7 +1212,7 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param map a Cons
+         * @param map the LinkedHashMap backing the LinkedHashSet to be serialized
          */
         SerializationProxy(LinkedHashMap<T, Object> map) {
             this.map = map;
@@ -1214,7 +1238,7 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
          *
          * @param s An object deserialization stream.
          * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-         * @throws InvalidObjectException If the stream contains no list elements.
+         * @throws InvalidObjectException If the stream contains a negative element count.
          * @throws IOException            If an error occurs reading from the stream.
          */
         @Serial

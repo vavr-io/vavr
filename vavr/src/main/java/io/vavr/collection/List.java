@@ -73,7 +73,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * List.of(x)                          // = new Cons<>(x, Nil.instance())
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(Iterable)                // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
- * List.ofAll(<primitive array>) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
+ * List.ofAll(<primitive array>) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
  * List.range(0, 3)              // = 0, 1, 2
@@ -81,7 +81,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * }
  * </pre>
  *
- * Note: A {@code List} is primarily a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
+ * Note: A {@code List} is primarily a {@code Seq}; the stack-style methods listed above are provided directly on {@code List} for convenience.
  * <p>
  * If operating on a {@code List}, please prefer
  *
@@ -543,9 +543,9 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -590,8 +590,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
@@ -664,7 +664,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * @return a range of double values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero and {@code from != toInclusive}
+     *                                  (if {@code from == toInclusive}, a singleton list is returned regardless of {@code step})
      */
     static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
@@ -753,7 +754,7 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -783,8 +784,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the list, otherwise {@code Some} {@code Tuple}
-     * of the element for the next call and the value to add to the
-     * resulting list.
+     * of the value to add to the resulting list and the element for
+     * the next call.
      * <p>
      * Example:
      * <pre>
@@ -812,8 +813,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the list, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting list and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting list.
      * <p>
      * Example:
      * <pre>
@@ -842,8 +843,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the list, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting list and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting list.
      * <p>
      * Example:
      * <pre>
@@ -1455,8 +1456,8 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
             tail = tail.tail();
             index--;
         }
-        if (index > 0) {
-            throw new IndexOutOfBoundsException("removeAt() on Nil");
+        if (index > 0 || tail.isEmpty()) {
+            throw new IndexOutOfBoundsException("removeAt(" + (index + init.length()) + ") on List of length " + length());
         }
         return init.reverse().appendAll(tail.tail());
     }

@@ -120,7 +120,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @return A new empty HashMap.
+     * @return The empty HashMap (a shared singleton instance).
      */
     @SuppressWarnings("unchecked")
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> empty() {
@@ -160,7 +160,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param map A map
      * @param <K> The key type
      * @param <V> The value type
-     * @return A new Map containing the given map
+     * @return A HashMap containing the given map
      */
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
@@ -180,7 +180,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
-     * @return A new Map
+     * @return A HashMap containing the mapped entries
      */
     public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
                                                 Function<? super T, ? extends K> keyMapper,
@@ -196,7 +196,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
-     * @return A new Map
+     * @return A HashMap containing the mapped entries
      */
     public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
                                                 Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
@@ -424,14 +424,15 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     /**
-     * Returns an HashMap containing {@code n} values of a given Function {@code f}
+     * Returns a HashMap containing up to {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the HashMap
+     * @param n   The number of times to call {@code f}
      * @param f   The Function computing element values
-     * @return An HashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A HashMap containing the entries {@code f(0), f(1), ..., f(n - 1)}; entries with equal keys collapse
+     *         (the later one wins), so the result may contain fewer than {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
@@ -445,9 +446,10 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the HashMap
+     * @param n   The number of times to call {@code s}
      * @param s   The Supplier computing element values
-     * @return An HashMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A HashMap containing the entries supplied by {@code s}; entries with equal keys collapse
+     *         (the later one wins), so the result may contain fewer than {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code s} is null
      */
     @SuppressWarnings("unchecked")
@@ -462,7 +464,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param entries Map entries
      * @param <K>     The key type
      * @param <V>     The value type
-     * @return A new Map containing the given entries
+     * @return A HashMap containing the given entries
      */
     @SafeVarargs
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> ... entries) {
@@ -480,7 +482,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param entries Map entries
      * @param <K>     The key type
      * @param <V>     The value type
-     * @return A new Map containing the given entries
+     * @return A HashMap containing the given entries
      */
     @SafeVarargs
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> ... entries) {
@@ -498,7 +500,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param entries Map entries
      * @param <K>     The key type
      * @param <V>     The value type
-     * @return A new Map containing the given entries
+     * @return A HashMap containing the given entries (the same instance if {@code entries} is already a HashMap)
      */
     @SuppressWarnings("unchecked")
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {

@@ -394,7 +394,7 @@ def genAPIAliases(im: ImportManager): String = {
      *
      * @param <K> The key type.
      * @param <V> The value type.
-     * @param map A map entry.
+     * @param map A {@code java.util.Map} whose entries are copied into the new {@link $mapType}.
      * @return A new {@link $mapType} instance containing the given map
      * @deprecated Will be removed in a future version.
      */
@@ -557,7 +557,7 @@ def genAPIAliases(im: ImportManager): String = {
      * Alias for {@link $FutureType#of($ExecutorType, $CheckedFunction0Type)}
      *
      * @param <T>             Type of the computation result.
-     * @param executorService An executor service.
+     * @param executorService An {@link $ExecutorType} used to run the computation.
      * @param computation     A computation.
      * @return A new {@link $FutureType} instance.
      * @throws NullPointerException if one of executorService or computation is null.
@@ -581,7 +581,7 @@ def genAPIAliases(im: ImportManager): String = {
      * Alias for {@link $FutureType#successful($ExecutorType, Object)}
      *
      * @param <T>             The value type of a successful result.
-     * @param executorService An {@code ExecutorService}.
+     * @param executorService An {@link $ExecutorType} used to run the future's callbacks.
      * @param result          The result.
      * @return A succeeded {@link $FutureType}.
      * @throws NullPointerException if executorService is null
@@ -597,7 +597,7 @@ def genAPIAliases(im: ImportManager): String = {
      *
      * @param <T>      type of the lazy value
      * @param supplier A supplier
-     * @return A new instance of {@link Lazy}
+     * @return A {@link Lazy} wrapping the given supplier, or the supplier itself if it already is a {@code Lazy}
      */
     public static <T $nullableBound> Lazy<T> Lazy($SupplierType<? extends T> supplier) {
         return Lazy.of(supplier);
@@ -646,8 +646,9 @@ def genAPIAliases(im: ImportManager): String = {
      *
      * @param <T>      Component type
      * @param supplier A checked supplier
-     * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
-     * exception occurs calling {@code supplier.get()}.
+     * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if a
+     * non-fatal exception occurs calling {@code supplier.apply()}. Fatal throwables (see {@link $TryType}) are
+     * rethrown instead of being wrapped.
      */
     public static <T $nullableBound> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
         return $TryType.of(supplier);
@@ -670,7 +671,8 @@ def genAPIAliases(im: ImportManager): String = {
      *
      * @param <T>       Component type of the {@code Try}.
      * @param exception An exception.
-     * @return A new {@link $TryType.Failure}.
+     * @return A new {@link $TryType.Failure} wrapping the given exception, unless it is considered fatal
+     * (see {@link $TryType}), in which case it is rethrown.
      */
     @SuppressWarnings("unchecked")
     public static <T $nullableBound> $TryType.Failure<T> Failure(Throwable exception) {
@@ -722,8 +724,8 @@ def genAPIAliases(im: ImportManager): String = {
      * Alias for {@link $CharSeqType#of(char...)}
      *
      * @param characters Zero or more characters.
-     * @return A new {@link $CharSeqType} instance containing the given characters in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @return A {@link $CharSeqType} containing the given characters in the same order (the empty {@code CharSeq} if none are given).
+     * @throws NullPointerException if {@code characters} is null
      */
     public static $CharSeqType CharSeq(char... characters) {
         return $CharSeqType.of(characters);
@@ -779,15 +781,15 @@ def genAPIJavaTypeTweaks(im: ImportManager): String = {
      * e.g. by {@code Match}:
      *
      * <pre>{@code Match(i).of(
-     *     Case($$(is(0)), i -> run(() -> System.out.println("zero"))),
-     *     Case($$(is(1)), i -> run(() -> System.out.println("one"))),
+     *     Case($$(is(0)), ignored -> run(() -> System.out.println("zero"))),
+     *     Case($$(is(1)), ignored -> run(() -> System.out.println("one"))),
      *     Case($$(), o -> run(() -> System.out.println("many")))
      * )}</pre>
      *
      * @param unit A block of code to be run.
      * @return the single instance of {@code Void}, namely {@code null}
      */
-    public static Void run(Runnable unit) {
+    public static @Nullable Void run(Runnable unit) {
         unit.run();
         return null;
     }
@@ -808,6 +810,9 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
 
   val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType, EitherType, ValidationType)
   val monadicTypesThatNeedParameter = List(EitherType, ValidationType)
+
+  // Either has a left-hand side, Validation has an error side
+  def lTypeDoc(mtype: String): String = if (mtype == ValidationType) "the error (invalid) type" else "the common left-hand type"
 
   val types = if (isLazy) monadicTypesFor.filterNot(_ == "Iterable") else monadicTypesFor
   val arityRange: Range = if (isLazy) 2 to N else 1 to N
@@ -838,12 +843,19 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          *
          * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
          * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
-         * bound so far and returns the next ${mtype}. This method only constructs the
+         * bound so far and returns the next ${mtype}.
+         ${if (mtype == FutureType) xs"""
+         * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts$i}
+         * are applied as the preceding Futures complete, asynchronously with respect to the call
+         * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
+         """ else xs"""
+         * This method only constructs the
          * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
          * is invoked.</p>
+         """}
          *
-         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")(using "\n")}
-         ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+         ${(0 to i).gen(j => if (j == 0) "*" else if (j == 1) s"* @param ts1 the initial ${mtype}" else if (j == 2) s"* @param ts2 a function of the previously bound value returning the 2nd ${mtype}" else s"* @param ts$j a function of the ${j - 1} previously bound values returning the ${j.ordinal} ${mtype}")(using "\n")}
+         ${if (isComplex) s"* @param <L> ${lTypeDoc(mtype)} of all ${mtype}s\n" else ""}
          ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
          * @return a new {@code $fcn} builder of arity $i
          * @throws NullPointerException if any argument is {@code null}
@@ -858,7 +870,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
         /$javadoc
          * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")(using "\n")}
-         ${if (isComplex) s"* @param <L> left-hand type of all ${mtype}s\n" else ""}
+         ${if (isComplex) s"* @param <L> ${lTypeDoc(mtype)} of all ${mtype}s\n" else ""}
          ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")(using "\n")}
          * @return a new {@code For}-comprehension of arity $i
          */
@@ -872,6 +884,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
 
   val classes = types.gen(mtype => arityRange.gen(i => {
     val rtype = if (!isLazy && mtype == "Iterable") IteratorType else mtype
+    val rtypeArticle = if ("AEIOU".contains(rtype.head)) "an" else "a"
     val cons: String => String = if (!isLazy && mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
     val fcn = forClassName(mtype, i)
     val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
@@ -910,10 +923,15 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
          * A lazily evaluated {@code For}-comprehension with ${i.numerus(mtype)}.
          *
          * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+         ${if (mtype == FutureType) xs"""
+         * Construction is side-effect free; the bound functions are applied as the underlying
+         * Futures complete, once {@code yield(...)} has been invoked.</p>
+         """ else xs"""
          * Construction is side-effect free; underlying ${i.plural(mtype)} are traversed
          * only when {@code yield(...)} is invoked.</p>
+         """}
          *
-         ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+         ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> ${lTypeDoc(mtype)} of all ${mtype}s\n" else ""}
          ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
          */
         public static class $fcn<$genericsDecl> {
@@ -927,12 +945,26 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
             /$javadoc
              * Produces results by mapping the Cartesian product of all bound values.
              *
-             * <p>Evaluation is lazy and delegated to the underlying ${i.plural(mtype)} by
-             * composing {@code flatMap} and {@code map} chains.</p>
+             ${if (mtype == FutureType) xs"""
+             * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+             * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+             * as each Future completes.</p>
+             """ else xs"""
+             * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+             * underlying ${i.plural(mtype)}; the bound functions and {@code f} are invoked eagerly
+             * during this call.</p>
+             """}
              *
              * @param f a function mapping a tuple of bound values to a result
              * @param <R> the element type of the resulting {@code $rtype}
-             * @return an {@code $rtype} containing mapped results
+             * @return ${
+               if (mtype == OptionType) "an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty"
+               else if (mtype == FutureType) "a {@code Future} that completes with the mapped result, or fails with the first failure encountered"
+               else if (mtype == TryType) "a {@code Try} containing the mapped result, or the first {@code Failure} encountered"
+               else if (mtype == ListType) "a {@code List} of the mapped results (empty if any bound List is empty)"
+               else if (mtype == EitherType) "an {@code Either} containing the mapped result, or the first {@code Left} encountered"
+               else "a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered"
+             }
              * @throws NullPointerException if {@code f} is {@code null}
              */
             public <R $nullableBound> $rtype<${parameterInset}R> yield(${
@@ -949,7 +981,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
     } else {
       val functionType = javaFunctionType(i, im)
       val parameterDoc = (if (monadicTypesThatNeedParameter.contains(mtype)) {
-        s"\n* @param <L> The left-hand type of all {@link $mtype}s"
+        s"\n* @param <L> ${lTypeDoc(mtype).capitalize} of all {@link $mtype}s"
       } else { "" })
       val typeDocs = (1 to i).gen(j => s"* @param <T$j> component type of {@link $mtype} number $j\n")
       val args = Arity(i).wideGenerics
@@ -972,7 +1004,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
              *
              * @param f a function that maps an element of the cross-product to a result
              * @param <R> type of the resulting {@code $rtype} elements
-             * @return an {@code $rtype} of mapped results
+             * @return ${rtypeArticle} {@code $rtype} of mapped results
              */
             public <R $nullableBound> $rtype<${parameterInset}R> yield($functionType<$args, ? extends R> f) {
                 $Objects.requireNonNull(f, "f is null");
@@ -989,7 +1021,7 @@ def genAPIForComprehensions(im: ImportManager, isLazy: Boolean): String = {
               /$javadoc
                * A shortcut for {@code yield(Function.identity())}.
                *
-               * @return an {@code Iterator} of mapped results
+               * @return ${rtypeArticle} {@code $rtype} of mapped results
                */
               public $rtype<${parameterInset}T1> yield() {
                   return this.yield(Function.identity());
@@ -1187,14 +1219,16 @@ def genAPIMatch(im: ImportManager): String = {
      * Wildcard pattern, matches any value.
      *
      * @param <T> injected type of the underlying value
-     * @return a new {@code Pattern0} instance
+     * @return the shared wildcard {@code Pattern0} instance
      */
     public static <T $nullableBound> Pattern0<T> $$() {
         return Pattern0.any();
     }
 
     /**
-     * Value pattern, checks for equality.
+     * Value pattern. Matches a value that is the same instance as {@code prototype}, or that is an instance of
+     * the prototype's runtime class and equal to it (see {@link $Objects#equals(Object, Object)}). Values that
+     * are equal but of a different runtime type (e.g. {@code Stream.empty()} vs. {@code List.empty()}) do not match.
      *
      * @param <T>       type of the prototype
      * @param prototype the value that should be equal to the underlying object
@@ -1271,11 +1305,11 @@ def genAPIMatch(im: ImportManager): String = {
      * <pre>{@code
      * Predicate<Integer> p = i -> true;
      * Match(p).of(
-     *     Case($$(is(p)), 1) // CORRECT! It calls $$(T)
+     *     Case($$(is(p)), 1) // CORRECT! It calls $$(Predicate) with a predicate that tests equality with p
      * );
      * }</pre>
      *
-     * @param <T>       type of the prototype
+     * @param <T>       type of the value tested by the predicate
      * @param predicate the predicate that tests a given value
      * @return a new {@code Pattern0} instance
      */
@@ -1314,13 +1348,13 @@ def genAPIMatch(im: ImportManager): String = {
         }
 
         /$javadoc
-         * Executes the match, created by the factory function {@link API#Match(Object)}. Throws exceptions
-         * when the list of {@link Case}s is incomplete.
+         * Executes the match, created by the factory function {@link API#Match(Object)}. Throws a
+         * {@link MatchError} if none of the given {@link Case}s is defined at the matched value.
          *
          * @param cases list of cases we execute the match against
          * @param <R>   return value type
-         * @return The matched value
-         * @throws MatchError if the list of cases was not defined for all possible values of T
+         * @return the result of applying the first case whose pattern matches the value
+         * @throws MatchError if none of the given cases is defined at the matched value
          */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
@@ -1341,7 +1375,7 @@ def genAPIMatch(im: ImportManager): String = {
         *
         * @param cases list of cases we execute the match against
         * @param <R>   return value type
-        * @return $OptionType containing the matched value, or none
+        * @return {@code Some} of the result of the first matching case, or {@code None} if no case matches
         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
@@ -1459,8 +1493,10 @@ def genAPIMatch(im: ImportManager): String = {
         // -- PATTERNS
 
         /**
-         * A Pattern is a partial {@link $FunctionType} in the sense that a function applications returns an
-         * optional result of type {@code Option<R>}.
+         * A Pattern is a {@link $PartialFunctionType}: {@link $PartialFunctionType#isDefinedAt(Object)} tells whether
+         * a value matches, and {@link $PartialFunctionType#apply(Object)} decomposes a matching value into its single
+         * or composite part of type {@code R}. Use {@link $PartialFunctionType#lift()} to obtain a total function
+         * that returns {@code Option<R>} instead.
          *
          * @param <T> Class type that is matched by this pattern
          * @param <R> Type of the single or composite part this pattern decomposes
@@ -1714,8 +1750,8 @@ def generateMainClasses(): Unit = {
          * Please note that values like Option, Try, Future, etc. are also iterable.
          * <p>
          * Given a suitable function
-         * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a Stream of the
-         * mapped cross product elements.
+         * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a lazily evaluated
+         * {@link io.vavr.collection.Iterator} of the mapped cross product elements.
          *
          * <pre>{@code
          * { f(v1, v2, ..., vN) | v1 ∈ iterable1, ... vN ∈ iterableN }
@@ -1853,17 +1889,6 @@ def generateMainClasses(): Unit = {
                * // using a lambda reference
                * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
                * }</pre>
-               * <p>
-               * <strong>Caution:</strong> Reflection loses type information of lambda references.
-               * <pre>{@code // type of a lambda expression
-               * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
-               *
-               * // type of a method reference
-               * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
-               *
-               * // type of a lambda reference
-               * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
-               * }</pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
@@ -1874,12 +1899,14 @@ def generateMainClasses(): Unit = {
               }
 
               /$javadoc
-               * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+               * Lifts the given {@code partialFunction} into a function that returns an {@code Option} result.
                *
                * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-               *         if the function is defined for the given arguments, and {@code None} otherwise.
+               *         if the function is defined for the given arguments, and {@code None} if it throws a non-fatal
+               *         throwable. Fatal throwables (see {@link ${im.getType("io.vavr.control.Try")}}) are rethrown
+               *         instead of being turned into {@code None}.
                */
               static $fullGenericsDecl ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
@@ -1893,12 +1920,14 @@ def generateMainClasses(): Unit = {
               }
 
               /$javadoc
-               * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+               * Lifts the given {@code partialFunction} into a function that returns a {@code Try} result.
                *
                * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-               *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+               *         if the function is defined for the given arguments, and {@code Failure(throwable)} if it throws a
+               *         non-fatal throwable. Fatal throwables (see {@link ${im.getType("io.vavr.control.Try")}}) are rethrown
+               *         instead of being wrapped.
                */
               static $fullGenericsDecl ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
                   ${
@@ -2012,10 +2041,18 @@ def generateMainClasses(): Unit = {
               }
 
               /**
+               ${if (i == 0) xs"""
+               * Returns a memoizing version of this function, which computes the return value only one time.
+               * On subsequent calls the memoized value is returned.
+               * <p>
+               * Note that a {@code null} return value is permitted and cached like any other value.
+               """ else xs"""
                * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
                * On subsequent calls given the same arguments the memoized value is returned.
                * <p>
-               * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+               * Note that {@code null} arguments and {@code null} return values are permitted; a {@code null} result
+               * is cached like any other value.
+               """}
                *
                * @return a memoizing function equivalent to this.
                */
@@ -2157,7 +2194,7 @@ def generateMainClasses(): Unit = {
               """)}
 
               /$javadoc
-               * Returns a composed function that first applies this $className to the given argument and then applies
+               * Returns a composed function that first applies this $className${if (i == 0) "" else if (i == 1) " to the given argument" else " to the given arguments"} and then applies
                * {@linkplain $compositionType} {@code after} to the result.
                *
                * @param <V> return type of after
@@ -2366,6 +2403,7 @@ def generateMainClasses(): Unit = {
             @Override
             public int compareTo($className$generics that) {
                 ${if (i == 0) xs"""
+                  Objects.requireNonNull(that, "that is null");
                   return 0;
                 """ else xs"""
                   return $className.compareTo(this, that);
@@ -2383,7 +2421,7 @@ def generateMainClasses(): Unit = {
               }
 
               /$javadoc
-               * Sets the ${j.ordinal} element of this tuple to the given {@code value}.
+               * Returns a copy of this tuple with the ${j.ordinal} element replaced by the given {@code value}.
                *
                * @param value the new value
                * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
@@ -2422,7 +2460,7 @@ def generateMainClasses(): Unit = {
                *
                * @param mapper the mapper function
                ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")(using "\n")}
-               * @return A new Tuple of same arity.
+               * @return ${if (i == 1) "A new Tuple of same arity." else "the result of applying {@code mapper} to the components of this tuple"}
                * @throws NullPointerException if {@code mapper} is null
                */
               public $resultGenericsDecl $className$resultGenerics map($functionType<$paramTypes, $mapResult> mapper) {
@@ -2593,7 +2631,7 @@ def generateMainClasses(): Unit = {
       }
 
       def genHashMethod(i: Int) = {
-        val paramsDecl = (1 to i).gen(j => s"Object o$j")(using ", ")
+        val paramsDecl = (1 to i).gen(j => s"@Nullable Object o$j")(using ", ")
         xs"""
           /**
            * Return the order-dependent hash of the ${i.numerus("given value")}.
@@ -2682,7 +2720,7 @@ def generateMainClasses(): Unit = {
             /**
              * Converts this tuple to a sequence.
              *
-             * @return A new {@code Seq}.
+             * @return a {@code Seq} containing the elements of this tuple, in order (empty for {@code Tuple0}).
              */
             $Seq<?> toSeq();
 
@@ -2791,13 +2829,13 @@ def generateMainClasses(): Unit = {
 
           default Object newInstance(int length) { return copy(empty(), length); }
 
-          /** System.arrayCopy with same source and destination */
+          /** copy the range [from, to) of the source into a new array of length (to - from), starting at index 0 */
           default Object copyRange(Object array, int from, int to) {
               final int length = to - from;
               return copy(array, length, from, 0, length);
           }
 
-          /** Repeatedly group an array into equal sized sub-trees */
+          /** group an array into sub-arrays of groupSize elements each (the last one may be shorter) */
           default Object grouped(Object array, int groupSize) {
               final int arrayLength = lengthOf(array);
               final Object results = obj().newInstance(1 + ((arrayLength - 1) / groupSize));
@@ -2825,7 +2863,7 @@ def generateMainClasses(): Unit = {
               return copy(array, length, 0, 0, arrayLength);
           }
 
-          /** clone the source and keep everything after the index (pre-padding the values with null) */
+          /** clone the source and keep everything at and after the index; the leading slots hold null (or the default value for primitive array types) */
           default Object copyDrop(Object array, int index) {
               final int length = lengthOf(array);
               return copy(array, length, index, index, length - index);
@@ -3936,6 +3974,12 @@ def generateTestClasses(): Unit = {
                   final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
                   $assertThat(t0.compareTo(t0)).isZero();
                   $assertThat(intTupleComparator.compare(t0, t0)).isZero();
+              }
+
+              @$test
+              public void shouldThrowWhenComparingToNull() {
+                  final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                  $assertThrows(NullPointerException.class, () -> t0.compareTo(null));
               }
 
               ${(1 to i).gen(j => xs"""

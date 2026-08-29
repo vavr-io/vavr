@@ -1286,7 +1286,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * original failure is preserved and the runnable's exception is added as
      * {@linkplain Throwable#addSuppressed(Throwable) suppressed} — analogous to how Java's
      * {@code try}-with-resources attaches an exception thrown by {@code close()} to the primary
-     * exception (JLS §14.20.3).</p>
+     * exception (JLS §14.20.3). A fatal throwable (see the class-level documentation) thrown by the
+     * runnable is rethrown instead, regardless of the state of this {@code Try}.</p>
      *
      * @param runnable a final action to perform
      * @return this {@code Try} if the runnable succeeds; if the runnable throws, this same {@code Try} with the
@@ -1307,7 +1308,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
      * original failure is preserved and the runnable's exception is added as
      * {@linkplain Throwable#addSuppressed(Throwable) suppressed} — analogous to how Java's
      * {@code try}-with-resources attaches an exception thrown by {@code close()} to the primary
-     * exception (JLS §14.20.3).</p>
+     * exception (JLS §14.20.3). A fatal throwable (see the class-level documentation) thrown by the
+     * runnable is rethrown instead, regardless of the state of this {@code Try}.</p>
      *
      * @param runnable a checked final action to perform
      * @return this {@code Try} if the runnable succeeds; if the runnable throws, this same {@code Try} with the
@@ -1321,7 +1323,7 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
             runnable.run();
             return this;
         } catch (Throwable t) {
-            if (isFailure()) {
+            if (isFailure() && !isFatal(t)) {
                 getCause().addSuppressed(t);
                 return this;
             }

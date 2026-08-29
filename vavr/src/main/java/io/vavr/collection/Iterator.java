@@ -652,6 +652,10 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
+        if ((step > 0 && toExclusive == Integer.MIN_VALUE) || (step < 0 && toExclusive == Integer.MAX_VALUE)) {
+            // no int lies strictly before the type boundary in the step direction
+            return empty();
+        }
         final int toInclusive = toExclusive - (step > 0 ? 1 : -1);
         return rangeClosedBy(from, toInclusive, step);
     }
@@ -698,6 +702,10 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
+        if ((step > 0 && toExclusive == Long.MIN_VALUE) || (step < 0 && toExclusive == Long.MAX_VALUE)) {
+            // no long lies strictly before the type boundary in the step direction
+            return empty();
+        }
         final long toInclusive = toExclusive - (step > 0 ? 1 : -1);
         return rangeClosedBy(from, toInclusive, step);
     }
@@ -765,7 +773,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        if (from == toInclusive) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
             return of(from);
         }
 
@@ -817,36 +827,52 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return of(from);
-        } else if (Integer.signum(step) == Integer.signum(from - toInclusive)) {
+        } else if ((step > 0) == (from > toInclusive)) {
             return empty();
         } else {
-            final int end = toInclusive - step;
+            // DEV-NOTE: the cursor never leaves [from, toInclusive], so the remaining distance to
+            // toInclusive is non-negative and fits an unsigned int; comparing it unsigned against
+            // |step| avoids the overflow that `from - step` / `toInclusive - step` would cause at
+            // Integer.MIN_VALUE / Integer.MAX_VALUE.
             if (step > 0) {
                 return new AbstractIterator<Integer>() {
-                    int i = from - step;
+                    boolean started = false;
+                    int i = from;
 
                     @Override
                     public boolean hasNext() {
-                        return i <= end;
+                        return !started || Integer.compareUnsigned(toInclusive - i, step) >= 0;
                     }
 
                     @Override
                     public Integer getNext() {
-                        return i += step;
+                        if (started) {
+                            i += step;
+                        } else {
+                            started = true;
+                        }
+                        return i;
                     }
                 };
             } else {
                 return new AbstractIterator<Integer>() {
-                    int i = from - step;
+                    boolean started = false;
+                    int i = from;
 
                     @Override
                     public boolean hasNext() {
-                        return i >= end;
+                        // -Integer.MIN_VALUE == Integer.MIN_VALUE, whose unsigned value is the correct |step|
+                        return !started || Integer.compareUnsigned(i - toInclusive, -step) >= 0;
                     }
 
                     @Override
                     public Integer getNext() {
-                        return i += step;
+                        if (started) {
+                            i += step;
+                        } else {
+                            started = true;
+                        }
+                        return i;
                     }
                 };
             }
@@ -897,39 +923,51 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return of(from);
-        } else if (Long.signum(step) == Long.signum(from - toInclusive)) {
+        } else if ((step > 0) == (from > toInclusive)) {
             return empty();
         } else {
-            final long end = toInclusive - step;
+            // DEV-NOTE: see rangeClosedBy(int, int, int) - same overflow-safe scheme using unsigned distances
             if (step > 0) {
                 return new AbstractIterator<Long>() {
-                    long i = from - step;
+                    boolean started = false;
+                    long i = from;
 
                     @Override
                     public boolean hasNext() {
-                        return i <= end;
+                        return !started || Long.compareUnsigned(toInclusive - i, step) >= 0;
                     }
 
                     @Override
                     public Long getNext() {
-                        return i += step;
+                        if (started) {
+                            i += step;
+                        } else {
+                            started = true;
+                        }
+                        return i;
                     }
                 };
             } else {
                 return new AbstractIterator<Long>() {
-                    long i = from - step;
+                    boolean started = false;
+                    long i = from;
 
                     @Override
                     public boolean hasNext() {
-                        return i >= end;
+                        // -Long.MIN_VALUE == Long.MIN_VALUE, whose unsigned value is the correct |step|
+                        return !started || Long.compareUnsigned(i - toInclusive, -step) >= 0;
                     }
 
                     @Override
                     public Long getNext() {
-                        return i += step;
+                        if (started) {
+                            i += step;
+                        } else {
+                            started = true;
+                        }
+                        return i;
                     }
                 };
-
             }
         }
     }

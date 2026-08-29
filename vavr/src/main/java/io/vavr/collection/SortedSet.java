@@ -155,12 +155,12 @@ public interface SortedSet<T extends @Nullable Object> extends Set<T>, Ordered<T
 
     @Override
     default <U extends @Nullable Object> SortedSet<U> mapTo(U value) {
-        return map(ignored -> value);
+        return map((o1, o2) -> 0, ignored -> value);
     }
 
     @Override
     default SortedSet<@Nullable Void> mapToVoid() {
-        return this.<@Nullable Void>map(ignored -> null);
+        return this.<@Nullable Void>map((o1, o2) -> 0, ignored -> null);
     }
 
     @Override

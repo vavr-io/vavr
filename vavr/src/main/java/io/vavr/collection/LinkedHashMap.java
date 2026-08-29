@@ -463,14 +463,16 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     }
 
     /**
-     * Returns a LinkedHashMap containing {@code n} values of a given Function {@code f}
+     * Returns a LinkedHashMap containing up to {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the LinkedHashMap
+     * @param n   The number of times to call {@code f}
      * @param f   The Function computing element values
-     * @return A LinkedHashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A LinkedHashMap containing the entries {@code f(0), f(1), ..., f(n - 1)}; entries with equal keys collapse
+     *         (the later value wins, keeping the earlier position), so the result may contain fewer than {@code n} entries.
+     *         Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
@@ -484,9 +486,11 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the LinkedHashMap
+     * @param n   The number of times to call {@code s}
      * @param s   The Supplier computing element values
-     * @return A LinkedHashMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A LinkedHashMap containing the entries supplied by {@code s}; entries with equal keys collapse
+     *         (the later value wins, keeping the earlier position), so the result may contain fewer than {@code n} entries.
+     *         Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code s} is null
      */
     @SuppressWarnings("unchecked")
@@ -538,7 +542,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
      * @param entries Map entries
      * @param <K>     The key type
      * @param <V>     The value type
-     * @return A new Map containing the given entries
+     * @return A LinkedHashMap containing the given entries (the same instance if {@code entries} is already a LinkedHashMap)
      */
     @SuppressWarnings("unchecked")
     public static <K extends @Nullable Object, V extends @Nullable Object> LinkedHashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
@@ -861,10 +865,9 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
      * the value are replaced by the specified ones, keeping the original
      * insertion order.
      * <p>
-     * Overwriting an existing key runs in (amortized) constant time: the
-     * insertion-order structure is left untouched and the replaced key is
-     * resolved through the backing map on read; inserting a new key appends
-     * to it in (amortized) constant time as well.
+     * Overwriting an existing key and inserting a new key both run in effectively
+     * constant time (O(log32 n)): the insertion-order structure is left untouched
+     * when a key is overwritten and appended to when a new key is inserted.
      *
      * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
@@ -993,14 +996,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
 
     @Override
     public LinkedHashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<K, V> result = empty();
-        for (Tuple2<K, V> entry : elements) {
-            if (contains(entry)) {
-                result = result.put(entry._1, entry._2);
-            }
-        }
-        return result;
+        return Collections.retainAll(this, elements);
     }
 
     @Override

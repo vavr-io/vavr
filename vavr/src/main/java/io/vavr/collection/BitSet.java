@@ -39,6 +39,10 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable {@code BitSet} implementation.
+ * <p>
+ * Elements are stored as bits, so every element must map to a non-negative {@code int} via the builder's
+ * {@code toInt} function (see {@link #withRelations(Function1, Function1)}). Adding, querying or removing a value
+ * that maps to a negative int throws {@link IllegalArgumentException}. Elements are ordered by their int mapping.
  *
  * @param <T> Component type
  * @author Ruslan Sennov
@@ -69,9 +73,9 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
 
         /**
          * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-         * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain an {@link ArrayList}.
+         * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link BitSet}.
          *
-         * @return A {@link ArrayList} Collector.
+         * @return A {@link BitSet} Collector.
          */
         public Collector<T, ArrayList<T>, BitSet<T>> collector() {
             final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -158,9 +162,11 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
         }
 
         /**
-         * Builds a new BitSet containing n copies of the same value
+         * Builds a new BitSet from the values supplied by {@code n} invocations of {@code s}.
+         * Because a BitSet cannot contain duplicates, equal values collapse into a single element
+         * (e.g. a constant supplier yields a BitSet of size 1, not n).
          *
-         * @param n number of times to copy the value
+         * @param n number of times to invoke the supplier
          * @param s value supplier
          * @return new BitSet
          */
@@ -214,6 +220,9 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
 
     /**
      * Returns new {@link BitSet} Builder for type {@link Long}
+     * <p>
+     * Values are converted via {@link Long#intValue()}, i.e. only values in {@code [0, Integer.MAX_VALUE]} are
+     * supported; larger values are silently truncated to their low 32 bits (and rejected if the result is negative).
      *
      * @return new Builder
      */
@@ -260,7 +269,8 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet of the given int values.
+     *
      * @param values int values
      * @return A new BitSet of int values
      */
@@ -269,12 +279,12 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
     }
 
     /**
-     * Returns a BitSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
+     * Returns a BitSet containing the distinct values of a given Function {@code f}
+     * applied over a range of integer values from 0 to {@code n - 1}.
      *
-     * @param n The number of elements in the BitSet
+     * @param n The number of times {@code f} is invoked
      * @param f The Function computing element values
-     * @return A BitSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A BitSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
     static BitSet<Integer> tabulate(int n, Function<Integer, Integer> f) {
@@ -282,11 +292,11 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
     }
 
     /**
-     * Returns a BitSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a BitSet containing the distinct values supplied by {@code n} invocations of a given Supplier {@code s}.
      *
-     * @param n The number of elements in the BitSet
+     * @param n The number of times the supplier is invoked
      * @param s The Supplier computing element values
-     * @return A BitSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A BitSet of at most {@code n} elements, containing the distinct values returned by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
     static BitSet<Integer> fill(int n, Supplier<Integer> s) {
@@ -294,7 +304,8 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet of the given Iterable of int values.
+     *
      * @param values int values
      * @return A new BitSet of int values
      */
@@ -303,7 +314,8 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet from a {@link java.util.stream.Stream} of int values.
+     *
      * @param javaStream A java.util.stream.Stream of int values
      * @return A new BitSet of int values
      */
@@ -389,6 +401,7 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Integer> range(int from, int toExclusive) {
         return BitSet.ofAll(Iterator.range(from, toExclusive));
@@ -411,6 +424,7 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Long> range(long from, long toExclusive) {
         return BitSet.withLongs().ofAll(Iterator.range(from, toExclusive));
@@ -423,10 +437,10 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
         return BitSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -439,8 +453,8 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static BitSet<Character> rangeBy(char from, char toExclusive, int step) {
@@ -454,9 +468,9 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Long> rangeBy(long from, long toExclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -468,6 +482,7 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Integer> rangeClosed(int from, int toInclusive) {
         return BitSet.ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -490,6 +505,7 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Long> rangeClosed(long from, long toInclusive) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -505,7 +521,7 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @return a range of int values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         return BitSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
@@ -537,17 +553,37 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
      * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
     @Override
     BitSet<T> add(T element);
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if one of the {@code elements} maps to a negative int
+     */
     @Override
     BitSet<T> addAll(Iterable<? extends T> elements);
+
+    /**
+     * Tests if the given {@code element} is contained, by comparing its int mapping.
+     *
+     * @param element An element
+     * @return true, if element is contained, false otherwise.
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
+    @Override
+    boolean contains(T element);
 
     @Override
     default <R extends @Nullable Object> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
@@ -698,12 +734,22 @@ public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
 
     @Override
     default SortedSet<@Nullable Void> mapToVoid() {
-        return this.<@Nullable Void>map(ignored -> null);
+        return this.<@Nullable Void>map((o1, o2) -> 0, ignored -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
     @Override
     BitSet<T> remove(T element);
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Elements that cannot be contained in this BitSet (e.g. values mapping to a negative int) are ignored.
+     */
     @Override
     BitSet<T> removeAll(Iterable<? extends T> elements);
 
@@ -978,12 +1024,12 @@ interface BitSetModule {
         }
 
         /**
-         * Returns this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         * Returns this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code other}.
+         * If {@code other} is itself a {@code BitSet} it is returned as-is (keeping its own element encoding),
+         * otherwise a new {@code BitSet} using this instance's element encoding is created.
          *
          * @param other An alternative {@code Traversable}
-         * @return this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         * @return this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code other}
          */
         @Override
         public BitSet<T> orElse(Iterable<? extends T> other) {
@@ -991,12 +1037,12 @@ interface BitSetModule {
         }
 
         /**
-         * Returns this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         * Returns this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from the result of
+         * evaluating {@code supplier}. If that result is itself a {@code BitSet} it is returned as-is (keeping its
+         * own element encoding), otherwise a new {@code BitSet} using this instance's element encoding is created.
          *
-         * @param supplier An alternative {@code Traversable}
-         * @return this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         * @param supplier A supplier of an alternative {@code Iterable}, evaluated only if this BitSet is empty
+         * @return this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code supplier.get()}
          */
         @Override
         public BitSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
@@ -1149,8 +1195,14 @@ interface BitSetModule {
                 if (source.isEmpty()) {
                     return this;
                 } else {
-                    final long[] copy = copyExpand(getWordsNum());
-                    source.forEach(element -> unsetElement(copy, element));
+                    final int wordsNum = getWordsNum();
+                    final long[] copy = copyExpand(wordsNum);
+                    source.forEach(element -> {
+                        // elements that cannot be present (negative or beyond the current words) are a no-op
+                        if (element >= 0 && (element >> ADDRESS_BITS_PER_WORD) < wordsNum) {
+                            unsetElement(copy, element);
+                        }
+                    });
                     return fromBitMaskNoCopy(shrink(copy));
                 }
             }

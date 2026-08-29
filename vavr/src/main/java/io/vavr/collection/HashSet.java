@@ -123,13 +123,14 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Returns an HashSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
+     * Returns a HashSet containing the distinct results of applying {@code f} to the integers
+     * {@code 0} through {@code n - 1}. Because a HashSet deduplicates its elements, the resulting
+     * set may contain fewer than {@code n} elements if {@code f} produces duplicate values.
      *
      * @param <T> Component type of the HashSet
-     * @param n   The number of elements in the HashSet
+     * @param n   The number of times {@code f} is invoked
      * @param f   The Function computing element values
-     * @return An HashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A HashSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
     public static <T extends @Nullable Object> HashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
@@ -138,12 +139,13 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Returns a HashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a HashSet containing the distinct values returned by {@code n} calls to a given
+     * Supplier {@code s}.
      *
      * @param <T> Component type of the HashSet
-     * @param n   The number of elements in the HashSet
+     * @param n   The number of times {@code s} is invoked
      * @param s   The Supplier computing element values
-     * @return An HashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A HashSet of at most {@code n} distinct values supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
     public static <T extends @Nullable Object> HashSet<T> fill(int n, Supplier<? extends T> s) {
@@ -156,7 +158,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      *
      * @param elements Set elements
      * @param <T>      The value type
-     * @return A new HashSet containing the given entries
+     * @return A HashSet containing the given elements; if {@code elements} is already a
+     *         HashSet, it is returned unchanged.
      */
     @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> HashSet<T> ofAll(Iterable<? extends T> elements) {
@@ -174,7 +177,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      *
      * @param javaStream A {@link java.util.stream.Stream}
      * @param <T>        Component type of the Stream.
-     * @return A HashSet containing the given elements in the same order.
+     * @return A HashSet containing the given elements.
      */
     public static <T extends @Nullable Object> HashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
@@ -318,8 +321,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of int numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -332,11 +335,11 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -344,8 +347,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of char numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -358,7 +361,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      * </pre>
      *
      * @param from        the first char
-     * @param toExclusive the last char + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
@@ -370,8 +373,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Creates a HashSet of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of double numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -384,7 +387,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      * </pre>
      *
      * @param from        the first double
-     * @param toExclusive the last double + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of double values as specified or the empty range if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
@@ -416,8 +419,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of long numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -430,11 +433,11 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Long> rangeBy(long from, long toExclusive, long step) {
@@ -596,7 +599,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -672,6 +675,12 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #drop(int)}:
+     * it removes {@code n} elements from the front of the iteration order, not from the end.
+     */
     @Override
     public HashSet<T> dropRight(int n) {
         return drop(n);
@@ -724,7 +733,8 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
 
     @Override
     public <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        return foldLeft(zero, (u, t) -> f.apply(t, u));
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
     }
 
     @Override
@@ -755,11 +765,22 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
         return iterator().headOption();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #tail()}:
+     * it removes the first element in iteration order, not the last one.
+     */
     @Override
     public HashSet<T> init() {
         return tail();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #tailOption()}.
+     */
     @Override
     public Option<HashSet<T>> initOption() {
         return tailOption();
@@ -974,6 +995,12 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #take(int)}:
+     * it keeps the first {@code n} elements in iteration order, not the last {@code n}.
+     */
     @Override
     public HashSet<T> takeRight(int n) {
         return take(n);
@@ -1053,6 +1080,12 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
         return zipWith(that, Tuple::of);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is collected into a {@code HashSet}, equal results of {@code mapper} are merged,
+     * so the resulting size may be smaller than the length guaranteed by {@link Traversable#zipWith(Iterable, BiFunction)}.
+     */
     @Override
     public <U extends @Nullable Object, R extends @Nullable Object> HashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
@@ -1060,6 +1093,12 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
         return HashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is collected into a {@code HashSet}, equal pairs are merged, so the resulting
+     * size may be smaller than the length guaranteed by {@link Traversable#zipAll(Iterable, Object, Object)}.
+     */
     @Override
     public <U extends @Nullable Object> HashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
@@ -1137,10 +1176,10 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
     }
 
     /**
-     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
+     * A serialization proxy which, in this context, is used to deserialize immutable HashSets with final
      * instance fields.
      *
-     * @param <T> The component type of the underlying list.
+     * @param <T> The component type of the underlying set.
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
@@ -1158,7 +1197,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param tree a Cons
+         * @param tree the HashArrayMappedTrie backing the HashSet to be serialized
          */
         SerializationProxy(HashArrayMappedTrie<T, T> tree) {
             this.tree = tree;
@@ -1184,7 +1223,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
          *
          * @param s An object deserialization stream.
          * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-         * @throws InvalidObjectException If the stream contains no list elements.
+         * @throws InvalidObjectException If the stream contains a negative element count.
          * @throws IOException            If an error occurs reading from the stream.
          */
         @Serial

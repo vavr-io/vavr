@@ -38,7 +38,8 @@ import org.jspecify.annotations.Nullable;
 public interface PartialFunction<T extends @Nullable Object, R extends @Nullable Object> extends Function1<T, R> {
 
     /**
-     * The serial version UID for serialization.
+     * A suggested serial version UID. Java serialization ignores constants inherited from interfaces, so
+     * implementing classes that need a stable UID must redeclare this field themselves.
      */
     long serialVersionUID = 1L;
 

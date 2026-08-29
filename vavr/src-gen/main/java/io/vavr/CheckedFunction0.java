@@ -76,17 +76,6 @@ public interface CheckedFunction0<R extends @Nullable Object> extends Serializab
      * // using a lambda reference
      * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
      * }</pre>
-     * <p>
-     * <strong>Caution:</strong> Reflection loses type information of lambda references.
-     * <pre>{@code // type of a lambda expression
-     * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
-     *
-     * // type of a method reference
-     * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
-     *
-     * // type of a lambda reference
-     * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
-     * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type
@@ -97,24 +86,28 @@ public interface CheckedFunction0<R extends @Nullable Object> extends Serializab
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     * Lifts the given {@code partialFunction} into a function that returns an {@code Option} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     *         if the function is defined for the given arguments, and {@code None} if it throws a non-fatal
+     *         throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being turned into {@code None}.
      */
     static <R extends @Nullable Object> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::apply).toOption();
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     * Lifts the given {@code partialFunction} into a function that returns a {@code Try} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} if it throws a
+     *         non-fatal throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being wrapped.
      */
     static <R extends @Nullable Object> Function0<Try<R>> liftTry(CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::apply);
@@ -177,10 +170,10 @@ public interface CheckedFunction0<R extends @Nullable Object> extends Serializab
     }
 
     /**
-     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
+     * Returns a memoizing version of this function, which computes the return value only one time.
+     * On subsequent calls the memoized value is returned.
      * <p>
-     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     * Note that a {@code null} return value is permitted and cached like any other value.
      *
      * @return a memoizing function equivalent to this.
      */
@@ -251,7 +244,7 @@ public interface CheckedFunction0<R extends @Nullable Object> extends Serializab
     }
 
     /**
-     * Returns a composed function that first applies this CheckedFunction0 to the given argument and then applies
+     * Returns a composed function that first applies this CheckedFunction0 and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
      * @param <V> return type of after

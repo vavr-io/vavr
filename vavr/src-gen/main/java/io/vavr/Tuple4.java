@@ -158,7 +158,7 @@ public final class Tuple4<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 1st element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 1st element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
@@ -177,7 +177,7 @@ public final class Tuple4<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 2nd element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 2nd element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
@@ -196,7 +196,7 @@ public final class Tuple4<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 3rd element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 3rd element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
@@ -215,7 +215,7 @@ public final class Tuple4<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 4th element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 4th element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
@@ -232,7 +232,7 @@ public final class Tuple4<T1 extends @Nullable Object, T2 extends @Nullable Obje
      * @param <U2> new type of the 2nd component
      * @param <U3> new type of the 3rd component
      * @param <U4> new type of the 4th component
-     * @return A new Tuple of same arity.
+     * @return the result of applying {@code mapper} to the components of this tuple
      * @throws NullPointerException if {@code mapper} is null
      */
     public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object> Tuple4<U1, U2, U3, U4> map(Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<U1, U2, U3, U4>> mapper) {

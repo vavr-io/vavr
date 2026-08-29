@@ -59,14 +59,14 @@ import org.jspecify.annotations.Nullable;
  * Validation<String, Option<String>> valid3 = Validation.valid(Option.of("123 Fake St."));
  * Function3<String, Integer, Option<String>, Person> f = ...;
  *
- * Validation<List<String>, String> result =
+ * Validation<Seq<String>, String> result =
  *     valid1.combine(valid2).ap((name, age) -> "Name: " + name + " Age: " + age);
  *
- * Validation<List<String>, Person> result2 =
+ * Validation<Seq<String>, Person> result2 =
  *     valid1.combine(valid2).combine(valid3).ap(f);
  *
  * // Another way to combine validations:
- * Validation<List<String>, Person> result3 =
+ * Validation<Seq<String>, Person> result3 =
  *     Validation.combine(valid1, valid2, valid3).ap(f);
  * }
  * </pre>
@@ -117,7 +117,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param <E>    error type
      * @param <T>    value type
      * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
-     * @throws NullPointerException if either is null
+     * @throws NullPointerException if either is null, or if it is a Left holding a null value
      */
     static <E extends @Nullable Object, T extends @Nullable Object> Validation<E, T> fromEither(Either<E, T> either) {
         Objects.requireNonNull(either, "either is null");
@@ -173,7 +173,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param <E>      The mapped error value type.
      * @param <U>      The mapped valid value type.
      * @return A {@code Validation} of a {@link Seq} of results.
-     * @throws NullPointerException if values or f is null.
+     * @throws NullPointerException if values or mapper is null.
      */
     static <E extends @Nullable Object, T extends @Nullable Object, U extends @Nullable Object> Validation<Seq<E>, Seq<U>> traverse(
       Iterable<? extends T> values, 
@@ -211,7 +211,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      *
      * @return {@code Validation<E, T>} with valid value or error, depending on the test condition evaluation
      *
-     * @throws NullPointerException if any of the arguments is null
+     * @throws NullPointerException if any of the arguments is null, or if test is false and {@code error} supplies null
      */
     static <E extends @Nullable Object, T extends @Nullable Object> Validation<E, T> cond(boolean test, Supplier<? extends T> valid, Supplier<? extends E> error) {
         Objects.requireNonNull(valid, "valid is null");
@@ -226,8 +226,8 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * if it's false - the result will be a {@link Validation.Invalid}
      *
      * @param test   A {@code boolean} value to evaluate
-     * @param valid  A {@code T} valid value, called if test is true
-     * @param error  An {@code E} error value, called if test is false
+     * @param valid  A {@code T} valid value, used as the result if test is true (required to be non-null regardless of test)
+     * @param error  An {@code E} error value, used as the result if test is false (required to be non-null regardless of test)
      * @param <E>    Type of error
      * @param <T>    Type of valid value
      *
@@ -291,7 +291,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param validation2 second validation
      * @param validation3 third validation
      * @param validation4 fourth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4&gt;
+     * @return an instance of Builder4&lt;E,T1,T2,T3,T4&gt;
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
     static <E extends @Nullable Object, T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4) {
@@ -316,7 +316,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param validation3 third validation
      * @param validation4 fourth validation
      * @param validation5 fifth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5&gt;
+     * @return an instance of Builder5&lt;E,T1,T2,T3,T4,T5&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
     static <E extends @Nullable Object, T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5) {
@@ -344,7 +344,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param validation4 fourth validation
      * @param validation5 fifth validation
      * @param validation6 sixth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6&gt;
+     * @return an instance of Builder6&lt;E,T1,T2,T3,T4,T5,T6&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
     static <E extends @Nullable Object, T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6) {
@@ -375,7 +375,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param validation5 fifth validation
      * @param validation6 sixth validation
      * @param validation7 seventh validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
+     * @return an instance of Builder7&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
     static <E extends @Nullable Object, T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7) {
@@ -409,7 +409,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param validation6 sixth validation
      * @param validation7 seventh validation
      * @param validation8 eighth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
+     * @return an instance of Builder8&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
     static <E extends @Nullable Object, T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7, Validation<E, T8> validation8) {
@@ -559,6 +559,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * Or if this is an Invalid&lt;E,T&gt;, return a Valid&lt;T,E&gt;.
      *
      * @return a flipped instance of Validation
+     * @throws NullPointerException if this is a Valid holding a null value
      */
     default Validation<T, E> swap() {
         if (isInvalid()) {
@@ -592,8 +593,8 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param <T2>        type of the mapping result if this is a valid
      * @param errorMapper the invalid mapping operation
      * @param valueMapper the valid mapping operation
-     * @return an instance of Validation&lt;U,R&gt;
-     * @throws NullPointerException if invalidMapper or validMapper is null
+     * @return an instance of Validation&lt;E2,T2&gt;
+     * @throws NullPointerException if errorMapper or valueMapper is null, or if this is an Invalid and errorMapper returns null
      */
     default <E2 extends @Nullable Object, T2 extends @Nullable Object> Validation<E2, T2> bimap(Function<? super E, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
@@ -614,7 +615,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      * @param <U> type of the error resulting from the mapping
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
-     * @throws NullPointerException if mapping operation f is null
+     * @throws NullPointerException if mapping operation f is null, or if this is an Invalid and f returns null
      */
     @SuppressWarnings("unchecked")
     default <U extends @Nullable Object> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
@@ -627,7 +628,9 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
     }
 
     /**
-     * Applies a validation containing a function to this validation's value, combining errors if both are invalid.
+     * Applies a validation containing a function to this validation's value. The result is a {@link Validation.Valid}
+     * only if both this and the given validation are valid; otherwise it is a {@link Validation.Invalid} accumulating
+     * the errors of whichever side(s) are invalid.
      * This is the applicative functor's ap operation for Validation.
      *
      * @param <U>        type of the result of applying the function
@@ -691,7 +694,7 @@ public interface Validation<E extends @Nullable Object, T extends @Nullable Obje
      *
      * @param <U>    type of the returned Validation value
      * @param mapper the mapper function to apply to the value
-     * @return a new Validation
+     * @return the result of {@code mapper.apply(get())} if this is a Valid, otherwise this same Invalid
      * @throws NullPointerException if mapper is null
      */
     @SuppressWarnings("unchecked")

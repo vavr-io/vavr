@@ -152,8 +152,8 @@ public interface LinearSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int i = from;
-        LinearSeq<T> these = drop(from);
+        int i = Math.max(from, 0);
+        LinearSeq<T> these = drop(i);
         while (!these.isEmpty()) {
             if (predicate.test(these.head())) {
                 return i;
@@ -486,6 +486,10 @@ interface LinearSeqModule {
             while (hasMore.test(source)) {
                 if (index >= from && source.startsWith(slice)) {
                     return index;
+                }
+                if (source.isEmpty()) {
+                    // only reachable for an empty slice with from > length()
+                    return -1;
                 }
                 index++;
                 source = source.tail();

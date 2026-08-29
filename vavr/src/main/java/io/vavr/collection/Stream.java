@@ -52,10 +52,10 @@ import static io.vavr.collection.JavaConverters.ListView;
  * {@code
  * // factory methods
  * Stream.empty()                  // = Stream.of() = Empty.instance()
- * Stream.of(x)                    // = new Cons<>(x, Empty.instance())
+ * Stream.of(x)                    // = Stream.cons(x, Stream::empty)
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.ofAll(<primitive array>) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
+ * Stream.ofAll(<primitive array>) // e.g. Stream.ofAll(1, 2, 3) = 1, 2, 3
  *
  * // int sequences
  * Stream.from(0)                  // = 0, 1, 2, 3, ...
@@ -77,8 +77,8 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Stream<Integer>       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream<int[]>         s3 = Stream.ofAll(1, 2, 3);
- * Stream<List<Integer>> s4 = Stream.ofAll(List.of(1, 2, 3));
+ * Stream<int[]>         s3 = Stream.of(new int[] {1, 2, 3});
+ * Stream<List<Integer>> s4 = Stream.of(List.of(1, 2, 3));
  *
  * Stream<Integer>       s5 = Stream.ofAll(1, 2, 3);
  * Stream<Integer>       s6 = Stream.ofAll(List.of(1, 2, 3));
@@ -139,7 +139,10 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
     }
 
     /**
-     * Lazily creates a Stream in O(1) which traverses along the concatenation of the given iterables.
+     * Creates a Stream which traverses along the concatenation of the given iterables.
+     * <p>
+     * Building the Stream is O(k) in the number of given iterables, since an iterator is eagerly
+     * obtained from every one of them up front; only the traversal of the elements is lazy.
      *
      * @param iterables The iterables
      * @param <T>       Component type.
@@ -152,7 +155,11 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
     }
 
     /**
-     * Lazily creates a Stream in O(1) which traverses along the concatenation of the given iterables.
+     * Creates a Stream which traverses along the concatenation of the given iterables.
+     * <p>
+     * The outer iterable is fully traversed and an iterator is eagerly obtained from every element
+     * up front, so it must be finite (an infinite outer iterable causes this call to never return);
+     * only the traversal of the resulting elements is lazy.
      *
      * @param iterables The iterable of iterables
      * @param <T>       Component type.
@@ -311,7 +318,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * <pre>{@code  Stream.of(1, 2, 3, 4)
      * = Empty.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty.instance()))))}</pre>
+     * = Stream.cons(1, () -> Stream.cons(2, () -> Stream.cons(3, () -> Stream.cons(4, Stream::empty))))}</pre>
      *
      * @param <T>      Component type of the Stream.
      * @param elements Zero or more elements.
@@ -518,7 +525,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first char
      * @param toExclusive the last char + 1
-     * @return a range of char values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of char values as specified or the empty Stream if {@code from >= toExclusive}
      */
     static Stream<Character> range(char from, char toExclusive) {
         return Stream.ofAll(Iterator.range(from, toExclusive));
@@ -541,7 +548,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first char
      * @param toExclusive the last char + 1
      * @param step        the step
-     * @return a range of char values as specified or {@code Nil} if<br>
+     * @return a range of char values as specified or the empty Stream if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
      * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -567,7 +574,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first double
      * @param toExclusive the upper bound (exclusive)
      * @param step        the step
-     * @return a range of double values as specified or {@code Nil} if<br>
+     * @return a range of double values as specified or the empty Stream if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
      * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -590,7 +597,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of int values as specified or the empty Stream if {@code from >= toExclusive}
      */
     static Stream<Integer> range(int from, int toExclusive) {
         return Stream.ofAll(Iterator.range(from, toExclusive));
@@ -613,9 +620,9 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty Stream if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -636,7 +643,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of long values as specified or the empty Stream if {@code from >= toExclusive}
      */
     static Stream<Long> range(long from, long toExclusive) {
         return Stream.ofAll(Iterator.range(from, toExclusive));
@@ -659,9 +666,9 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of long values as specified or the empty Stream if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Long> rangeBy(long from, long toExclusive, long step) {
@@ -682,7 +689,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first char
      * @param toInclusive the last char
-     * @return a range of char values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of char values as specified or the empty Stream if {@code from > toInclusive}
      */
     static Stream<Character> rangeClosed(char from, char toInclusive) {
         return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -710,7 +717,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of int values as specified or the empty Stream if {@code from > toInclusive}
      */
     static Stream<Integer> rangeClosed(int from, int toInclusive) {
         return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -733,7 +740,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if<br>
+     * @return a range of int values as specified or the empty Stream if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -756,7 +763,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of long values as specified or the empty Stream if {@code from > toInclusive}
      */
     static Stream<Long> rangeClosed(long from, long toInclusive) {
         return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -779,7 +786,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if<br>
+     * @return a range of long values as specified or the empty Stream if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -937,7 +944,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * </pre>
      *
      * @param mapper an mapper
-     * @return a new Stream
+     * @return this Stream if it is empty, otherwise a new Stream obtained by appending this Stream, mapped by {@code mapper}, to itself
      */
     default Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -995,7 +1002,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * }
      * </pre>
      *
-     * @return A new Stream containing this elements cycled.
+     * @return this Stream if it is empty, otherwise a new Stream containing this elements cycled.
      */
     default Stream<T> cycle() {
         return isEmpty() ? this : appendSelf(Function.identity());
@@ -1063,6 +1070,7 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
 
     @Override
     default <U extends @Nullable Object> Stream<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
@@ -1216,6 +1224,14 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because {@code Stream} is lazy, only {@code index < 0} (and {@code index > 0} on an empty Stream)
+     * is detected when this method is called; for {@code index > length()} the
+     * {@code IndexOutOfBoundsException} is thrown only once the returned Stream is traversed as far
+     * as the offending position.
+     */
     @Override
     default Stream<T> insert(int index, T element) {
         if (index < 0) {
@@ -1229,6 +1245,14 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because {@code Stream} is lazy, only {@code index < 0} (and {@code index > 0} on an empty Stream)
+     * is detected when this method is called; for {@code index > length()} the
+     * {@code IndexOutOfBoundsException} is thrown only once the returned Stream is traversed as far
+     * as the offending position.
+     */
     @Override
     default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1368,6 +1392,12 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return this Stream if it is empty; otherwise a new, structurally equal Stream whose elements
+     *         are handed to {@code action} lazily as they are traversed
+     */
     @Override
     default Stream<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
@@ -1445,14 +1475,22 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         return isEmpty() ? this : reverse().removeFirst(predicate).reverse();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because {@code Stream} is lazy, only {@code index < 0} and an empty Stream are detected when
+     * this method is called; for {@code index >= length()} on a non-empty Stream the
+     * {@code IndexOutOfBoundsException} is thrown only once the returned Stream is traversed as far
+     * as the offending position.
+     */
     @Override
     default Stream<T> removeAt(int index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
+        } else if (isEmpty()) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ") on Nil");
         } else if (index == 0) {
             return tail();
-        } else if (isEmpty()) {
-            throw new IndexOutOfBoundsException("removeAt() on Nil");
         } else {
             return cons(head(), () -> tail().removeAt(index - 1));
         }
@@ -1525,6 +1563,14 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         return scanLeft(zero, operation);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Unlike the general {@link Traversable#scanLeft} contract, this {@code Stream} implementation is
+     * lazy: results are produced as the underlying elements are consumed, so {@code scanLeft} terminates
+     * even for an infinite Stream as long as only a finite prefix of the result is consumed.
+     * Contrast with {@link #scanRight}, which is not lazy and will not terminate for an infinite Stream.
+     */
     @Override
     default <U extends @Nullable Object> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         // lazily streams the elements of an iterator
@@ -1638,6 +1684,13 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because {@code Stream} is lazy, {@code beginIndex} is validated eagerly, but if
+     * {@code endIndex > length()} the {@code IndexOutOfBoundsException} is only thrown once the
+     * returned Stream is traversed as far as the offending position, not when this method is called.
+     */
     @Override
     default Stream<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0) {
@@ -1836,6 +1889,9 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
     /**
      * Extends (continues) this {@code Stream} with a Stream of values created by applying
      * consecutively provided {@code Function} to the last element of the original Stream.
+     * <p>
+     * If this Stream is empty, it is returned unchanged (there is no last element to seed the
+     * function); use {@link #extend(Object)} or {@link #extend(Supplier)} to extend an empty Stream.
      *
      * @param nextFunction a function which calculates the next value based on the previous value
      * @return new {@code Stream} composed from this stream extended with values calculated by the provided function

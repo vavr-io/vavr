@@ -97,7 +97,7 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      * List.empty().average()                       // = None
      * List.of(1, 2, 3).average()                   // = Some(2.0)
      * List.of(1.0, 1e100, 2.0, -1e100).average()  // = Some(0.75)
-     * List.of(1.0, Double.NaN).average()           // = NaN
+     * List.of(1.0, Double.NaN).average()           // = Some(NaN)
      * List.of("apple", "pear").average()           // throws
      * }</pre>
      *
@@ -277,7 +277,7 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      *     <li>Null elements are allowed and treated as expected
      *         (e.g., {@code List(null, 1) == Stream(null, 1)}, {@code HashMap((null,1)) == LinkedHashMap((null,1))})</li>
      *     <li>Element order matters only for {@code Seq}</li>
-     *     <li>Other collection classes are equal if their types and elements (in iteration order) are equal</li>
+     *     <li>Other collection classes are equal if their types and elements are equal, regardless of iteration order</li>
      *     <li>Iterators are compared by reference only</li>
      * </ul>
      *
@@ -709,13 +709,14 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      * List.empty().max()             // = None
      * List.of(1, 2, 3).max()         // = Some(3)
      * List.of("a", "b", "c").max()   // = Some("c")
-     * List.of(1.0, Double.NaN).max() // = NaN
+     * List.of(1.0, Double.NaN).max() // = Some(NaN)
      * List.of(1, "a").max()          // throws ClassCastException
      * }</pre>
      *
      * @return {@code Some(maximum)} if this Traversable is not empty, otherwise {@code None}
-     * @throws NullPointerException if any element is null
-     * @throws ClassCastException if elements do not implement {@link Comparable}
+     * @throws NullPointerException if this Traversable contains 2 or more elements and any of them is null
+     *                              (a single null element is returned as {@code Some(null)} without being compared)
+     * @throws ClassCastException if this Traversable contains 2 or more elements that do not implement {@link Comparable}
      */
     default Option<T> max() {
         return maxBy(Comparators.naturalComparator());
@@ -784,14 +785,16 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      * List.empty().min()             // = None
      * List.of(1, 2, 3).min()         // = Some(1)
      * List.of("a", "b", "c").min()   // = Some("a")
-     * List.of(1.0, Double.NaN).min() // = NaN
+     * List.of(1.0, Double.NaN).min() // = Some(NaN)
      * List.of(1, "a").min()          // throws
      * }
      * </pre>
      *
      * @return {@code Some(minimum)} of this elements, or {@code None} if this Traversable is empty
-     * @throws NullPointerException if an element is null
-     * @throws ClassCastException   if the elements do not have a natural order, i.e., do not implement {@link Comparable}
+     * @throws NullPointerException if this Traversable contains 2 or more elements and any of them is null
+     *                              (a single null element is returned as {@code Some(null)} without being compared)
+     * @throws ClassCastException   if this Traversable contains 2 or more elements that do not have a natural order,
+     *                              i.e., do not implement {@link Comparable}
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
@@ -951,15 +954,20 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      *
      * @param other an alternative {@code Traversable} to return if this is empty
      * @return this {@code Traversable} if non-empty, otherwise {@code other}
+     * @throws NullPointerException if this {@code Traversable} is empty and {@code other} is null
+     *                              (a non-empty {@code Traversable} returns itself without inspecting {@code other})
      */
     Traversable<T> orElse(Iterable<? extends T> other);
 
     /**
      * Returns this {@code Traversable} if it is non-empty; otherwise, returns the result of evaluating the given supplier.
+     * <p>
+     * The supplier is only evaluated if this {@code Traversable} is empty.
      *
      * @param supplier a supplier of an alternative {@code Traversable} if this is empty
      * @return this {@code Traversable} if non-empty, otherwise the result of {@code supplier.get()}
-     * @throws NullPointerException if {@code supplier} is null
+     * @throws NullPointerException if this {@code Traversable} is empty and {@code supplier} is null
+     *                              (a non-empty {@code Traversable} returns itself without evaluating {@code supplier})
      */
     Traversable<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
@@ -982,21 +990,23 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
     /**
      * Calculates the product of the elements in this {@code Traversable}.
      * <p>
-     * Supported element types are {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long},
-     * {@code Short}, {@code BigInteger}, and {@code BigDecimal}.
+     * The types {@code Byte}, {@code Short}, {@code Integer}, and {@code Long} are multiplied as {@code long},
+     * and {@code BigInteger}/{@code BigDecimal} use their own arithmetic; any other {@link Number} (including
+     * {@code Double}, {@code Float}, and custom {@code Number} subtypes) is multiplied via
+     * {@link Number#doubleValue()}. The arithmetic to use is chosen based on the first element.
      * <p>
      * Examples:
      * <pre>{@code
      * List.empty().product()              // = 1
      * List.of(1, 2, 3).product()          // = 6L
-     * List.of(0.1, 0.2, 0.3).product()    // = 0.006
+     * List.of(0.5, 2.0, 3.0).product()    // = 3.0
      * List.of("apple", "pear").product()  // throws
      * }</pre>
      * <p>
      * For type-safe multiplication of elements, consider using {@link #fold(Object, BiFunction)}.
      *
      * @return a {@code Number} representing the product of the elements
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @throws UnsupportedOperationException if an element is not a {@link Number}
      */
     @SuppressWarnings("unchecked")
     default Number product() {
@@ -1123,7 +1133,9 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
     /**
      * Produces a collection containing cumulative results of applying the operator from left to right.
      * <p>
-     * Will not terminate for infinite collections. The results may vary across runs unless the collection is ordered.
+     * Lazy implementations ({@code Stream}, {@code Iterator}) compute the results on demand and may be used with
+     * infinite collections; eager implementations will not terminate for infinite collections. The results may
+     * vary across runs unless the collection is ordered.
      *
      * @param <U>       the type of the resulting elements
      * @param zero      the initial value
@@ -1267,9 +1279,13 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
     }
 
     /**
-     * Calculates the sum of the elements in this {@code Traversable}. Supported numeric types are
-     * {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long}, {@code Short},
-     * {@code BigInteger}, and {@code BigDecimal}.
+     * Calculates the sum of the elements in this {@code Traversable}.
+     * <p>
+     * The types {@code Byte}, {@code Short}, {@code Integer}, and {@code Long} are summed as {@code long},
+     * and {@code BigInteger}/{@code BigDecimal} use their own arithmetic; any other {@link Number} (including
+     * {@code Double}, {@code Float}, and custom {@code Number} subtypes) is summed via
+     * {@link Number#doubleValue()} with Neumaier compensation. The arithmetic to use is chosen based on the
+     * first element.
      * <p>
      * Examples:
      * <pre>{@code
@@ -1282,7 +1298,7 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
      * See also {@link #fold(Object, BiFunction)} for type-safe summation of elements.
      *
      * @return a {@code Number} representing the sum of the elements
-     * @throws UnsupportedOperationException if elements are not numeric
+     * @throws UnsupportedOperationException if an element is not a {@link Number}
      */
     @SuppressWarnings("unchecked")
     default Number sum() {
@@ -1331,8 +1347,6 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
     /**
      * Returns the first {@code n} elements of this {@code Traversable}, or all elements if {@code n} exceeds the length.
      * <p>
-     * Equivalent to {@code sublist(0, max(0, min(length(), n)))}, but safe for {@code n < 0} or {@code n > length()}.
-     * <p>
      * If {@code n < 0}, an empty instance is returned. If {@code n > length()}, the full instance is returned.
      *
      * @param n the number of elements to take
@@ -1342,8 +1356,6 @@ public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Va
 
     /**
      * Returns the last {@code n} elements of this {@code Traversable}, or all elements if {@code n} exceeds the length.
-     * <p>
-     * Equivalent to {@code sublist(max(0, length() - n), length())}, but safe for {@code n < 0} or {@code n > length()}.
      * <p>
      * If {@code n < 0}, an empty instance is returned. If {@code n > length()}, the full instance is returned.
      *

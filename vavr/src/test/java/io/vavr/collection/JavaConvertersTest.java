@@ -2214,6 +2214,20 @@ public class JavaConvertersTest {
     }
 
     @TestTemplate
+    public void shouldNotBackParentListBySubList() {
+        final java.util.List<Character> list = of('1', '2', '3');
+        // documented ListView-specific semantics: the sub-list is detached (java.util.ArrayList's is backed)
+        org.junit.jupiter.api.Assumptions.assumeTrue(list instanceof JavaConverters.ListView && changePolicy == MUTABLE);
+        final java.util.List<Character> subList = list.subList(0, 2);
+        subList.clear();
+        assertThat(subList).isEmpty();
+        assertThat(list).isEqualTo(asList('1', '2', '3'));
+        final java.util.List<Character> anotherSubList = list.subList(0, 3);
+        list.set(2, '0');
+        assertThat(anotherSubList).isEqualTo(asList('1', '2', '3'));
+    }
+
+    @TestTemplate
     public void shouldThrowOnSubListOnNonEmptyWhenBeginIndexIsGreaterThanEndIndex() {
         assertThrows(IllegalArgumentException.class, () -> {
             of('1', '2', '3').subList(1, 0);

@@ -72,6 +72,12 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldThrowWhenComparingToNull() {
+        final Tuple1<Integer> t0 = createIntTuple(0);
+        assertThrows(NullPointerException.class, () -> t0.compareTo(null));
+    }
+
+    @Test
     public void shouldCompare1stArg() {
         final Tuple1<Integer> t0 = createIntTuple(0);
         final Tuple1<Integer> t1 = createIntTuple(1);

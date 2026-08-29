@@ -900,6 +900,12 @@ public class CharSeqTest {
         public void shouldThrowWhenFillingWithNullValue() {
             assertThatThrownBy(() -> CharSeq.fill(1, () -> null)).isInstanceOf(NullPointerException.class);
         }
+
+        @Test
+        public void shouldThrowWhenFillingWithNullSupplierEvenIfNIsNotPositive() {
+            assertThatThrownBy(() -> CharSeq.fill(0, null)).isInstanceOf(NullPointerException.class);
+            assertThatThrownBy(() -> CharSeq.fill(-1, null)).isInstanceOf(NullPointerException.class);
+        }
     }
 
     @Nested
@@ -1827,6 +1833,22 @@ public class CharSeqTest {
     }
 
     @Nested
+    class SegmentlengthTests {
+        @Test
+        public void shouldClampNegativeFromToZero() {
+            assertThat(CharSeq.of("aab").segmentLength(c -> c == 'a', -1)).isEqualTo(2);
+            assertThat(CharSeq.of("aab").segmentLength(c -> c == 'a', -1)).isEqualTo(CharSeq.of("aab").segmentLength(c -> c == 'a', 0));
+            assertThat(CharSeq.empty().segmentLength(c -> true, -1)).isEqualTo(0);
+        }
+
+        @Test
+        public void shouldCalculateSegmentLengthFromIndex() {
+            assertThat(CharSeq.of("baab").segmentLength(c -> c == 'a', 1)).isEqualTo(2);
+            assertThat(CharSeq.of("baab").segmentLength(c -> c == 'a', 4)).isEqualTo(0);
+        }
+    }
+
+    @Nested
     class StartswithTests {
         @Test
         public void shouldStartsNilOfNilCalculate() {
@@ -1871,6 +1893,28 @@ public class CharSeqTest {
             assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c'), 1)).isTrue();
             assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c', 'd'), 1)).isFalse();
             assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
+        }
+
+        // -- startsWith(Iterable, int) honors the Seq contract: an empty prefix always matches
+
+        @Test
+        public void shouldStartsWithEmptyIterableWhenOffsetExceedsLength() {
+            assertThat(CharSeq.empty().startsWith(List.<Character>empty(), 1)).isTrue();
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.<Character>empty(), 5)).isTrue();
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.<Character>empty(), 3)).isTrue();
+        }
+
+        @Test
+        public void shouldNotStartsWithIterableWhenOffsetIsNegative() {
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.<Character>empty(), -1)).isFalse();
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.of('a'), -1)).isFalse();
+        }
+
+        @Test
+        public void shouldStartsWithNonEmptyIterableWithOffset() {
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.of('b', 'c'), 1)).isTrue();
+            assertThat(CharSeq.of('a', 'b', 'c').startsWith(List.of('b', 'c', 'd'), 1)).isFalse();
+            assertThat(CharSeq.empty().startsWith(List.of('a'), 1)).isFalse();
         }
     }
 

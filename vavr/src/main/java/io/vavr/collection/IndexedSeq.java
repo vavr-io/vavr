@@ -221,7 +221,7 @@ public interface IndexedSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int i = Math.min(end, length() - 1);
+        int i = Math.max(-1, Math.min(end, length() - 1));
         while (i >= 0 && !predicate.test(this.get(i))) {
             i--;
         }
@@ -337,12 +337,13 @@ public interface IndexedSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int len = length();
-        int i = from;
+        final int len = length();
+        final int start = Math.max(from, 0);
+        int i = start;
         while (i < len && predicate.test(this.get(i))) {
             i++;
         }
-        return i - from;
+        return i - start;
     }
 
     @Override

@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * THIS CLASS IS INTENDED TO BE USED INTERNALLY ONLY!
  * <p>
- * This helper class provides methods that return views on Java collections.
+ * This helper class provides methods that return {@link java.util.List} views on Vavr {@link Seq} collections.
  * The view creation and back conversion take O(1).
  *
  * @author Daniel Dietrich
@@ -246,6 +246,14 @@ class JavaConverters {
             setDelegate(() -> (C) getDelegate().sorted(comparator));
         }
 
+        /**
+         * {@inheritDoc}
+         * <p>
+         * Unlike the general {@link java.util.List#subList(int, int)} contract, the returned list is
+         * <strong>not</strong> backed by this list: it is an independent view over a snapshot of the
+         * requested range, so changes made through either list are not reflected in the other.
+         * In particular, {@code list.subList(from, to).clear()} does not remove elements from this list.
+         */
         @Override
         public java.util.List<T> subList(int fromIndex, int toIndex) {
             return new ListView<>(getDelegate().subSequence(fromIndex, toIndex), isMutable());
