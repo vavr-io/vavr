@@ -780,9 +780,11 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param <K>           The key type
      * @param <V>           The value type
      * @param keyComparator The comparator used to sort the entries by their key
-     * @param n             The number of elements in the TreeMap
+     * @param n             The number of times to call {@code f}
      * @param f             The Function computing element values
-     * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A TreeMap containing the entries {@code f(0), f(1), ..., f(n - 1)}; entries whose keys are equal
+     *         per {@code keyComparator} collapse (the later one wins), so the result may contain fewer than
+     *         {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code keyComparator} or {@code f} are null
      */
     public static <K extends @Nullable Object, V extends @Nullable Object> TreeMap<K, V> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
@@ -797,9 +799,10 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the TreeMap
+     * @param n   The number of times to call {@code f}
      * @param f   The Function computing element values
-     * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A TreeMap containing the entries {@code f(0), f(1), ..., f(n - 1)}; entries with equal keys collapse
+     *         (the later one wins), so the result may contain fewer than {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code f} is null
      */
     public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
@@ -813,9 +816,11 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
      * @param <K>           The key type
      * @param <V>           The value type
      * @param keyComparator The comparator used to sort the entries by their key
-     * @param n             The number of elements in the TreeMap
+     * @param n             The number of times to call {@code s}
      * @param s             The Supplier computing element values
-     * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A TreeMap containing the entries supplied by {@code s}; entries whose keys are equal per
+     *         {@code keyComparator} collapse (the later one wins), so the result may contain fewer than
+     *         {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code keyComparator} or {@code s} are null
      */
     @SuppressWarnings("unchecked")
@@ -830,9 +835,10 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n   The number of elements in the TreeMap
+     * @param n   The number of times to call {@code s}
      * @param s   The Supplier computing element values
-     * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A TreeMap containing the entries supplied by {@code s}; entries with equal keys collapse
+     *         (the later one wins), so the result may contain fewer than {@code n} entries. Empty if {@code n <= 0}.
      * @throws NullPointerException if {@code s} is null
      */
     public static <K extends Comparable<? super K>, V extends @Nullable Object> TreeMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
@@ -1228,7 +1234,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
      * Returns this {@code TreeMap} if it is nonempty,
      * otherwise {@code TreeMap} created from result of evaluating supplier, using existing comparator.
      *
-     * @param supplier An alternative {@code Traversable}
+     * @param supplier A supplier of alternative entries, evaluated only if this map is empty
      * @return this {@code TreeMap} if it is nonempty,
      * otherwise {@code TreeMap} created from result of evaluating supplier, using existing comparator.
      */
@@ -1337,7 +1343,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
 
     @Override
     public TreeMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
-        return Maps.replaceAll(this, function);
+        return map(comparator(), (k, v) -> Tuple.of(k, function.apply(k, v)));
     }
 
     @Override
@@ -1664,7 +1670,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
             /**
              * Instance control for object serialization.
              *
-             * @return The singleton instance of NaturalEntryComparator.
+             * @return The singleton instance of {@code Natural}.
              * @see java.io.Serializable
              */
             private Object readResolve() {

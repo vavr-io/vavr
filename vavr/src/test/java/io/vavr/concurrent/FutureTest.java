@@ -224,6 +224,19 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldUseGivenExecutorWhenWrappingCompletedJavaCompletableFuture() {
+        final Executor executor = Runnable::run;
+        final Future<Integer> completed = Future.fromCompletableFuture(executor, CompletableFuture.completedFuture(1));
+        assertThat(completed.executor()).isSameAs(executor);
+        assertCompleted(completed, 1);
+        final CompletableFuture<Integer> jFailed = new CompletableFuture<>();
+        jFailed.completeExceptionally(new RuntimeException("some"));
+        final Future<Integer> failed = Future.fromCompletableFuture(executor, jFailed);
+        assertThat(failed.executor()).isSameAs(executor);
+        assertFailed(failed, RuntimeException.class);
+    }
+
+    @Test
     public void shouldCreateFutureFromJavaCompletableFuture() {
         final CompletableFuture<Integer> jFuture = CompletableFuture.supplyAsync(() -> 1);
         final Future<Integer> future = Future.fromCompletableFuture(jFuture).await();

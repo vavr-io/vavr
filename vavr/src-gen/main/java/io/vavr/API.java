@@ -89,8 +89,8 @@ import org.jspecify.annotations.Nullable;
  * Please note that values like Option, Try, Future, etc. are also iterable.
  * <p>
  * Given a suitable function
- * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a Stream of the
- * mapped cross product elements.
+ * f: {@code (v1, v2, ..., vN) -> ...} and {@code 1 <= N <= 8} iterables, the result is a lazily evaluated
+ * {@link io.vavr.collection.Iterator} of the mapped cross product elements.
  *
  * <pre>{@code
  * { f(v1, v2, ..., vN) | v1 ∈ iterable1, ... vN ∈ iterableN }
@@ -821,7 +821,7 @@ public final class API {
      * Alias for {@link Future#of(Executor, CheckedFunction0)}
      *
      * @param <T>             Type of the computation result.
-     * @param executorService An executor service.
+     * @param executorService An {@link Executor} used to run the computation.
      * @param computation     A computation.
      * @return A new {@link Future} instance.
      * @throws NullPointerException if one of executorService or computation is null.
@@ -845,7 +845,7 @@ public final class API {
      * Alias for {@link Future#successful(Executor, Object)}
      *
      * @param <T>             The value type of a successful result.
-     * @param executorService An {@code ExecutorService}.
+     * @param executorService An {@link Executor} used to run the future's callbacks.
      * @param result          The result.
      * @return A succeeded {@link Future}.
      * @throws NullPointerException if executorService is null
@@ -861,7 +861,7 @@ public final class API {
      *
      * @param <T>      type of the lazy value
      * @param supplier A supplier
-     * @return A new instance of {@link Lazy}
+     * @return A {@link Lazy} wrapping the given supplier, or the supplier itself if it already is a {@code Lazy}
      */
     public static <T extends @Nullable Object> Lazy<T> Lazy(Supplier<? extends T> supplier) {
         return Lazy.of(supplier);
@@ -910,8 +910,9 @@ public final class API {
      *
      * @param <T>      Component type
      * @param supplier A checked supplier
-     * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
-     * exception occurs calling {@code supplier.get()}.
+     * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if a
+     * non-fatal exception occurs calling {@code supplier.apply()}. Fatal throwables (see {@link Try}) are
+     * rethrown instead of being wrapped.
      */
     public static <T extends @Nullable Object> Try<T> Try(CheckedFunction0<? extends T> supplier) {
         return Try.of(supplier);
@@ -934,7 +935,8 @@ public final class API {
      *
      * @param <T>       Component type of the {@code Try}.
      * @param exception An exception.
-     * @return A new {@link Try.Failure}.
+     * @return A new {@link Try.Failure} wrapping the given exception, unless it is considered fatal
+     * (see {@link Try}), in which case it is rethrown.
      */
     @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> Try.Failure<T> Failure(Throwable exception) {
@@ -986,8 +988,8 @@ public final class API {
      * Alias for {@link CharSeq#of(char...)}
      *
      * @param characters Zero or more characters.
-     * @return A new {@link CharSeq} instance containing the given characters in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @return A {@link CharSeq} containing the given characters in the same order (the empty {@code CharSeq} if none are given).
+     * @throws NullPointerException if {@code characters} is null
      */
     public static CharSeq CharSeq(char... characters) {
         return CharSeq.of(characters);
@@ -2055,7 +2057,7 @@ public final class API {
      *
      * @param <K> The key type.
      * @param <V> The value type.
-     * @param map A map entry.
+     * @param map A {@code java.util.Map} whose entries are copied into the new {@link TreeMap}.
      * @return A new {@link TreeMap} instance containing the given map
      * @deprecated Will be removed in a future version.
      */
@@ -2293,15 +2295,15 @@ public final class API {
      * e.g. by {@code Match}:
      *
      * <pre>{@code Match(i).of(
-     *     Case($(is(0)), i -> run(() -> System.out.println("zero"))),
-     *     Case($(is(1)), i -> run(() -> System.out.println("one"))),
+     *     Case($(is(0)), ignored -> run(() -> System.out.println("zero"))),
+     *     Case($(is(1)), ignored -> run(() -> System.out.println("one"))),
      *     Case($(), o -> run(() -> System.out.println("many")))
      * )}</pre>
      *
      * @param unit A block of code to be run.
      * @return the single instance of {@code Void}, namely {@code null}
      */
-    public static Void run(Runnable unit) {
+    public static @Nullable Void run(Runnable unit) {
         unit.run();
         return null;
     }
@@ -3276,7 +3278,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Either.
      *
      * @param ts1 the 1st Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -3290,7 +3292,7 @@ public final class API {
      *
      * @param ts1 the 1st Either
      * @param ts2 the 2nd Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @return a new {@code For}-comprehension of arity 2
@@ -3307,7 +3309,7 @@ public final class API {
      * @param ts1 the 1st Either
      * @param ts2 the 2nd Either
      * @param ts3 the 3rd Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3327,7 +3329,7 @@ public final class API {
      * @param ts2 the 2nd Either
      * @param ts3 the 3rd Either
      * @param ts4 the 4th Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3350,7 +3352,7 @@ public final class API {
      * @param ts3 the 3rd Either
      * @param ts4 the 4th Either
      * @param ts5 the 5th Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3376,7 +3378,7 @@ public final class API {
      * @param ts4 the 4th Either
      * @param ts5 the 5th Either
      * @param ts6 the 6th Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3405,7 +3407,7 @@ public final class API {
      * @param ts5 the 5th Either
      * @param ts6 the 6th Either
      * @param ts7 the 7th Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3437,7 +3439,7 @@ public final class API {
      * @param ts6 the 6th Either
      * @param ts7 the 7th Either
      * @param ts8 the 8th Either
-     * @param <L> left-hand type of all Eithers
+     * @param <L> the common left-hand type of all Eithers
      * @param <T1> component type of the 1st Either
      * @param <T2> component type of the 2nd Either
      * @param <T3> component type of the 3rd Either
@@ -3464,7 +3466,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Validation.
      *
      * @param ts1 the 1st Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -3478,7 +3480,7 @@ public final class API {
      *
      * @param ts1 the 1st Validation
      * @param ts2 the 2nd Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @return a new {@code For}-comprehension of arity 2
@@ -3495,7 +3497,7 @@ public final class API {
      * @param ts1 the 1st Validation
      * @param ts2 the 2nd Validation
      * @param ts3 the 3rd Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -3515,7 +3517,7 @@ public final class API {
      * @param ts2 the 2nd Validation
      * @param ts3 the 3rd Validation
      * @param ts4 the 4th Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -3538,7 +3540,7 @@ public final class API {
      * @param ts3 the 3rd Validation
      * @param ts4 the 4th Validation
      * @param ts5 the 5th Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -3564,7 +3566,7 @@ public final class API {
      * @param ts4 the 4th Validation
      * @param ts5 the 5th Validation
      * @param ts6 the 6th Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -3593,7 +3595,7 @@ public final class API {
      * @param ts5 the 5th Validation
      * @param ts6 the 6th Validation
      * @param ts7 the 7th Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -3625,7 +3627,7 @@ public final class API {
      * @param ts6 the 6th Validation
      * @param ts7 the 7th Validation
      * @param ts8 the 8th Validation
-     * @param <L> left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> component type of the 1st Validation
      * @param <T2> component type of the 2nd Validation
      * @param <T3> component type of the 3rd Validation
@@ -4019,7 +4021,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return an {@code Option} of mapped results
           */
          public Option<T1> yield() {
              return this.yield(Function.identity());
@@ -4352,7 +4354,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4362,7 +4364,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public Future<T1> yield() {
              return this.yield(Function.identity());
@@ -4390,7 +4392,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4425,7 +4427,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4464,7 +4466,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4507,7 +4509,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4554,7 +4556,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4605,7 +4607,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4660,7 +4662,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
-          * @return an {@code Future} of mapped results
+          * @return a {@code Future} of mapped results
           */
          public <R extends @Nullable Object> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4695,7 +4697,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4705,7 +4707,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public Try<T1> yield() {
              return this.yield(Function.identity());
@@ -4733,7 +4735,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4768,7 +4770,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4807,7 +4809,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4850,7 +4852,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4897,7 +4899,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -4948,7 +4950,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5003,7 +5005,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
-          * @return an {@code Try} of mapped results
+          * @return a {@code Try} of mapped results
           */
          public <R extends @Nullable Object> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5038,7 +5040,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5048,7 +5050,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return a {@code List} of mapped results
           */
          public List<T1> yield() {
              return this.yield(Function.identity());
@@ -5076,7 +5078,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5111,7 +5113,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5150,7 +5152,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5193,7 +5195,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5240,7 +5242,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5291,7 +5293,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5346,7 +5348,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
-          * @return an {@code List} of mapped results
+          * @return a {@code List} of mapped results
           */
          public <R extends @Nullable Object> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5366,7 +5368,7 @@ public final class API {
      /**
       * For-comprehension with one Either.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       */
      public static class For1Either<L extends @Nullable Object, T1 extends @Nullable Object> {
@@ -5392,7 +5394,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return an {@code Either} of mapped results
           */
          public Either<L, T1> yield() {
              return this.yield(Function.identity());
@@ -5402,7 +5404,7 @@ public final class API {
      /**
       * For-comprehension with two Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       */
@@ -5435,7 +5437,7 @@ public final class API {
      /**
       * For-comprehension with three Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5472,7 +5474,7 @@ public final class API {
      /**
       * For-comprehension with 4 Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5513,7 +5515,7 @@ public final class API {
      /**
       * For-comprehension with 5 Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5558,7 +5560,7 @@ public final class API {
      /**
       * For-comprehension with 6 Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5607,7 +5609,7 @@ public final class API {
      /**
       * For-comprehension with 7 Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5660,7 +5662,7 @@ public final class API {
      /**
       * For-comprehension with 8 Eithers.
 
-      * @param <L> The left-hand type of all {@link Either}s
+      * @param <L> The common left-hand type of all {@link Either}s
       * @param <T1> component type of {@link Either} number 1
       * @param <T2> component type of {@link Either} number 2
       * @param <T3> component type of {@link Either} number 3
@@ -5717,7 +5719,7 @@ public final class API {
      /**
       * For-comprehension with one Validation.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       */
      public static class For1Validation<L extends @Nullable Object, T1 extends @Nullable Object> {
@@ -5733,7 +5735,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5743,7 +5745,7 @@ public final class API {
          /**
           * A shortcut for {@code yield(Function.identity())}.
           *
-          * @return an {@code Iterator} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public Validation<L, T1> yield() {
              return this.yield(Function.identity());
@@ -5753,7 +5755,7 @@ public final class API {
      /**
       * For-comprehension with two Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       */
@@ -5772,7 +5774,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5786,7 +5788,7 @@ public final class API {
      /**
       * For-comprehension with three Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -5808,7 +5810,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5823,7 +5825,7 @@ public final class API {
      /**
       * For-comprehension with 4 Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -5848,7 +5850,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5864,7 +5866,7 @@ public final class API {
      /**
       * For-comprehension with 5 Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -5892,7 +5894,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5909,7 +5911,7 @@ public final class API {
      /**
       * For-comprehension with 6 Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -5940,7 +5942,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -5958,7 +5960,7 @@ public final class API {
      /**
       * For-comprehension with 7 Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -5992,7 +5994,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -6011,7 +6013,7 @@ public final class API {
      /**
       * For-comprehension with 8 Validations.
 
-      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <L> The error (invalid) type of all {@link Validation}s
       * @param <T1> component type of {@link Validation} number 1
       * @param <T2> component type of {@link Validation} number 2
       * @param <T3> component type of {@link Validation} number 3
@@ -6048,7 +6050,7 @@ public final class API {
           *
           * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Validation} elements
-          * @return an {@code Validation} of mapped results
+          * @return a {@code Validation} of mapped results
           */
          public <R extends @Nullable Object> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
@@ -6070,13 +6072,14 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6094,14 +6097,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6121,15 +6125,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
-     * @param ts4 the 4th Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
+     * @param ts4 a function of the 3 previously bound values returning the 4th Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6151,16 +6156,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
-     * @param ts4 the 4th Option
-     * @param ts5 the 5th Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
+     * @param ts4 a function of the 3 previously bound values returning the 4th Option
+     * @param ts5 a function of the 4 previously bound values returning the 5th Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6184,17 +6190,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
-     * @param ts4 the 4th Option
-     * @param ts5 the 5th Option
-     * @param ts6 the 6th Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
+     * @param ts4 a function of the 3 previously bound values returning the 4th Option
+     * @param ts5 a function of the 4 previously bound values returning the 5th Option
+     * @param ts6 a function of the 5 previously bound values returning the 6th Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6220,18 +6227,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
-     * @param ts4 the 4th Option
-     * @param ts5 the 5th Option
-     * @param ts6 the 6th Option
-     * @param ts7 the 7th Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
+     * @param ts4 a function of the 3 previously bound values returning the 4th Option
+     * @param ts5 a function of the 4 previously bound values returning the 5th Option
+     * @param ts6 a function of the 5 previously bound values returning the 6th Option
+     * @param ts7 a function of the 6 previously bound values returning the 7th Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6259,19 +6267,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Option. This method only constructs the
+     * bound so far and returns the next Option.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Option
-     * @param ts2 the 2nd Option
-     * @param ts3 the 3rd Option
-     * @param ts4 the 4th Option
-     * @param ts5 the 5th Option
-     * @param ts6 the 6th Option
-     * @param ts7 the 7th Option
-     * @param ts8 the 8th Option
+     * @param ts1 the initial Option
+     * @param ts2 a function of the previously bound value returning the 2nd Option
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Option
+     * @param ts4 a function of the 3 previously bound values returning the 4th Option
+     * @param ts5 a function of the 4 previously bound values returning the 5th Option
+     * @param ts6 a function of the 5 previously bound values returning the 6th Option
+     * @param ts7 a function of the 6 previously bound values returning the 7th Option
+     * @param ts8 a function of the 7 previously bound values returning the 8th Option
 
      * @param <T1> the component type of the 1st Option
      * @param <T2> the component type of the 2nd Option
@@ -6301,13 +6310,14 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts2}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6325,14 +6335,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts3}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6352,15 +6363,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts4}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
-     * @param ts4 the 4th Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
+     * @param ts4 a function of the 3 previously bound values returning the 4th Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6382,16 +6394,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts5}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
-     * @param ts4 the 4th Future
-     * @param ts5 the 5th Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
+     * @param ts4 a function of the 3 previously bound values returning the 4th Future
+     * @param ts5 a function of the 4 previously bound values returning the 5th Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6415,17 +6428,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts6}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
-     * @param ts4 the 4th Future
-     * @param ts5 the 5th Future
-     * @param ts6 the 6th Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
+     * @param ts4 a function of the 3 previously bound values returning the 4th Future
+     * @param ts5 a function of the 4 previously bound values returning the 5th Future
+     * @param ts6 a function of the 5 previously bound values returning the 6th Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6451,18 +6465,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts7}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
-     * @param ts4 the 4th Future
-     * @param ts5 the 5th Future
-     * @param ts6 the 6th Future
-     * @param ts7 the 7th Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
+     * @param ts4 a function of the 3 previously bound values returning the 4th Future
+     * @param ts5 a function of the 4 previously bound values returning the 5th Future
+     * @param ts6 a function of the 5 previously bound values returning the 6th Future
+     * @param ts7 a function of the 6 previously bound values returning the 7th Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6490,19 +6505,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Future. This method only constructs the
-     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
-     * is invoked.</p>
+     * bound so far and returns the next Future.
+     * This method only constructs the comprehension; the functions {@code ts2} .. {@code ts8}
+     * are applied as the preceding Futures complete, asynchronously with respect to the call
+     * to {@code yield(...)}. Note that {@code ts1} is an already running Future.</p>
      *
      *
-     * @param ts1 the 1st Future
-     * @param ts2 the 2nd Future
-     * @param ts3 the 3rd Future
-     * @param ts4 the 4th Future
-     * @param ts5 the 5th Future
-     * @param ts6 the 6th Future
-     * @param ts7 the 7th Future
-     * @param ts8 the 8th Future
+     * @param ts1 the initial Future
+     * @param ts2 a function of the previously bound value returning the 2nd Future
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Future
+     * @param ts4 a function of the 3 previously bound values returning the 4th Future
+     * @param ts5 a function of the 4 previously bound values returning the 5th Future
+     * @param ts6 a function of the 5 previously bound values returning the 6th Future
+     * @param ts7 a function of the 6 previously bound values returning the 7th Future
+     * @param ts8 a function of the 7 previously bound values returning the 8th Future
 
      * @param <T1> the component type of the 1st Future
      * @param <T2> the component type of the 2nd Future
@@ -6532,13 +6548,14 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6556,14 +6573,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6583,15 +6601,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
-     * @param ts4 the 4th Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
+     * @param ts4 a function of the 3 previously bound values returning the 4th Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6613,16 +6632,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
-     * @param ts4 the 4th Try
-     * @param ts5 the 5th Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
+     * @param ts4 a function of the 3 previously bound values returning the 4th Try
+     * @param ts5 a function of the 4 previously bound values returning the 5th Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6646,17 +6666,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
-     * @param ts4 the 4th Try
-     * @param ts5 the 5th Try
-     * @param ts6 the 6th Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
+     * @param ts4 a function of the 3 previously bound values returning the 4th Try
+     * @param ts5 a function of the 4 previously bound values returning the 5th Try
+     * @param ts6 a function of the 5 previously bound values returning the 6th Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6682,18 +6703,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
-     * @param ts4 the 4th Try
-     * @param ts5 the 5th Try
-     * @param ts6 the 6th Try
-     * @param ts7 the 7th Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
+     * @param ts4 a function of the 3 previously bound values returning the 4th Try
+     * @param ts5 a function of the 4 previously bound values returning the 5th Try
+     * @param ts6 a function of the 5 previously bound values returning the 6th Try
+     * @param ts7 a function of the 6 previously bound values returning the 7th Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6721,19 +6743,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Try. This method only constructs the
+     * bound so far and returns the next Try.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Try
-     * @param ts2 the 2nd Try
-     * @param ts3 the 3rd Try
-     * @param ts4 the 4th Try
-     * @param ts5 the 5th Try
-     * @param ts6 the 6th Try
-     * @param ts7 the 7th Try
-     * @param ts8 the 8th Try
+     * @param ts1 the initial Try
+     * @param ts2 a function of the previously bound value returning the 2nd Try
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Try
+     * @param ts4 a function of the 3 previously bound values returning the 4th Try
+     * @param ts5 a function of the 4 previously bound values returning the 5th Try
+     * @param ts6 a function of the 5 previously bound values returning the 6th Try
+     * @param ts7 a function of the 6 previously bound values returning the 7th Try
+     * @param ts8 a function of the 7 previously bound values returning the 8th Try
 
      * @param <T1> the component type of the 1st Try
      * @param <T2> the component type of the 2nd Try
@@ -6763,13 +6786,14 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6787,14 +6811,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6814,15 +6839,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
-     * @param ts4 the 4th List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
+     * @param ts4 a function of the 3 previously bound values returning the 4th List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6844,16 +6870,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
-     * @param ts4 the 4th List
-     * @param ts5 the 5th List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
+     * @param ts4 a function of the 3 previously bound values returning the 4th List
+     * @param ts5 a function of the 4 previously bound values returning the 5th List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6877,17 +6904,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
-     * @param ts4 the 4th List
-     * @param ts5 the 5th List
-     * @param ts6 the 6th List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
+     * @param ts4 a function of the 3 previously bound values returning the 4th List
+     * @param ts5 a function of the 4 previously bound values returning the 5th List
+     * @param ts6 a function of the 5 previously bound values returning the 6th List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6913,18 +6941,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
-     * @param ts4 the 4th List
-     * @param ts5 the 5th List
-     * @param ts6 the 6th List
-     * @param ts7 the 7th List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
+     * @param ts4 a function of the 3 previously bound values returning the 4th List
+     * @param ts5 a function of the 4 previously bound values returning the 5th List
+     * @param ts6 a function of the 5 previously bound values returning the 6th List
+     * @param ts7 a function of the 6 previously bound values returning the 7th List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6952,19 +6981,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next List. This method only constructs the
+     * bound so far and returns the next List.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st List
-     * @param ts2 the 2nd List
-     * @param ts3 the 3rd List
-     * @param ts4 the 4th List
-     * @param ts5 the 5th List
-     * @param ts6 the 6th List
-     * @param ts7 the 7th List
-     * @param ts8 the 8th List
+     * @param ts1 the initial List
+     * @param ts2 a function of the previously bound value returning the 2nd List
+     * @param ts3 a function of the 2 previously bound values returning the 3rd List
+     * @param ts4 a function of the 3 previously bound values returning the 4th List
+     * @param ts5 a function of the 4 previously bound values returning the 5th List
+     * @param ts6 a function of the 5 previously bound values returning the 6th List
+     * @param ts7 a function of the 6 previously bound values returning the 7th List
+     * @param ts8 a function of the 7 previously bound values returning the 8th List
 
      * @param <T1> the component type of the 1st List
      * @param <T2> the component type of the 2nd List
@@ -6994,13 +7024,14 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7018,14 +7049,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7045,15 +7077,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
-     * @param ts4 the 4th Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
+     * @param ts4 a function of the 3 previously bound values returning the 4th Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7075,16 +7108,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
-     * @param ts4 the 4th Either
-     * @param ts5 the 5th Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
+     * @param ts4 a function of the 3 previously bound values returning the 4th Either
+     * @param ts5 a function of the 4 previously bound values returning the 5th Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7108,17 +7142,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
-     * @param ts4 the 4th Either
-     * @param ts5 the 5th Either
-     * @param ts6 the 6th Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
+     * @param ts4 a function of the 3 previously bound values returning the 4th Either
+     * @param ts5 a function of the 4 previously bound values returning the 5th Either
+     * @param ts6 a function of the 5 previously bound values returning the 6th Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7144,18 +7179,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
-     * @param ts4 the 4th Either
-     * @param ts5 the 5th Either
-     * @param ts6 the 6th Either
-     * @param ts7 the 7th Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
+     * @param ts4 a function of the 3 previously bound values returning the 4th Either
+     * @param ts5 a function of the 4 previously bound values returning the 5th Either
+     * @param ts6 a function of the 5 previously bound values returning the 6th Either
+     * @param ts7 a function of the 6 previously bound values returning the 7th Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7183,19 +7219,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Either. This method only constructs the
+     * bound so far and returns the next Either.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Either
-     * @param ts2 the 2nd Either
-     * @param ts3 the 3rd Either
-     * @param ts4 the 4th Either
-     * @param ts5 the 5th Either
-     * @param ts6 the 6th Either
-     * @param ts7 the 7th Either
-     * @param ts8 the 8th Either
+     * @param ts1 the initial Either
+     * @param ts2 a function of the previously bound value returning the 2nd Either
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Either
+     * @param ts4 a function of the 3 previously bound values returning the 4th Either
+     * @param ts5 a function of the 4 previously bound values returning the 5th Either
+     * @param ts6 a function of the 5 previously bound values returning the 6th Either
+     * @param ts7 a function of the 6 previously bound values returning the 7th Either
+     * @param ts8 a function of the 7 previously bound values returning the 8th Either
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
      * @param <T2> the component type of the 2nd Either
@@ -7225,14 +7262,15 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @return a new {@code ForLazy2Validation} builder of arity 2
@@ -7249,15 +7287,16 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7276,16 +7315,17 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param ts4 the 4th Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param ts4 a function of the 3 previously bound values returning the 4th Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7306,17 +7346,18 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param ts4 the 4th Validation
-     * @param ts5 the 5th Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param ts4 a function of the 3 previously bound values returning the 4th Validation
+     * @param ts5 a function of the 4 previously bound values returning the 5th Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7339,18 +7380,19 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param ts4 the 4th Validation
-     * @param ts5 the 5th Validation
-     * @param ts6 the 6th Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param ts4 a function of the 3 previously bound values returning the 4th Validation
+     * @param ts5 a function of the 4 previously bound values returning the 5th Validation
+     * @param ts6 a function of the 5 previously bound values returning the 6th Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7375,19 +7417,20 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param ts4 the 4th Validation
-     * @param ts5 the 5th Validation
-     * @param ts6 the 6th Validation
-     * @param ts7 the 7th Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param ts4 a function of the 3 previously bound values returning the 4th Validation
+     * @param ts5 a function of the 4 previously bound values returning the 5th Validation
+     * @param ts6 a function of the 5 previously bound values returning the 6th Validation
+     * @param ts7 a function of the 6 previously bound values returning the 7th Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7414,20 +7457,21 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Validation. This method only constructs the
+     * bound so far and returns the next Validation.
+     * This method only constructs the
      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
      * is invoked.</p>
      *
      *
-     * @param ts1 the 1st Validation
-     * @param ts2 the 2nd Validation
-     * @param ts3 the 3rd Validation
-     * @param ts4 the 4th Validation
-     * @param ts5 the 5th Validation
-     * @param ts6 the 6th Validation
-     * @param ts7 the 7th Validation
-     * @param ts8 the 8th Validation
-     * @param <L> the common left-hand type of all Validations
+     * @param ts1 the initial Validation
+     * @param ts2 a function of the previously bound value returning the 2nd Validation
+     * @param ts3 a function of the 2 previously bound values returning the 3rd Validation
+     * @param ts4 a function of the 3 previously bound values returning the 4th Validation
+     * @param ts5 a function of the 4 previously bound values returning the 5th Validation
+     * @param ts6 a function of the 5 previously bound values returning the 6th Validation
+     * @param ts7 a function of the 6 previously bound values returning the 7th Validation
+     * @param ts8 a function of the 7 previously bound values returning the 8th Validation
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -7475,12 +7519,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -7518,12 +7563,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -7566,12 +7612,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -7619,12 +7666,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -7677,12 +7725,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -7740,12 +7789,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -7808,12 +7858,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Options; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
-         * @return an {@code Option} containing mapped results
+         * @return an {@code Option} containing the mapped result, or {@code None} if any bound Option is empty
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -7840,8 +7891,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7860,12 +7911,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -7880,8 +7932,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7903,12 +7955,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -7925,8 +7978,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7951,12 +8004,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -7975,8 +8029,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -8004,12 +8058,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -8030,8 +8085,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -8062,12 +8117,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -8090,8 +8146,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -8125,12 +8181,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -8155,8 +8212,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are traversed
-     * only when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; the bound functions are applied as the underlying
+     * Futures complete, once {@code yield(...)} has been invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -8193,12 +8250,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Futures; the bound functions and {@code f} are invoked asynchronously
+         * as each Future completes.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
-         * @return an {@code Future} containing mapped results
+         * @return a {@code Future} that completes with the mapped result, or fails with the first failure encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -8245,12 +8303,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -8288,12 +8347,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -8336,12 +8396,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -8389,12 +8450,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -8447,12 +8509,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -8510,12 +8573,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -8578,12 +8642,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Trys; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
-         * @return an {@code Try} containing mapped results
+         * @return a {@code Try} containing the mapped result, or the first {@code Failure} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -8630,12 +8695,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -8673,12 +8739,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -8721,12 +8788,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -8774,12 +8842,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -8832,12 +8901,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -8895,12 +8965,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -8963,12 +9034,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Lists; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
-         * @return an {@code List} containing mapped results
+         * @return a {@code List} of the mapped results (empty if any bound List is empty)
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -9015,12 +9087,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -9058,12 +9131,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -9106,12 +9180,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -9159,12 +9234,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -9217,12 +9293,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -9280,12 +9357,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -9348,12 +9426,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Eithers; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
-         * @return an {@code Either} containing mapped results
+         * @return an {@code Either} containing the mapped result, or the first {@code Left} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -9383,7 +9462,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      */
@@ -9400,12 +9479,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -9423,7 +9503,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9443,12 +9523,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -9468,7 +9549,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9491,12 +9572,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -9518,7 +9600,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9544,12 +9626,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -9573,7 +9656,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9602,12 +9685,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -9633,7 +9717,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9665,12 +9749,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -9698,7 +9783,7 @@ public final class API {
      * Construction is side-effect free; underlying Validations are traversed
      * only when {@code yield(...)} is invoked.</p>
      *
-     * @param <L> the common left-hand type of all Validations
+     * @param <L> the error (invalid) type of all Validations
      * @param <T1> the component type of the 1st Validation
      * @param <T2> the component type of the 2nd Validation
      * @param <T3> the component type of the 3rd Validation
@@ -9733,12 +9818,13 @@ public final class API {
         /**
          * Produces results by mapping the Cartesian product of all bound values.
          *
-         * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing {@code flatMap} and {@code map} chains.</p>
+         * <p>Evaluates the comprehension by composing {@code flatMap} and {@code map} on the
+         * underlying Validations; the bound functions and {@code f} are invoked eagerly
+         * during this call.</p>
          *
          * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
-         * @return an {@code Validation} containing mapped results
+         * @return a {@code Validation} containing the mapped result, or the first {@code Invalid} encountered
          * @throws NullPointerException if {@code f} is {@code null}
          */
         public <R extends @Nullable Object> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -10310,14 +10396,16 @@ public final class API {
      * Wildcard pattern, matches any value.
      *
      * @param <T> injected type of the underlying value
-     * @return a new {@code Pattern0} instance
+     * @return the shared wildcard {@code Pattern0} instance
      */
     public static <T extends @Nullable Object> Pattern0<T> $() {
         return Pattern0.any();
     }
 
     /**
-     * Value pattern, checks for equality.
+     * Value pattern. Matches a value that is the same instance as {@code prototype}, or that is an instance of
+     * the prototype's runtime class and equal to it (see {@link Objects#equals(Object, Object)}). Values that
+     * are equal but of a different runtime type (e.g. {@code Stream.empty()} vs. {@code List.empty()}) do not match.
      *
      * @param <T>       type of the prototype
      * @param prototype the value that should be equal to the underlying object
@@ -10394,11 +10482,11 @@ public final class API {
      * <pre>{@code
      * Predicate<Integer> p = i -> true;
      * Match(p).of(
-     *     Case($(is(p)), 1) // CORRECT! It calls $(T)
+     *     Case($(is(p)), 1) // CORRECT! It calls $(Predicate) with a predicate that tests equality with p
      * );
      * }</pre>
      *
-     * @param <T>       type of the prototype
+     * @param <T>       type of the value tested by the predicate
      * @param predicate the predicate that tests a given value
      * @return a new {@code Pattern0} instance
      */
@@ -10437,13 +10525,13 @@ public final class API {
         }
 
         /**
-         * Executes the match, created by the factory function {@link API#Match(Object)}. Throws exceptions
-         * when the list of {@link Case}s is incomplete.
+         * Executes the match, created by the factory function {@link API#Match(Object)}. Throws a
+         * {@link MatchError} if none of the given {@link Case}s is defined at the matched value.
          *
          * @param cases list of cases we execute the match against
          * @param <R>   return value type
-         * @return The matched value
-         * @throws MatchError if the list of cases was not defined for all possible values of T
+         * @return the result of applying the first case whose pattern matches the value
+         * @throws MatchError if none of the given cases is defined at the matched value
          */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
@@ -10464,7 +10552,7 @@ public final class API {
         *
         * @param cases list of cases we execute the match against
         * @param <R>   return value type
-        * @return Option containing the matched value, or none
+        * @return {@code Some} of the result of the first matching case, or {@code None} if no case matches
         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
@@ -10822,8 +10910,10 @@ public final class API {
         // -- PATTERNS
 
         /**
-         * A Pattern is a partial {@link Function} in the sense that a function applications returns an
-         * optional result of type {@code Option<R>}.
+         * A Pattern is a {@link PartialFunction}: {@link PartialFunction#isDefinedAt(Object)} tells whether
+         * a value matches, and {@link PartialFunction#apply(Object)} decomposes a matching value into its single
+         * or composite part of type {@code R}. Use {@link PartialFunction#lift()} to obtain a total function
+         * that returns {@code Option<R>} instead.
          *
          * @param <T> Class type that is matched by this pattern
          * @param <R> Type of the single or composite part this pattern decomposes

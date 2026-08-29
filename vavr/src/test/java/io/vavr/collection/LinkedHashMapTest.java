@@ -342,4 +342,14 @@ public class LinkedHashMapTest extends AbstractMapTest {
         }
     }
 
+    @Nested
+    class RetainAllTests {
+        @Test
+        public void shouldPreserveInsertionOrderWhenRetainingAll() {
+            final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+            final LinkedHashMap<Integer, String> actual = map.retainAll(List.of(Tuple.of(4, "d"), Tuple.of(2, "b"), Tuple.of(9, "z")));
+            assertThat(actual.toList()).isEqualTo(List.of(Tuple.of(2, "b"), Tuple.of(4, "d")));
+        }
+    }
+
 }

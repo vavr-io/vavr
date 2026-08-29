@@ -76,7 +76,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link Vector}.
      *
      * @param <T> Component type of the Vector.
-     * @return A io.vavr.collection.List Collector.
+     * @return A {@link Vector} Collector.
      */
     public static <T extends @Nullable Object> Collector<T, ArrayList<T>, Vector<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
@@ -177,7 +177,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * @param <T>      Component type of the Vector.
      * @param iterable An Iterable of elements.
      * @return A vector containing the given elements in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @throws NullPointerException if {@code iterable} is null
      */
     @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> Vector<T> ofAll(Iterable<? extends T> iterable) {
@@ -413,9 +413,9 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -460,8 +460,8 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
@@ -623,7 +623,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -653,8 +653,8 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Vector, otherwise {@code Some} {@code Tuple}
-     * of the element for the next call and the value to add to the
-     * resulting Vector.
+     * of the value to add to the resulting Vector and the element for
+     * the next call.
      * <p>
      * Example:
      * <pre>
@@ -662,7 +662,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * Vector.unfoldRight(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x, x-1)));
-     * // Vector(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+     * // Vector(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
      * }
      * </pre>
      *
@@ -682,8 +682,8 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Vector, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting Vector and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting Vector.
      * <p>
      * Example:
      * <pre>
@@ -691,7 +691,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * Vector.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x-1, x)));
-     * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
      * }
      * </pre>
      *
@@ -711,8 +711,8 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Vector, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting Vector and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting Vector.
      * <p>
      * Example:
      * <pre>
@@ -720,7 +720,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
      * Vector.unfold(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x-1, x)));
-     * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
      * }
      * </pre>
      *
@@ -893,7 +893,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
 
     @Override
     public int indexOf(T element, int from) {
-        for (int i = from; i < length(); i++) {
+        for (int i = Math.max(from, 0); i < length(); i++) {
             if (Objects.equals(get(i), element)) {
                 return i;
             }

@@ -144,13 +144,12 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
     /**
      * Creates a Tree of the given elements.
      * <p>
-     * If the given iterable is a tree, it is returned as result.
-     * if the iteration order of the elements is stable.
+     * If the given iterable is already a Tree, it is returned unmodified; otherwise a new Tree is built from its elements.
      *
-     * @param <T>      Component type of the List.
+     * @param <T>      Component type of the Tree.
      * @param iterable An Iterable of elements.
-     * @return A list containing the given elements in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @return A Tree containing the given elements in the same order, or {@code iterable} itself if it is already a Tree.
+     * @throws NullPointerException if {@code iterable} is null
      */
     @SuppressWarnings("unchecked")
     static <T extends @Nullable Object> Tree<T> ofAll(Iterable<? extends T> iterable) {
@@ -230,7 +229,7 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
      * // = (1 (2 4 5) 3)
      * Tree.recurse(1, i ->
      *   (i == 1) ? List.of(2, 3) :
-     *   (i == 2) ? List.(4, 5) :
+     *   (i == 2) ? List.of(4, 5) :
      *   List.empty()
      * ).toLispString();
      * }</pre>
@@ -260,7 +259,8 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
      *  //   II  III
      *  //   /\
      *  //  IV V
-     *  Tree<MenuItem> menu = Tree.build(items, MenuItem::getId, MenuItem::getParentId);
+     *  List<Tree.Node<MenuItem>> roots = Tree.build(items, MenuItem::getId, MenuItem::getParentId);
+     *  Tree<MenuItem> menu = roots.head(); // the single root node, "I"
      * }</pre>
      *
      * @param source       Flat source
@@ -559,6 +559,19 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
         }
     }
 
+    /**
+     * Transforms each element of this Tree into an {@code Iterable} of elements and flattens the resulting
+     * iterables into a single Tree.
+     * <p>
+     * Because a Tree is hierarchical, if {@code mapper} produces an empty {@code Iterable} for a node's value,
+     * that node and its entire subtree are removed from the result, even if {@code mapper} would have produced
+     * elements for descendant nodes.
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return a new Tree
+     * @throws NullPointerException if {@code mapper} is null
+     */
     @Override
     default <U extends @Nullable Object> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -882,12 +895,11 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
         private final int size;
 
         /**
-         * Constructs a rose tree branch.
+         * Constructs a rose tree node. A node with an empty {@code children} list is a leaf.
          *
          * @param value    A value.
-         * @param children A non-empty list of children.
-         * @throws NullPointerException     if children is null
-         * @throws IllegalArgumentException if children is empty
+         * @param children The list of children, possibly empty.
+         * @throws NullPointerException if children is null
          */
         public Node(T value, io.vavr.collection.List<Node<T>> children) {
             Objects.requireNonNull(children, "children is null");
@@ -1162,7 +1174,7 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
         /**
          * Instance control for object serialization.
          *
-         * @return The singleton instance of Nil.
+         * @return The singleton instance of Empty.
          * @see java.io.Serializable
          */
         @Serial

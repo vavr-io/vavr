@@ -215,7 +215,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 1st element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 1st element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
@@ -234,7 +234,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 2nd element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 2nd element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
@@ -253,7 +253,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 3rd element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 3rd element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
@@ -272,7 +272,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 4th element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 4th element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
@@ -291,7 +291,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 5th element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 5th element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 5th element of this Tuple.
@@ -310,7 +310,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 6th element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 6th element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 6th element of this Tuple.
@@ -329,7 +329,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Sets the 7th element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 7th element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 7th element of this Tuple.
@@ -349,7 +349,7 @@ public final class Tuple7<T1 extends @Nullable Object, T2 extends @Nullable Obje
      * @param <U5> new type of the 5th component
      * @param <U6> new type of the 6th component
      * @param <U7> new type of the 7th component
-     * @return A new Tuple of same arity.
+     * @return the result of applying {@code mapper} to the components of this tuple
      * @throws NullPointerException if {@code mapper} is null
      */
     public <U1 extends @Nullable Object, U2 extends @Nullable Object, U3 extends @Nullable Object, U4 extends @Nullable Object, U5 extends @Nullable Object, U6 extends @Nullable Object, U7 extends @Nullable Object> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<U1, U2, U3, U4, U5, U6, U7>> mapper) {

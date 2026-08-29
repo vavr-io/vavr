@@ -52,8 +52,8 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * <p>
      * The natural comparator is used to compare TreeSet elements.
      *
-     * @param <T> Component type of the List.
-     * @return A io.vavr.collection.List Collector.
+     * @param <T> Component type of the TreeSet.
+     * @return A io.vavr.collection.TreeSet Collector.
      */
     public static <T extends Comparable<? super T>> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
         return collector(Comparators.naturalComparator());
@@ -63,9 +63,9 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeSet}.
      *
-     * @param <T>        Component type of the List.
+     * @param <T>        Component type of the TreeSet.
      * @param comparator An element comparator
-     * @return A io.vavr.collection.List Collector.
+     * @return A io.vavr.collection.TreeSet Collector.
      */
     public static <T extends @Nullable Object> Collector<T, ArrayList<T>, TreeSet<T>> collector(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -133,9 +133,11 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      *
      * @param <T>        Component type of the TreeSet
      * @param comparator The comparator used to sort the elements
-     * @param n          The number of elements in the TreeSet
+     * @param n          The number of times {@code f} is invoked (for indices {@code 0} through {@code n - 1});
+     *                   the resulting TreeSet may contain fewer than {@code n} elements if {@code f} produces
+     *                   values considered equal by the comparator
      * @param f          The Function computing element values
-     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A TreeSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code comparator} or {@code f} are null
      */
     public static <T extends @Nullable Object> TreeSet<T> tabulate(Comparator<? super T> comparator, int n, Function<? super Integer, ? extends T> f) {
@@ -150,9 +152,11 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * The underlying comparator is the natural comparator of T.
      *
      * @param <T> Component type of the TreeSet
-     * @param n   The number of elements in the TreeSet
+     * @param n   The number of times {@code f} is invoked (for indices {@code 0} through {@code n - 1});
+     *            the resulting TreeSet may contain fewer than {@code n} elements if {@code f} produces
+     *            values considered equal by the comparator
      * @param f   The Function computing element values
-     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A TreeSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
     public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
@@ -161,13 +165,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
     }
 
     /**
-     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a TreeSet containing the values returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <T>        Component type of the TreeSet
      * @param comparator The comparator used to sort the elements
-     * @param n          The number of elements in the TreeSet
+     * @param n          The number of times {@code s} is invoked
      * @param s          The Supplier computing element values
-     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A TreeSet of at most {@code n} elements, containing the values (deduplicated by the comparator) supplied by {@code s}.
      * @throws NullPointerException if {@code comparator} or {@code s} are null
      */
     public static <T extends @Nullable Object> TreeSet<T> fill(Comparator<? super T> comparator, int n, Supplier<? extends T> s) {
@@ -177,13 +181,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
     }
 
     /**
-     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a TreeSet containing the values returned by {@code n} calls to a given Supplier {@code s}.
      * The underlying comparator is the natural comparator of T.
      *
      * @param <T> Component type of the TreeSet
-     * @param n   The number of elements in the TreeSet
+     * @param n   The number of times {@code s} is invoked
      * @param s   The Supplier computing element values
-     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A TreeSet of at most {@code n} elements, containing the values (deduplicated by the comparator) supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
     public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, Supplier<? extends T> s) {
@@ -361,7 +365,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeBy(1, 3, 1)  // = TreeSet(1, 2)
      * TreeSet.rangeBy(1, 4, 2)  // = TreeSet(1, 3)
-     * TreeSet.rangeBy(4, 1, -2) // = TreeSet(4, 2)
+     * TreeSet.rangeBy(4, 1, -2) // = TreeSet(2, 4)
      * TreeSet.rangeBy(4, 1, 2)  // = TreeSet()
      * }
      * </pre>
@@ -369,9 +373,9 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -387,7 +391,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeBy('a', 'c', 1)  // = TreeSet('a', 'b')
      * TreeSet.rangeBy('a', 'd', 2)  // = TreeSet('a', 'c')
-     * TreeSet.rangeBy('d', 'a', -2) // = TreeSet('d', 'b')
+     * TreeSet.rangeBy('d', 'a', -2) // = TreeSet('b', 'd')
      * TreeSet.rangeBy('d', 'a', 2)  // = TreeSet()
      * }
      * </pre>
@@ -413,7 +417,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0)
      * TreeSet.rangeBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
-     * TreeSet.rangeBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+     * TreeSet.rangeBy(4.0, 1.0, -2.0) // = TreeSet(2.0, 4.0)
      * TreeSet.rangeBy(4.0, 1.0, 2.0)  // = TreeSet()
      * }
      * </pre>
@@ -459,7 +463,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeBy(1L, 3L, 1L)  // = TreeSet(1L, 2L)
      * TreeSet.rangeBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
-     * TreeSet.rangeBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
+     * TreeSet.rangeBy(4L, 1L, -2L) // = TreeSet(2L, 4L)
      * TreeSet.rangeBy(4L, 1L, 2L)  // = TreeSet()
      * }
      * </pre>
@@ -468,8 +472,8 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Long> rangeBy(long from, long toExclusive, long step) {
@@ -525,7 +529,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeClosedBy(1, 3, 1)  // = TreeSet(1, 2, 3)
      * TreeSet.rangeClosedBy(1, 4, 2)  // = TreeSet(1, 3)
-     * TreeSet.rangeClosedBy(4, 1, -2) // = TreeSet(4, 2)
+     * TreeSet.rangeClosedBy(4, 1, -2) // = TreeSet(2, 4)
      * TreeSet.rangeClosedBy(4, 1, 2)  // = TreeSet()
      * }
      * </pre>
@@ -551,7 +555,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeClosedBy('a', 'c', 1)  // = TreeSet('a', 'b', 'c')
      * TreeSet.rangeClosedBy('a', 'd', 2)  // = TreeSet('a', 'c')
-     * TreeSet.rangeClosedBy('d', 'a', -2) // = TreeSet('d', 'b')
+     * TreeSet.rangeClosedBy('d', 'a', -2) // = TreeSet('b', 'd')
      * TreeSet.rangeClosedBy('d', 'a', 2)  // = TreeSet()
      * }
      * </pre>
@@ -577,7 +581,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeClosedBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0, 3.0)
      * TreeSet.rangeClosedBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
-     * TreeSet.rangeClosedBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+     * TreeSet.rangeClosedBy(4.0, 1.0, -2.0) // = TreeSet(2.0, 4.0)
      * TreeSet.rangeClosedBy(4.0, 1.0, 2.0)  // = TreeSet()
      * }
      * </pre>
@@ -623,7 +627,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * {@code
      * TreeSet.rangeClosedBy(1L, 3L, 1L)  // = TreeSet(1L, 2L, 3L)
      * TreeSet.rangeClosedBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
-     * TreeSet.rangeClosedBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
+     * TreeSet.rangeClosedBy(4L, 1L, -2L) // = TreeSet(2L, 4L)
      * TreeSet.rangeClosedBy(4L, 1L, 2L)  // = TreeSet()
      * }
      * </pre>
@@ -631,7 +635,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -661,6 +665,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code R}.
+     *
+     * @throws ClassCastException if the collected elements are not mutually {@link Comparable}
+     */
     @Override
     public <R extends @Nullable Object> TreeSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(Comparators.naturalComparator(), iterator().<R> collect(partialFunction));
@@ -677,7 +688,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
-        } else if (elements instanceof TreeSet) {
+        } else if (hasSameComparator(elements)) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
         } else {
@@ -685,11 +696,33 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         }
     }
 
+    // the RedBlackTree set operations require both trees to be ordered by the same comparator
+    private boolean hasSameComparator(Set<?> that) {
+        return that instanceof TreeSet && comparator().equals(((TreeSet<?>) that).comparator());
+    }
+
+    /**
+     * Returns {@code true} if this TreeSet contains an element that compares equal to {@code element}
+     * according to this set's {@link #comparator()} (not according to {@code equals}), {@code false} otherwise.
+     * <p>
+     * Whether {@code null} is accepted depends on the comparator: the natural comparator throws
+     * {@code NullPointerException} for {@code null}.
+     *
+     * @param element the element to check
+     * @return true, if element is contained, false otherwise.
+     */
     @Override
     public boolean contains(T element) {
         return tree.contains(element);
     }
 
+    /**
+     * Returns this {@code TreeSet}, since its elements are already distinct according to this set's
+     * {@link #comparator()}. If the comparator is not consistent with {@code equals}, elements that are
+     * {@code equals} to each other but compare unequal are retained.
+     *
+     * @return this TreeSet
+     */
     @Override
     public TreeSet<T> distinct() {
         return this;
@@ -762,6 +795,14 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code U}.
+     *
+     * @throws ClassCastException if the flat-mapped elements are not mutually {@link Comparable};
+     *                            use {@link #flatMap(Comparator, Function)} to avoid this
+     */
     @Override
     public <U extends @Nullable Object> TreeSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return flatMap(Comparators.naturalComparator(), mapper);
@@ -822,7 +863,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
-        } else if (elements instanceof TreeSet) {
+        } else if (hasSameComparator(elements)) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return new TreeSet<>(tree.intersection(that.tree));
         } else {
@@ -885,11 +926,26 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         return TreeSet.ofAll(comparator, iterator().map(mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code U}.
+     *
+     * @throws ClassCastException if the mapped elements are not mutually {@link Comparable};
+     *                            use {@link #map(Comparator, Function)} to avoid this
+     */
     @Override
     public <U extends @Nullable Object> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         return map(Comparators.naturalComparator(), mapper);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code U}.
+     *
+     * @throws ClassCastException if this set has more than one element and {@code value} is not {@link Comparable}
+     */
     @Override
     public <U extends @Nullable Object> TreeSet<U> mapTo(U value) {
         return map(ignored -> value);
@@ -917,7 +973,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
      * Returns this {@code TreeSet} if it is nonempty,
      * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
      *
-     * @param supplier An alternative {@code Traversable}
+     * @param supplier A supplier of an alternative {@code Iterable}, evaluated only if this TreeSet is empty
      * @return this {@code TreeSet} if it is nonempty,
      * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
      */
@@ -1089,7 +1145,7 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
     @Override
     public TreeSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
+        if (hasSameComparator(elements)) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
         } else {
@@ -1097,6 +1153,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSets are ordered by the natural comparators of {@code T1} and {@code T2}.
+     *
+     * @throws ClassCastException if the unzipped elements are not mutually {@link Comparable}
+     */
     @Override
     public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
       Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
@@ -1105,6 +1168,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
                 i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSets are ordered by the natural comparators of {@code T1}, {@code T2} and {@code T3}.
+     *
+     * @throws ClassCastException if the unzipped elements are not mutually {@link Comparable}
+     */
     @Override
     public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
       Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
@@ -1115,11 +1185,26 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
                 i3 -> TreeSet.ofAll(Comparators.naturalComparator(), i3));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code Tuple2<T, U>}, i.e. by the natural
+     * order of both components (not by this set's comparator).
+     *
+     * @throws ClassCastException if the elements of this set or of {@code that} are not mutually {@link Comparable}
+     */
     @Override
     public <U extends @Nullable Object> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by the natural comparator of {@code R}.
+     *
+     * @throws ClassCastException if the mapped elements are not mutually {@link Comparable}
+     */
     @Override
     public <U extends @Nullable Object, R extends @Nullable Object> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
@@ -1127,6 +1212,14 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting TreeSet is ordered by this set's comparator on the first component and the natural
+     * comparator of {@code U} on the second.
+     *
+     * @throws ClassCastException if the elements of {@code that} (or {@code thatElem}) are not mutually {@link Comparable}
+     */
     @Override
     public <U extends @Nullable Object> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
@@ -1141,6 +1234,13 @@ public final class TreeSet<T extends @Nullable Object> implements SortedSet<T>, 
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The resulting SortedSet is ordered by the natural comparator of {@code U}.
+     *
+     * @throws ClassCastException if the mapped elements are not mutually {@link Comparable}
+     */
     @Override
     public <U extends @Nullable Object> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));

@@ -55,10 +55,12 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * Calls will throw an exception if the {@code Promise} has already been completed:
  * <ul>
  *   <li>{@link #complete(Try)}</li>
- *   <li>{@link #completeWith(Future)}</li>
  *   <li>{@link #failure(Throwable)}</li>
  *   <li>{@link #success(Object)}</li>
  * </ul>
+ * <p>
+ * {@link #completeWith(Future)} is one-shot in intent but completes asynchronously once {@code other} completes;
+ * it never throws and silently does nothing if this {@code Promise} is already completed by then.
  *
  * <h3>API for concurrent completion</h3>
  * <p>
@@ -66,10 +68,13 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * Calls will return {@code false} if the {@code Promise} is already completed:
  * <ul>
  *   <li>{@link #tryComplete(Try)}</li>
- *   <li>{@link #tryCompleteWith(Future)}</li>
  *   <li>{@link #tryFailure(Throwable)}</li>
  *   <li>{@link #trySuccess(Object)}</li>
  * </ul>
+ * <p>
+ * {@link #tryCompleteWith(Future)} follows the same "try" naming but returns this {@code Promise} rather than a
+ * {@code boolean}; it completes asynchronously once {@code other} completes and silently does nothing if this
+ * {@code Promise} is already completed by then.
  *
  * @param <T> the type of the value that completes the underlying {@code Future}
  * @author Daniel Dietrich
@@ -160,8 +165,12 @@ public interface Promise<T extends @Nullable Object> {
     }
 
     /**
-     * Narrows a {@code Promise<? extends T>} to {@code Promise<T>} through a type-safe cast. 
-     * This is safe because immutable or read-only collections are covariant.
+     * Narrows a {@code Promise<? extends T>} to {@code Promise<T>} through an unchecked cast.
+     * Unlike Vavr's immutable types, a {@code Promise} is a mutable, write-once container: the narrowed
+     * reference still exposes {@link #success(Object)}, {@link #complete(Try)} and the other completion
+     * methods. The cast is only safe if the narrowed reference is never used to complete this
+     * {@code Promise} with a value that is not actually a {@code T} &mdash; doing so causes heap pollution
+     * and a later {@code ClassCastException} when the value is read back.
      *
      * @param promise the {@code Promise} to narrow
      * @param <T>     the component type of the {@code Promise}
@@ -203,6 +212,9 @@ public interface Promise<T extends @Nullable Object> {
      * Returns the {@link Executor} used by the underlying {@link Future} of this {@code Promise}.
      *
      * @return the {@code Executor} associated with this {@code Promise}
+     * @throws UnsupportedOperationException if this default implementation is inherited without being overridden
+     *         and the underlying {@code Executor} isn't an {@link ExecutorService} (every {@code Promise} obtained
+     *         through this interface's factory methods overrides {@code executor()} and never throws)
      */
     default Executor executor() {
         return executorService();
@@ -215,9 +227,9 @@ public interface Promise<T extends @Nullable Object> {
      * {@link UnsupportedOperationException} AT RUNTIME, DEPENDING ON WHAT {@link Future#executorService()}
      * returns.
      *
-     * @return (never)
+     * @return the underlying {@code Executor}, if it is an {@link ExecutorService}
      * @throws UnsupportedOperationException if the underlying {@link Executor} isn't an {@link ExecutorService}.
-     * @deprecated Removed starting with Vavr 0.10.0, use {@link #executor()} instead.
+     * @deprecated Deprecated since Vavr 0.10.0, use {@link #executor()} instead.
      */
     @Deprecated
     ExecutorService executorService();
@@ -264,6 +276,9 @@ public interface Promise<T extends @Nullable Object> {
 
     /**
      * Completes this {@code Promise} with the result of the given {@code Future} once it is completed.
+     * Equivalent to {@link #tryCompleteWith(Future)}: completion happens asynchronously and is silently
+     * ignored if this {@code Promise} is already completed at that time; unlike {@link #complete(Try)},
+     * this method never throws.
      *
      * @param other the {@code Future} whose result or failure will complete this {@code Promise}
      * @return this {@code Promise}
@@ -276,8 +291,8 @@ public interface Promise<T extends @Nullable Object> {
      * Attempts to complete this {@code Promise} with the result of the given {@code Future} once it is completed.
      *
      * @param other the {@code Future} whose result or failure may complete this {@code Promise}
-     * @return {@code true} if this {@code Promise} was completed by {@code other}, 
-     *         {@code false} if it was already completed
+     * @return this {@code Promise}. Completion happens asynchronously once {@code other} completes, and is
+     *         silently ignored if this {@code Promise} is already completed at that time.
      */
     default Promise<T> tryCompleteWith(Future<? extends T> other) {
         other.onComplete(this::tryComplete);

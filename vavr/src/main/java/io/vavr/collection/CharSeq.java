@@ -86,7 +86,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Creates a String of {@code CharSequence}.
      *
      * @param sequence {@code CharSequence} instance.
-     * @return A new {@link io.vavr.collection.CharSeq}
+     * @return A {@link io.vavr.collection.CharSeq} wrapping the given sequence; {@code sequence} itself if it already is a {@code CharSeq}
      */
     // DEV-NOTE: Needs to be 'of' instead of 'ofAll' because 'ofAll(CharSeq)' is ambiguous.
     public static CharSeq of(CharSequence sequence) {
@@ -113,7 +113,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @param characters Zero or more characters.
      * @return A string containing the given characters in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @throws NullPointerException if {@code characters} is null
      */
     public static CharSeq of(char ... characters) {
         Objects.requireNonNull(characters, "characters is null");
@@ -183,6 +183,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws NullPointerException if {@code s} is null
      */
     public static CharSeq fill(int n, Supplier<? extends Character> s) {
+        Objects.requireNonNull(s, "s is null");
         return tabulate(n, anything -> s.get());
     }
 
@@ -274,8 +275,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
-     * of the element for the next call and the value to add to the
-     * resulting CharSeq.
+     * of the value to add to the resulting CharSeq and the seed for the
+     * next call.
      * <p>
      * Example:
      * <pre>
@@ -302,8 +303,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting CharSeq and
-     * the element for the next call.
+     * of the seed for the next call and
+     * the value to add to the resulting CharSeq.
      * <p>
      * Example:
      * <pre>
@@ -330,8 +331,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting CharSeq and
-     * the element for the next call.
+     * of the seed for the next call and
+     * the value to add to the resulting CharSeq.
      * <p>
      * Example:
      * <pre>
@@ -639,6 +640,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
+    /**
+     * Returns a new {@code CharSeq} with the given character inserted at the specified index.
+     * Inserting at {@code index == length()} appends the character.
+     *
+     * @param index   the position at which to insert the character
+     * @param element the character to insert
+     * @return a new {@code CharSeq} with the character inserted
+     * @throws IndexOutOfBoundsException if {@code index < 0} or {@code index > length()}
+     */
     @Override
     public CharSeq insert(int index, Character element) {
         if (index < 0) {
@@ -651,6 +661,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return of(new StringBuilder(back).insert(index, c).toString());
     }
 
+    /**
+     * Returns a new {@code CharSeq} with the given characters inserted at the specified index.
+     * Inserting at {@code index == length()} appends the characters.
+     *
+     * @param index    the position at which to insert the characters
+     * @param elements the characters to insert; must not be {@code null}
+     * @return a new {@code CharSeq} with the characters inserted
+     * @throws IndexOutOfBoundsException if {@code index < 0} or {@code index > length()}
+     * @throws NullPointerException      if {@code elements} is null
+     */
     @Override
     public CharSeq insertAll(int index, Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1320,7 +1340,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public boolean startsWith(Iterable<? extends Character> that, int offset) {
-        return startsWith(CharSeq.ofAll(that), offset);
+        final CharSeq prefix = CharSeq.ofAll(that);
+        if (prefix.isEmpty()) {
+            return offset >= 0;
+        }
+        return startsWith(prefix, offset);
     }
 
     @Override
@@ -1656,9 +1680,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * </ul>
      *
      * @param anotherString The {@code CharSeq} to compare this {@code CharSeq} against
-     * @return {@code true} if the argument is not {@code null} and it
-     * represents an equivalent {@code CharSeq} ignoring case; {@code
-     * false} otherwise
+     * @return {@code true} if the argument represents an equivalent
+     * {@code CharSeq} ignoring case; {@code false} otherwise
+     * @throws NullPointerException if {@code anotherString} is null
      * @see #equals(Object)
      */
     public boolean equalsIgnoreCase(CharSeq anotherString) {
@@ -1822,6 +1846,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return back.regionMatches(ignoreCase, toffset, other.back, ooffset, len);
     }
 
+    /**
+     * Returns a {@code CharSeq} that is a subsequence of this sequence, starting from the specified {@code beginIndex}
+     * (inclusive) and ending at {@code endIndex} (exclusive).
+     *
+     * @param beginIndex the starting index (inclusive) of the subsequence
+     * @param endIndex   the ending index (exclusive) of the subsequence
+     * @return the subsequence from {@code beginIndex} to {@code endIndex - 1} (this instance if it covers the whole sequence)
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative or {@code endIndex} is greater than {@code length()}
+     * @throws IllegalArgumentException  if {@code beginIndex} is greater than {@code endIndex} (including a negative {@code endIndex})
+     */
     @Override
     public CharSeq subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0) {
@@ -2260,8 +2294,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     /**
      * Concatenates the specified string to the end of this string.
      * <p>
-     * If the length of the argument string is {@code 0}, then this
-     * {@code CharSeq} object is returned. Otherwise, a
+     * If the length of the argument string is {@code 0}, then a
+     * {@code CharSeq} equal to this one is returned. Otherwise, a
      * {@code CharSeq} object is returned that represents a character
      * sequence that is the concatenation of the character sequence
      * represented by this {@code CharSeq} object and the character
@@ -2732,7 +2766,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * returns {@code "T\u005Cu0130TLE"}, where '\u005Cu0130' is the
      * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
      * To obtain correct results for locale insensitive strings, use
-     * {@code toUpperCase(Locale.ROOT)}.
+     * {@code capitalize(Locale.ROOT)}.
      *
      * @return the {@code CharSeq}, capitalized.
      */
@@ -2748,7 +2782,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * sequence, or the first and last characters of character sequence
      * represented by this {@code CharSeq} object both have codes
      * greater than {@code '\u005Cu0020'} (the space character), then a
-     * reference to this {@code CharSeq} object is returned.
+     * {@code CharSeq} equal to this one is returned.
      * <p>
      * Otherwise, if there is no character with a code greater than
      * {@code '\u005Cu0020'} in the string, then a
@@ -2768,7 +2802,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * the beginning and end of a string.
      *
      * @return A string whose value is this string, with any leading and trailing white
-     * space removed, or this string if it has no leading or
+     * space removed, or a string equal to this one if it has no leading or
      * trailing white space.
      */
     public CharSeq trim() {
@@ -2977,7 +3011,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * instead of
      *
      * <pre>{@code
-     * float value = Double.parseFloat(charSeq.mkString());
+     * float value = Float.parseFloat(charSeq.mkString());
      * }</pre>
      *
      * @return the float value represented by this {@code CharSeq}
@@ -3468,6 +3502,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     // -- conversion overrides
 
+    /**
+     * Converts this {@code CharSeq} to a new {@code Character[]} array containing its characters, in order.
+     *
+     * @return a new {@code Character[]} array
+     */
     @Override
     public Character[] toJavaArray() {
         return toJavaList().toArray(new Character[0]);

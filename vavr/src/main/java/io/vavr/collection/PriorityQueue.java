@@ -70,10 +70,10 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
     }
 
     /**
-     * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
-     * the first which will be retrieved.
+     * Enqueues the given elements. Elements are retrieved in the order induced by this queue's
+     * comparator (priority order), not in insertion order.
      *
-     * @param elements An {@link PriorityQueue} of elements, may be empty
+     * @param elements An {@code Iterable} of elements, may be empty
      * @return a new {@link PriorityQueue} instance, containing the new elements
      * @throws NullPointerException if elements is null
      */
@@ -290,6 +290,7 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
      */
     @SuppressWarnings("unchecked")
     public static <T extends @Nullable Object> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
+        Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof PriorityQueue && ((PriorityQueue<?>) elements).comparator == comparator) {
             return (PriorityQueue<T>) elements;
@@ -359,7 +360,7 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
     }
 
     /**
-     * Returns a {@link PriorityQueue} containing {@code n} times the given {@code element}
+     * Returns a {@link PriorityQueue} containing {@code size} times the given {@code element}
      *
      * @param <T>     Component type of the {@link PriorityQueue}
      * @param size    The number of elements in the {@link PriorityQueue}
@@ -382,6 +383,13 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
         return results.reverse();
     }
 
+    /**
+     * Returns a new {@code PriorityQueue} containing the elements of this instance with all duplicates removed.
+     * Unlike {@link Traversable#distinct()}, duplicates are determined by this queue's comparator
+     * ({@code comparator.compare(a, b) == 0}), not by {@code equals}.
+     *
+     * @return a new {@code PriorityQueue} without elements that compare equal
+     */
     @Override
     public PriorityQueue<T> distinct() {
         return distinctBy(comparator);
@@ -463,19 +471,18 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
     }
 
     /**
-     * Accumulates the elements of this {@link PriorityQueue} by successively calling the given function {@code f} from the right,
-     * starting with a value {@code zero} of type B.
+     * Accumulates the elements of this {@link PriorityQueue} by successively calling the given function {@code accumulator} from the right,
+     * starting with a value {@code zero} of type U.
      * <p>
      * Example: {@code PriorityQueue.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
      *
      * @param zero        Value to start the accumulation with.
      * @param accumulator The accumulator function.
      * @return an accumulated version of this.
-     * @throws NullPointerException if {@code f} is null
+     * @throws NullPointerException if {@code accumulator} is null
      */
     @Override
     public <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> accumulator) {
-        Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(accumulator, "accumulator is null");
         return toList().foldRight(zero, accumulator);
     }
@@ -615,6 +622,11 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NullPointerException if {@code currentElement} or {@code newElement} is null
+     */
     @Override
     public PriorityQueue<T> replace(T currentElement, T newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
@@ -622,6 +634,11 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
         return ofAll(comparator, iterator().replace(currentElement, newElement));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NullPointerException if {@code currentElement} or {@code newElement} is null
+     */
     @Override
     public PriorityQueue<T> replaceAll(T currentElement, T newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");

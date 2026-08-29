@@ -464,6 +464,19 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Test
+    public void shouldIgnoreAbsentElementsOnRemoveAll() {
+        assertThat(BitSet.of(1, 2).removeAll(List.of(-1, 2, 200))).isEqualTo(BitSet.of(1));
+        assertThat(BitSet.of(1, 2).removeAll(List.of(-1, 200))).isEqualTo(BitSet.of(1, 2));
+        assertThat(BitSet.of(77).removeAll(List.of(-1, 777))).isEqualTo(BitSet.of(77));
+        assertThat(BitSet.of(777).removeAll(List.of(-1, 7777))).isEqualTo(BitSet.of(777));
+    }
+
+    @Test
+    public void shouldIgnoreAbsentElementsOnDiff() {
+        assertThat(BitSet.of(1, 2).diff(HashSet.of(-1, 2, 200))).isEqualTo(BitSet.of(1));
+    }
+
+    @Test
     public void shouldSerializeDeserializeNativeBitSet() {
         final Object actual = deserialize(serialize(BitSet.of(1, 2, 3)));
         final Object expected = BitSet.of(1, 2, 3);
@@ -588,6 +601,8 @@ public class BitSetTest extends AbstractSortedSetTest {
     public void shouldExecuteMapToVoidCorrectly() {
         assertThat(empty().mapToVoid()).isEqualTo(empty());
         assertThat(of(1).mapToVoid()).isEqualTo(of((Integer)null));
+        assertThat(of(1, 2, 3).mapToVoid()).isEqualTo(of((Integer)null));
+        assertThat(of(1, 2, 3).mapToVoid().size()).isEqualTo(1);
     }
 
     // -- classes

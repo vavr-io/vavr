@@ -89,9 +89,12 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
 
     /**
      * Inserts a new value into this tree.
+     * <p>
+     * A new tree instance is always returned. If a comparator-equal value is already present, it is replaced
+     * by the given value.
      *
      * @param value A value.
-     * @return A new tree if this tree does not contain the given value, otherwise the same tree instance.
+     * @return A new tree containing the given value.
      */
     default RedBlackTree<T> insert(T value) {
         return Node.insert(this, value).color(BLACK);
@@ -123,9 +126,12 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
 
     /**
      * Deletes a value from this RedBlackTree.
+     * <p>
+     * A new instance is returned even if the value is not present in this tree, except when this tree is
+     * already empty, in which case {@code this} is returned.
      *
      * @param value A value
-     * @return A new RedBlackTree if the value is present, otherwise this.
+     * @return A RedBlackTree without the given value.
      */
     default RedBlackTree<T> delete(T value) {
         final RedBlackTree<T> tree = Node.delete(this, value)._1;
@@ -180,7 +186,7 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
     }
 
     /**
-     * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Leaf}.
+     * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Empty}.
      *
      * @return true, if it is empty, false otherwise.
      */
@@ -228,10 +234,12 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
     int size();
 
     /**
-     * Adds all of the elements of the given {@code tree} to this tree, if not already present.
+     * Adds all of the elements of the given {@code tree} to this tree. When an element of the given tree is
+     * comparator-equal to one already present in this tree, the given tree's element replaces this tree's.
      *
      * @param tree The RedBlackTree to form the union with.
-     * @return A new RedBlackTree that contains all distinct elements of this and the given {@code tree}.
+     * @return A RedBlackTree that contains all distinct elements of this and the given {@code tree}
+     *         (may be {@code this} or the given {@code tree} itself if the other one is empty).
      */
     default RedBlackTree<T> union(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");

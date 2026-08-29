@@ -315,6 +315,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
             final TreeSet<Integer> expected = of(3);
             assertThat(actual).isEqualTo(expected);
         }
+
+        @Test
+        public void shouldCalculateDiffOfTreeSetWithDifferentComparator() {
+            final TreeSet<Integer> actual = of(1, 2, 3, 4, 5).diff(TreeSet.of(inverseIntComparator(), 2, 4, 6));
+            assertThat(actual.toList()).isEqualTo(List.of(1, 3, 5));
+        }
     }
 
     @Nested
@@ -324,6 +330,18 @@ public class TreeSetTest extends AbstractSortedSetTest {
             final TreeSet<Integer> actual = of(1, 2, 3).union(HashSet.of(4));
             final TreeSet<Integer> expected = of(1, 2, 3, 4);
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldCalculateUnionOfTreeSetWithDifferentComparator() {
+            final TreeSet<Integer> actual = of(1, 2, 3, 4, 5).union(TreeSet.of(inverseIntComparator(), 2, 4, 6));
+            assertThat(actual.toList()).isEqualTo(List.of(1, 2, 3, 4, 5, 6));
+        }
+
+        @Test
+        public void shouldKeepComparatorOnUnionOfEmptyWithTreeSetWithDifferentComparator() {
+            final TreeSet<Integer> actual = TreeSet.empty(inverseIntComparator()).union(TreeSet.of(1, 2, 3));
+            assertThat(actual.toList()).isEqualTo(List.of(3, 2, 1));
         }
     }
 
@@ -340,6 +358,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
             final TreeSet<Integer> actual = of(1, 2, 3).intersect(HashSet.of(3));
             final TreeSet<Integer> expected = of(3);
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void shouldCalculateIntersectOfTreeSetWithDifferentComparator() {
+            final TreeSet<Integer> actual = of(1, 2, 3, 4, 5).intersect(TreeSet.of(inverseIntComparator(), 2, 4, 6));
+            assertThat(actual.toList()).isEqualTo(List.of(2, 4));
         }
     }
 

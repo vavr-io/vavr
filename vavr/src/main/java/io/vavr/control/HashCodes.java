@@ -145,7 +145,7 @@ class HashCodes {
      *
      * @param value the value to hash
      * @return the hashcode
-     * @see Objects#hashCode()
+     * @see Objects#hashCode(Object)
      */
     static int hash(Object value) {
         return Objects.hashCode(value);
@@ -352,7 +352,7 @@ class HashCodes {
     }
 
     /**
-     * Return the order-dependent hash of the two given values.
+     * Return the order-dependent hash of the four given values.
      * <p>
      * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
      *
@@ -374,7 +374,7 @@ class HashCodes {
     }
 
     /**
-     * Return the order-dependent hash of the two given values.
+     * Return the order-dependent hash of the five given values.
      * <p>
      * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
      *
@@ -398,7 +398,7 @@ class HashCodes {
     }
 
     /**
-     * Return the order-dependent hash of the two given values.
+     * Return the order-dependent hash of the six given values.
      * <p>
      * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
      *
@@ -424,7 +424,7 @@ class HashCodes {
     }
 
     /**
-     * Return the order-dependent hash of the two given values.
+     * Return the order-dependent hash of the seven given values.
      * <p>
      * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
      *
@@ -452,7 +452,7 @@ class HashCodes {
     }
 
     /**
-     * Return the order-dependent hash of the two given values.
+     * Return the order-dependent hash of the eight given values.
      * <p>
      * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
      *

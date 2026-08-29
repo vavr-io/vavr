@@ -40,7 +40,7 @@ public interface CheckedConsumer<T extends @Nullable Object> {
      * final CheckedConsumer<Value> checkedConsumer = CheckedConsumer.of(Value::stdout);
      * final Consumer<Value> consumer = checkedConsumer.unchecked();
      *
-     * // prints "Hi" to the console
+     * // prints "H", "i" and "!", each on its own line
      * consumer.accept(CharSeq.of("Hi!"));
      *
      * // may throw an exception
@@ -49,7 +49,7 @@ public interface CheckedConsumer<T extends @Nullable Object> {
      *
      * @param methodReference typically a method reference, e.g. {@code Type::method}
      * @param <T> the type of values accepted by the consumer
-     * @return a new {@code CheckedConsumer} wrapping the given method reference
+     * @return the given {@code CheckedConsumer} unchanged (this method only aids type inference)
      * @see CheckedFunction1#of(CheckedFunction1)
      */
     static <T extends @Nullable Object> CheckedConsumer<T> of(CheckedConsumer<T> methodReference) {
