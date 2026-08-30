@@ -63,7 +63,7 @@
         <scala.maven.version>4.9.10</scala.maven.version>
         <scala.version>3.8.1</scala.version>
         <error.prone.version>2.50.0</error.prone.version>
-        <nullaway.version>0.13.8</nullaway.version>
+        <nullaway.version>0.14.0</nullaway.version>
     </properties>
     <dependencyManagement>
         <dependencies>
