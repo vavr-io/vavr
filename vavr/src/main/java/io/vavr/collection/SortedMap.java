@@ -208,7 +208,7 @@ public interface SortedMap<K extends @Nullable Object, V extends @Nullable Objec
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
 
     @Override
-    <U extends V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
+    <U extends @Nullable V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
     SortedMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
@@ -229,10 +229,10 @@ public interface SortedMap<K extends @Nullable Object, V extends @Nullable Objec
     SortedMap<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
     @Override
-    <U extends V> SortedMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends @Nullable V> SortedMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
 
     @Override
-    <U extends V> SortedMap<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends @Nullable V> SortedMap<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
 
     @Override
     SortedMap<K, V> remove(K key);
