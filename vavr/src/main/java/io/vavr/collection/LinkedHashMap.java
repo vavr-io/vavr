@@ -1082,7 +1082,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
 
     @Override
     public int hashCode() {
-        return Collections.hashUnordered(this);
+        return Collections.hashMap(this);
     }
 
     @Override

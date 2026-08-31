@@ -186,6 +186,15 @@ public class HashMapTest extends AbstractMapTest {
             Assertions.assertThat(map.hashCode()).isEqualTo(map2.hashCode());
             Assertions.assertThat(map).isEqualTo(map2);
         }
+
+        @Test
+        public void shouldDistinguishHashCodesWhenValuesAreSwappedBetweenKeys() {
+            // java.util.Map style entry hash (key ^ value) must not collide for this case (#2733)
+            final HashMap<String, Integer> m1 = HashMap.of("a", 1, "b", 2);
+            final HashMap<String, Integer> m2 = HashMap.of("a", 2, "b", 1);
+            Assertions.assertThat(m1.hashCode()).isNotEqualTo(m2.hashCode());
+            Assertions.assertThat(m1.equals(m2)).isFalse();
+        }
     }
 
     @Nested
