@@ -262,7 +262,7 @@ public interface Function1<T1 extends @Nullable Object, R extends @Nullable Obje
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V extends @Nullable Object> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1) -> after.apply(apply(t1));
     }
@@ -276,7 +276,7 @@ public interface Function1<T1 extends @Nullable Object, R extends @Nullable Obje
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <V extends @Nullable Object> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
+    default <V> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }

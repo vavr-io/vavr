@@ -79,7 +79,7 @@ public interface SortedMultimap<K extends @Nullable Object, V extends @Nullable 
     SortedMultimap<K, V> merge(Multimap<? extends K, ? extends V> that);
 
     @Override
-    <K2 extends K, V2 extends V> SortedMultimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
+    <K2 extends @Nullable K, V2 extends @Nullable V> SortedMultimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
     @Override
     SortedMultimap<K, V> put(K key, V value);
