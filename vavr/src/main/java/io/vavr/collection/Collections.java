@@ -227,6 +227,29 @@ final class Collections {
         return hash(iterable, (acc, hash) -> acc + hash);
     }
 
+    /**
+     * Hash code for Map-like collections of {@code Tuple2} entries.
+     * <p>
+     * Uses the same entry contribution as {@link java.util.Map.Entry#hashCode()}:
+     * {@code Objects.hashCode(key) ^ Objects.hashCode(value)}, summed in iteration order
+     * independent fashion (empty maps still hash to {@code 1}, matching other Vavr collections).
+     * <p>
+     * Using {@link Tuple2#hashCode()} with {@link #hashUnordered(Iterable)} is insufficient:
+     * maps that only swap values between keys can collide (see issue #2733).
+     */
+    static int hashMap(Iterable<? extends Tuple2<?, ?>> entries) {
+        if (entries == null) {
+            return 0;
+        }
+        int hashCode = 1;
+        for (Tuple2<?, ?> t : entries) {
+            if (t != null) {
+                hashCode += Objects.hashCode(t._1) ^ Objects.hashCode(t._2);
+            }
+        }
+        return hashCode;
+    }
+
     private static int hash(Iterable<?> iterable, IntBinaryOperator accumulator) {
         if (iterable == null) {
             return 0;
