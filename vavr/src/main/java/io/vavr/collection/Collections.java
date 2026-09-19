@@ -364,11 +364,9 @@ final class Collections {
     static <T extends @Nullable Object, C extends Seq<T>> C rotateLeft(C source, int n) {
         if (source.isEmpty() || n == 0) {
             return source;
-        } else if (n < 0) {
-            return rotateRight(source, -n);
         } else {
             int len = source.length();
-            int m = n % len;
+            int m = Math.floorMod(n, len);
             if (m == 0) {
                 return source;
             } else {
@@ -381,11 +379,9 @@ final class Collections {
     static <T extends @Nullable Object, C extends Seq<T>> C rotateRight(C source, int n) {
         if (source.isEmpty() || n == 0) {
             return source;
-        } else if (n < 0) {
-            return rotateLeft(source, -n);
         } else {
             int len = source.length();
-            int m = n % len;
+            int m = Math.floorMod(n, len);
             if (m == 0) {
                 return source;
             } else {

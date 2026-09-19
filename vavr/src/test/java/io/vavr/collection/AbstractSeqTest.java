@@ -1590,6 +1590,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldRotateLeftForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(Integer.MIN_VALUE)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateLeftForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateLeft(Integer.MIN_VALUE)).isSameAs(seq);
+        }
+
+        @Test
         public void shouldRotateLeftForPositiveLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
         }
@@ -1628,6 +1639,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         @Test
         public void shouldRotateRightForNegativeLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(Integer.MIN_VALUE)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateRight(Integer.MIN_VALUE)).isSameAs(seq);
         }
 
         @Test
