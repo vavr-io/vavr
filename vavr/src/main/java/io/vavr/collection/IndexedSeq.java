@@ -524,15 +524,17 @@ interface IndexedSeqModule {
         static <T extends @Nullable Object> int lastIndexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
-            } else if (source.isEmpty()) {
-                return Collections.isEmpty(slice) ? 0 : -1;
-            } else if (Collections.isEmpty(slice)) {
+            }
+            // the slice is read once: an Iterable may not be iterable twice (e.g. a stream's iterator())
+            final IndexedSeq<T> _slice = toIndexedSeq(slice);
+            if (source.isEmpty()) {
+                return _slice.isEmpty() ? 0 : -1;
+            } else if (_slice.isEmpty()) {
                 final int len = source.length();
                 return len < end ? len : end;
             }
             int index = 0;
             int result = -1;
-            final IndexedSeq<T> _slice = toIndexedSeq(slice);
             final int maxIndex = source.length() - _slice.length();
             while (index <= maxIndex) {
                 int indexOfSlice = findSlice(source, _slice, index, maxIndex);
