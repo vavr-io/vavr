@@ -199,6 +199,9 @@ public interface SortedMap<K extends @Nullable Object, V extends @Nullable Objec
     <K2 extends @Nullable Object> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
 
     @Override
+    <K2 extends @Nullable Object> SortedMap<K2, V> mapKeysWith(BiFunction<? super K, ? super V, ? extends K2> keyMapper);
+
+    @Override
     <K2 extends @Nullable Object> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge);
 
     @Override
