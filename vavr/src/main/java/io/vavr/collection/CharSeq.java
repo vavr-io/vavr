@@ -53,7 +53,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     private final String back;
 
     private CharSeq(String javaString) {
-        this.back = javaString;
+        back = javaString;
     }
 
     /**

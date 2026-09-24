@@ -905,7 +905,7 @@ public interface Tree<T extends @Nullable Object> extends Traversable<T>, Serial
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
-            this.size = children.foldLeft(1, (acc, child) -> acc + child.size);
+            size = children.foldLeft(1, (acc, child) -> acc + child.size);
         }
 
         @Override

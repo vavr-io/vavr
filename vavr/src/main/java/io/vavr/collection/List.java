@@ -1960,7 +1960,7 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
         private Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
-            this.length = 1 + tail.length();
+            length = 1 + tail.length();
         }
 
         @Override
