@@ -442,7 +442,7 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
+    public <K2 extends @Nullable K, V2 extends @Nullable V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
