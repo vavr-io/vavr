@@ -29,9 +29,9 @@ import org.jspecify.annotations.Nullable;
  * An immutable {@code Map} interface.
  *
  * <p>
- * Represents a collection of key-value pairs with immutable operations. 
+ * Represents a collection of key-value pairs with immutable operations.
  * Supports typical map operations such as querying, updating, filtering,
- * transforming, and iterating over entries. Provides convenient methods 
+ * transforming, and iterating over entries. Provides convenient methods
  * for converting to standard Java maps and for working with default values.
  *
  * @param <K> Key type
@@ -308,7 +308,7 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
     }
 
     @Override
-    
+
     Iterator<Tuple2<K, V>> iterator();
 
     /**
@@ -357,10 +357,13 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * Maps the {@code Map} entries to a sequence of values.
      * <p>
      * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
+     * <p>
+     * Please use {@link #zipWith(BiFunction)} to combine the keys with values in mapper.
      *
      * @param mapper A mapper
      * @param <U>    Component type
      * @return A sequence of mapped values.
+     * @see #zipWith(BiFunction)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -405,6 +408,20 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
     <K2 extends @Nullable Object> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
 
     /**
+     * Combine the keys of this {@code Map} with corresponding values while preserving values.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the value at the {@code latest} of the original keys is retained.
+     * Order of keys is predictable in {@code TreeMap} (by comparator) and {@code LinkedHashMap} (insertion-order) and not predictable in {@code HashMap}.
+     *
+     * @param <K2>      the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2 extends @Nullable Object> Map<K2, V> mapKeysWith(BiFunction<? super K, ? super V, ? extends K2> keyMapper);
+
+    /**
      * Maps the keys of this {@code Map} while preserving the corresponding values and applying a value merge function on collisions.
      * <p>
      * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
@@ -427,6 +444,16 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
      * @throws NullPointerException if {@code valueMapper} is null
      */
     <V2 extends @Nullable Object> Map<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
+
+    /**
+     * Combine the values of this {@code Map} with corresponding keys while preserving the keys.
+     *
+     * @param <V2>        the new value type
+     * @param valueMapper a {@code BiFunction} that maps keys of type {@code K} and values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code valueMapper} is null
+     */
+    <V2 extends @Nullable Object> Map<K, V2> mapValuesWith(BiFunction<? super K, ? super V, ? extends V2> valueMapper);
 
     /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
@@ -696,6 +723,19 @@ public interface Map<K extends @Nullable Object, V extends @Nullable Object> ext
     @Override
     default <U extends @Nullable Object> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
+    }
+
+    /**
+     * Combines the {@code Map} entries to a sequence of values.
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A sequence of mapped values.
+     * @see #map(Function)
+     */
+    default <U extends @Nullable Object> Seq<U> zipWith(BiFunction<K, V, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Seq<U>) iterator(mapper).toStream();
     }
 
     @Override
