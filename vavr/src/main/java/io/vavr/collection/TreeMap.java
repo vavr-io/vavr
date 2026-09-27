@@ -1212,7 +1212,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
+    public <U extends @Nullable V> TreeMap<K, V> merge(Map<? extends K, U> that,
                                              BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         return Maps.merge(this, this::createFromEntries, that, collisionResolution);
     }
@@ -1254,7 +1254,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge) {
+    public <U extends @Nullable V> TreeMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, key, value, merge);
     }
 
@@ -1269,7 +1269,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> put(Tuple2<? extends K, U> entry,
+    public <U extends @Nullable V> TreeMap<K, V> put(Tuple2<? extends K, U> entry,
                                            BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, entry, merge);
     }

@@ -1800,6 +1800,7 @@ def generateMainClasses(): Unit = {
         val genericsTryReturnType = s"<${genericsFunction}${im.getType("io.vavr.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(using " -> ")
         val compositionType = if(checked) "CheckedFunction1" else im.getType("java.util.function.Function")
+        val compositionTypeVariableBound = if (!checked && i == 1) "" else s" $nullableBound"
 
         // imports
 
@@ -2202,7 +2203,7 @@ def generateMainClasses(): Unit = {
                * @return a function composed of this and after
                * @throws NullPointerException if after is null
                */
-              default <V $nullableBound> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
+              default <V$compositionTypeVariableBound> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
                   $Objects.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
@@ -2217,7 +2218,7 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of before and this
                  * @throws NullPointerException if before is null
                  */
-                default <V $nullableBound> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
+                default <V$compositionTypeVariableBound> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
                     $Objects.requireNonNull(before, "before is null");
                     return v -> apply(before.apply(v));
                 }
