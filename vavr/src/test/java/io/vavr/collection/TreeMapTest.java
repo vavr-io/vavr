@@ -393,6 +393,17 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Nested
+    class HashCodeTests {
+        @Test
+        public void shouldDistinguishHashCodesWhenValuesAreSwappedBetweenKeys() {
+            final TreeMap<String, Integer> m1 = TreeMap.of("a", 1, "b", 2);
+            final TreeMap<String, Integer> m2 = TreeMap.of("a", 2, "b", 1);
+            assertThat(m1.hashCode()).isNotEqualTo(m2.hashCode());
+            assertThat(m1.equals(m2)).isFalse();
+        }
+    }
+
+    @Nested
     class TabulateTests {
         @Test
         public void shouldTabulateWithComparator() {

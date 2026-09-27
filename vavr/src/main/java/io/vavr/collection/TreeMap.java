@@ -1444,7 +1444,7 @@ public final class TreeMap<K extends @Nullable Object, V extends @Nullable Objec
 
     @Override
     public int hashCode() {
-        return Collections.hashUnordered(this);
+        return Collections.hashMap(this);
     }
 
     @Override
