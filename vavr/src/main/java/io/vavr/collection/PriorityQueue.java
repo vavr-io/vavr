@@ -117,8 +117,8 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
         if (isEmpty()) {
             throw new NoSuchElementException("dequeue of empty " + stringPrefix());
         } else {
-            final Tuple2<T, Seq<Node<T>>> dequeue = deleteMin(comparator, this.forest);
-            return Tuple.of(dequeue._1, with(dequeue._2, this.size - 1));
+            final Tuple2<T, Seq<Node<T>>> dequeue = deleteMin(comparator, forest);
+            return Tuple.of(dequeue._1, with(dequeue._2, size - 1));
         }
     }
 
@@ -130,8 +130,8 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
      * @return A new PriorityQueue containing elements from both queues in priority order.
      */
     public PriorityQueue<T> merge(PriorityQueue<T> target) {
-        final Seq<Node<T>> meld = meld(comparator, this.forest, target.forest);
-        return with(meld, this.size + target.size);
+        final Seq<Node<T>> meld = meld(comparator, forest, target.forest);
+        return with(meld, size + target.size);
     }
 
     /**
@@ -939,8 +939,8 @@ final class PriorityQueueBase {
          * *  else                     Node (x2,r2+1,t1 :: c2
          */
         Node<T> link(Comparator<? super T> comparator, Node<T> tree) {
-            return comparator.compare(this.root, tree.root) <= 0
-                   ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+            return comparator.compare(root, tree.root) <= 0
+                   ? of(root, rank + 1, tree.appendTo(children))
                    : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
         }
 

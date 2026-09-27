@@ -2446,7 +2446,7 @@ interface IteratorModule {
 
         DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
             this.that = that;
-            this.known = set;
+            known = set;
             this.keyExtractor = keyExtractor;
         }
 
@@ -2518,9 +2518,9 @@ interface IteratorModule {
             this.that = that;
             this.size = size;
             this.step = step;
-            this.gap = Math.max(step - size, 0);
-            this.preserve = Math.max(size - step, 0);
-            this.buffer = take(that, new Object[size], 0, size);
+            gap = Math.max(step - size, 0);
+            preserve = Math.max(size - step, 0);
+            buffer = take(that, new Object[size], 0, size);
         }
 
         @Override

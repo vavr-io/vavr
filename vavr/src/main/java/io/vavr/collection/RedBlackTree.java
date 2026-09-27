@@ -367,7 +367,7 @@ interface RedBlackTreeModule {
             this.value = value;
             this.right = right;
             this.empty = empty;
-            this.size = left.size() + right.size() + 1;
+            size = left.size() + right.size() + 1;
         }
 
         @Override

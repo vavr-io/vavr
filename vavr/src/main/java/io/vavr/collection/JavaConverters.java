@@ -91,7 +91,7 @@ class JavaConverters {
 
         protected void setDelegate(Supplier<C> newDelegate) {
             ensureMutable();
-            this.delegate = newDelegate.get();
+            delegate = newDelegate.get();
         }
 
         protected void ensureMutable() {
@@ -397,7 +397,7 @@ class JavaConverters {
                 if (index < 0 || index > list.size()) {
                     throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + list.size());
                 }
-                this.nextIndex = index;
+                nextIndex = index;
             }
 
             @Override
