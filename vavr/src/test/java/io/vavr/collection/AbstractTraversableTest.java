@@ -600,6 +600,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(empty.dropRight(1)).isSameAs(empty);
     }
 
+    @TestTemplate
+    public void shouldDropRightNoneIfCountIsNonPositive() {
+        for (int n : new int[] {Integer.MIN_VALUE, -1, 0}) {
+            assertThat(of(1, 2, 3).dropRight(n)).as("dropRight(%d)", n).isEqualTo(of(1, 2, 3));
+        }
+    }
+
+    @TestTemplate
+    public void shouldDropRightAllIfCountIsAtLeastSize() {
+        for (int n : new int[] {3, 4, Integer.MAX_VALUE}) {
+            assertThat(of(1, 2, 3).dropRight(n)).as("dropRight(%d)", n).isEqualTo(empty());
+        }
+    }
+
     // -- dropUntil
 
     @TestTemplate
@@ -2295,6 +2309,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final Traversable<?> t = of(1, 2, 3);
         assertThat(t.takeRight(3)).isSameAs(t);
         assertThat(t.takeRight(4)).isSameAs(t);
+    }
+
+    @TestTemplate
+    public void shouldTakeRightNoneIfCountIsNonPositive() {
+        for (int n : new int[] {Integer.MIN_VALUE, -1, 0}) {
+            assertThat(of(1, 2, 3).takeRight(n)).as("takeRight(%d)", n).isEqualTo(empty());
+        }
+    }
+
+    @TestTemplate
+    public void shouldTakeRightAllIfCountIsAtLeastSize() {
+        for (int n : new int[] {3, 4, Integer.MAX_VALUE}) {
+            assertThat(of(1, 2, 3).takeRight(n)).as("takeRight(%d)", n).isEqualTo(of(1, 2, 3));
+        }
     }
 
     // -- takeUntil
