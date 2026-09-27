@@ -709,6 +709,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldFindLastIndexOfSliceGivenAnIterableThatCanBeIteratedOnlyOnce() {
+            // a stream's iterator() throws when called a second time
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(3);
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator, 2)).isEqualTo(0);
+            assertThat(of(1, 2, 3).lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(3);
+            assertThat(AbstractSeqTest.this.<Integer> empty().lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(0);
+
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(Option.some(3));
+        }
+
+        @Test
         public void shouldFindLastIndexOfSliceWithEnd() {
             assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
             assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
