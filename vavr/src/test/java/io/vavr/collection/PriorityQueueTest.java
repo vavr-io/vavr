@@ -263,6 +263,30 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     }
 
     @Nested
+    class NullComparatorTests {
+        @Test
+        public void shouldThrowWhenOfWithNullComparator() {
+            final Comparator<Integer> comparator = null;
+            assertThrows(NullPointerException.class, () -> PriorityQueue.of(comparator, 1));
+        }
+
+        @Test
+        public void shouldThrowWhenOfAllWithNullComparator() {
+            final Comparator<Integer> comparator = null;
+            assertThrows(NullPointerException.class, () -> PriorityQueue.ofAll(comparator, io.vavr.collection.List.of(1)));
+        }
+    }
+
+    @Nested
+    class FoldRightTests {
+        @Test
+        public void shouldFoldRightWithNullZero() {
+            final String actual = of(1, 2, 3).foldRight((String) null, (x, acc) -> acc == null ? String.valueOf(x) : acc + x);
+            assertThat(actual).isEqualTo("321");
+        }
+    }
+
+    @Nested
     class PeekTests {
         @Test
         public void shouldFailPeekOfEmpty() {

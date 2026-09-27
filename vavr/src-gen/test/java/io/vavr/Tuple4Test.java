@@ -105,6 +105,12 @@ public class Tuple4Test {
     }
 
     @Test
+    public void shouldThrowWhenComparingToNull() {
+        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
+        assertThrows(NullPointerException.class, () -> t0.compareTo(null));
+    }
+
+    @Test
     public void shouldCompare1stArg() {
         final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
         final Tuple4<Integer, Integer, Integer, Integer> t1 = createIntTuple(1, 0, 0, 0);

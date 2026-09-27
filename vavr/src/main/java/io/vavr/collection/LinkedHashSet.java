@@ -27,15 +27,15 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
- * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
+ * An immutable, hash-based {@link Set} implementation with predictable (insertion-order) iteration.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
-public final class LinkedHashSet<T> implements Set<T>, Serializable {
+public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -55,11 +55,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return The empty LinkedHashSet.
      */
     @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> empty() {
+    public static <T extends @Nullable Object> LinkedHashSet<T> empty() {
         return (LinkedHashSet<T>) EMPTY;
     }
 
-    static <T> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
+    static <T extends @Nullable Object> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
         return new LinkedHashSet<>(map);
     }
 
@@ -70,7 +70,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param <T> Component type of the LinkedHashSet.
      * @return A io.vavr.collection.LinkedHashSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
+    public static <T extends @Nullable Object> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -91,7 +91,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return the same set viewed as {@code LinkedHashSet<T>}
      */
     @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> linkedHashSet) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> linkedHashSet) {
         return (LinkedHashSet<T>) linkedHashSet;
     }
 
@@ -102,7 +102,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param <T>     The component type
      * @return A new LinkedHashSet instance containing the given element
      */
-    public static <T> LinkedHashSet<T> of(T element) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> of(T element) {
         return LinkedHashSet.<T> empty().add(element);
     }
 
@@ -117,7 +117,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> LinkedHashSet<T> of(T @NonNull ... elements) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> of(T ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         LinkedHashMap<T, Object> map = LinkedHashMap.empty();
         for (T element : elements) {
@@ -131,26 +131,28 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
+     * @param n   The number of times {@code f} is invoked (equal results are deduplicated, so the
+     *            resulting set may contain fewer than {@code n} elements)
      * @param f   The Function computing element values
-     * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A LinkedHashSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> LinkedHashSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
     }
 
     /**
-     * Returns a LinkedHashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a LinkedHashSet containing the distinct values returned by {@code n} calls to a given
+     * Supplier {@code s}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
+     * @param n   The number of times {@code s} is invoked
      * @param s   The Supplier computing element values
-     * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A LinkedHashSet of at most {@code n} distinct values supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> LinkedHashSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
     }
@@ -160,10 +162,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      *
      * @param elements Set elements
      * @param <T>      The value type
-     * @return A new LinkedHashSet containing the given entries
+     * @return A LinkedHashSet containing the given elements; if {@code elements} is already a
+     *         LinkedHashSet, it is returned unchanged.
      */
     @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> ofAll(@NonNull Iterable<? extends T> elements) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof LinkedHashSet) {
             return (LinkedHashSet<T>) elements;
@@ -180,7 +183,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param <T>        Component type of the Stream.
      * @return A LinkedHashSet containing the given elements in the same order.
      */
-    public static <T> LinkedHashSet<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
+    public static <T extends @Nullable Object> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }
@@ -192,7 +195,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Boolean> ofAll(boolean @NonNull ... elements) {
+    public static LinkedHashSet<Boolean> ofAll(boolean ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -204,7 +207,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Byte> ofAll(byte @NonNull ... elements) {
+    public static LinkedHashSet<Byte> ofAll(byte ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -216,7 +219,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Character values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Character> ofAll(char @NonNull ... elements) {
+    public static LinkedHashSet<Character> ofAll(char ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -228,7 +231,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Double values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Double> ofAll(double @NonNull ... elements) {
+    public static LinkedHashSet<Double> ofAll(double ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -240,7 +243,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Float values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Float> ofAll(float @NonNull ... elements) {
+    public static LinkedHashSet<Float> ofAll(float ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -252,7 +255,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Integer> ofAll(int @NonNull ... elements) {
+    public static LinkedHashSet<Integer> ofAll(int ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -264,7 +267,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Long values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Long> ofAll(long @NonNull ... elements) {
+    public static LinkedHashSet<Long> ofAll(long ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -276,7 +279,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Short values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Short> ofAll(short @NonNull ... elements) {
+    public static LinkedHashSet<Short> ofAll(short ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -338,9 +341,9 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static LinkedHashSet<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -437,8 +440,8 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static LinkedHashSet<Long> rangeBy(long from, long toExclusive, long step) {
@@ -600,7 +603,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -610,12 +613,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Add the given element to this set, replacing existing one if it is already contained.
+     * Adds the given element to this set. If an equal element is already contained, this instance is
+     * returned unchanged and the existing element is retained (the given {@code element} is discarded).
      * <p>
      * Note that this method runs in (amortized) constant time.
      *
      * @param element The element to be added.
-     * @return A new set containing all elements of this set and also {@code element}.
+     * @return A set containing all elements of this set and also {@code element}.
      */
     @Override
     public LinkedHashSet<T> add(T element) {
@@ -623,15 +627,19 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Adds all of the given elements to this set, replacing existing one if they are not already contained.
+     * Adds all of the given elements that are not already contained in this set, in encounter order.
+     * If no new element is added, this instance is returned unchanged (or, if this set is empty and
+     * {@code elements} is a {@code LinkedHashSet}, the given {@code elements} instance). Whether an
+     * already-contained element is retained or replaced by its equal counterpart from {@code elements}
+     * is unspecified.
      * <p>
      * Note that this method has a worst-case linear complexity.
      *
      * @param elements The elements to be added.
-     * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
+     * @return A set containing all elements of this set and the given {@code elements}.
      */
     @Override
-    public LinkedHashSet<T> addAll(@NonNull Iterable<? extends T> elements) {
+    public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof LinkedHashSet) {
             @SuppressWarnings("unchecked")
@@ -647,7 +655,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <R> LinkedHashSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R extends @Nullable Object> LinkedHashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -657,7 +665,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> diff(@NonNull Set<? extends T> elements) {
+    public LinkedHashSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return this;
@@ -672,13 +680,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    public LinkedHashSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return LinkedHashSet.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
-    public <U> LinkedHashSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> LinkedHashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return LinkedHashSet.ofAll(iterator().distinctBy(keyExtractor));
     }
@@ -702,33 +710,33 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    public LinkedHashSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final LinkedHashSet<T> dropped = LinkedHashSet.ofAll(iterator().dropWhile(predicate));
         return dropped.length() == length() ? this : dropped;
     }
 
     @Override
-    public LinkedHashSet<T> filter(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final LinkedHashSet<T> filtered = LinkedHashSet.ofAll(iterator().filter(predicate));
         return filtered.length() == length() ? this : filtered;
     }
 
     @Override
-    public LinkedHashSet<T> reject(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
-    public <U> LinkedHashSet<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U extends @Nullable Object> LinkedHashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -740,13 +748,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    public <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 
     @Override
-    public <C> Map<C, LinkedHashSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+    public <C extends @Nullable Object> Map<C, LinkedHashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, LinkedHashSet::ofAll);
     }
 
@@ -788,7 +796,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> intersect(@NonNull Set<? extends T> elements) {
+    public LinkedHashSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return empty();
@@ -833,7 +841,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return map.iterator().map(t -> t._1);
     }
 
@@ -848,7 +856,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> LinkedHashSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> LinkedHashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -862,13 +870,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> LinkedHashSet<U> mapTo(U value) {
+    public <U extends @Nullable Object> LinkedHashSet<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    public LinkedHashSet<Void> mapToVoid() {
-        return map(ignored -> null);
+    public LinkedHashSet<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
@@ -877,22 +885,22 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> orElse(@NonNull Iterable<? extends T> other) {
+    public LinkedHashSet<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    public LinkedHashSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    public LinkedHashSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     @Override
-    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> partition(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> partition(Predicate<? super T> predicate) {
         return Collections.partition(this, LinkedHashSet::ofAll, predicate);
     }
 
     @Override
-    public LinkedHashSet<T> peek(@NonNull Consumer<? super T> action) {
+    public LinkedHashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(iterator().head());
@@ -907,7 +915,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
+    public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
     }
 
@@ -929,27 +937,27 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
     @Override
-    public LinkedHashSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public LinkedHashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> LinkedHashSet<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U extends @Nullable Object> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, LinkedHashSet::ofAll);
     }
 
     @Override
-    public <U> LinkedHashSet<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U extends @Nullable Object> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, LinkedHashSet::ofAll);
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    public Iterator<LinkedHashSet<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(LinkedHashSet::ofAll);
     }
 
@@ -964,7 +972,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
@@ -1000,13 +1008,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    public LinkedHashSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+    public LinkedHashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final LinkedHashSet<T> taken = LinkedHashSet.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
@@ -1020,7 +1028,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(@NonNull Function<? super LinkedHashSet<T>, ? extends U> f) {
+    public <U extends @Nullable Object> U transform(Function<? super LinkedHashSet<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -1031,18 +1039,22 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
+     * Adds all of the elements of {@code elements} that are not already contained in this set, forming the union.
+     * If no new element is added, this instance is returned unchanged (or, if this set is empty and
+     * {@code elements} is a {@code LinkedHashSet}, the given {@code elements} instance). Whether an
+     * already-contained element is retained or replaced by its equal counterpart from {@code elements}
+     * is unspecified.
      * <p>
      * Note that this method has a worst-case linear complexity.
      * <p>
      * See also {@link #addAll(Iterable)}.
      *
      * @param elements The set to form the union with.
-     * @return A new set that contains all distinct elements of this and {@code elements} set.
+     * @return A set that contains all distinct elements of this and {@code elements} set.
      */
     @SuppressWarnings("unchecked")
     @Override
-    public LinkedHashSet<T> union(@NonNull Set<? extends T> elements) {
+    public LinkedHashSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             if (elements instanceof LinkedHashSet) {
@@ -1063,35 +1075,47 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<LinkedHashSet<T1>, LinkedHashSet<T2>, LinkedHashSet<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<LinkedHashSet<T1>, LinkedHashSet<T2>, LinkedHashSet<T3>> unzip3(
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2), LinkedHashSet.ofAll(t._3));
     }
 
     @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    public <U extends @Nullable Object> LinkedHashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is a {@code Set}, equal results of {@code mapper} are deduplicated, so the resulting
+     * length may be less than the minimum of the lengths of this set and {@code that}.
+     */
     @Override
-    public <U, R> LinkedHashSet<R> zipWith(@NonNull Iterable<? extends U> that, @NonNull BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U extends @Nullable Object, R extends @Nullable Object> LinkedHashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return LinkedHashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is a {@code Set}, equal pairs (e.g. filler-padded ones) are deduplicated, so the
+     * resulting length may be less than the maximum of the lengths of this set and {@code that}.
+     */
     @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U extends @Nullable Object> LinkedHashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return LinkedHashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1102,7 +1126,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> LinkedHashSet<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U extends @Nullable Object> LinkedHashSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return LinkedHashSet.ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1110,7 +1134,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return Collections.equals(this, o);
     }
 
@@ -1129,7 +1153,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
+    private static <T extends @Nullable Object> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
             Iterable<? extends T> additional) {
         LinkedHashMap<T, Object> that = initial;
         for (T t : additional) {
@@ -1167,14 +1191,14 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
+     * A serialization proxy which, in this context, is used to deserialize immutable LinkedHashSets with final
      * instance fields.
      *
-     * @param <T> The component type of the underlying list.
+     * @param <T> The component type of the underlying set.
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
-    private static final class SerializationProxy<T> implements Serializable {
+    private static final class SerializationProxy<T extends @Nullable Object> implements Serializable {
 
         @Serial
         private static final long serialVersionUID = 1L;
@@ -1188,7 +1212,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param map a Cons
+         * @param map the LinkedHashMap backing the LinkedHashSet to be serialized
          */
         SerializationProxy(LinkedHashMap<T, Object> map) {
             this.map = map;
@@ -1214,7 +1238,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          *
          * @param s An object deserialization stream.
          * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-         * @throws InvalidObjectException If the stream contains no list elements.
+         * @throws InvalidObjectException If the stream contains a negative element count.
          * @throws IOException            If an error occurs reading from the stream.
          */
         @Serial

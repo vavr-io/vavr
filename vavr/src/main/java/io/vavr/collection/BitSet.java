@@ -35,15 +35,19 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable {@code BitSet} implementation.
+ * <p>
+ * Elements are stored as bits, so every element must map to a non-negative {@code int} via the builder's
+ * {@code toInt} function (see {@link #withRelations(Function1, Function1)}). Adding, querying or removing a value
+ * that maps to a negative int throws {@link IllegalArgumentException}. Elements are ordered by their int mapping.
  *
  * @param <T> Component type
  * @author Ruslan Sennov
  */
-public interface BitSet<T> extends SortedSet<T> {
+public interface BitSet<T extends @Nullable Object> extends SortedSet<T> {
 
     /**
      * The serial version UID for serialization.
@@ -55,7 +59,7 @@ public interface BitSet<T> extends SortedSet<T> {
      *
      * @param <T> Component type
      */
-    class Builder<T> {
+    class Builder<T extends @Nullable Object> {
 
         final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
 
@@ -69,9 +73,9 @@ public interface BitSet<T> extends SortedSet<T> {
 
         /**
          * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-         * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain an {@link ArrayList}.
+         * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link BitSet}.
          *
-         * @return A {@link ArrayList} Collector.
+         * @return A {@link BitSet} Collector.
          */
         public Collector<T, ArrayList<T>, BitSet<T>> collector() {
             final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -119,7 +123,7 @@ public interface BitSet<T> extends SortedSet<T> {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public final BitSet<T> of(T @NonNull ... values) {
+        public final BitSet<T> of(T ... values) {
             return empty().addAll(Array.wrap(values));
         }
 
@@ -129,7 +133,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param values iterable to build the BitSet from
          * @return new BitSet
          */
-        public BitSet<T> ofAll(@NonNull Iterable<? extends T> values) {
+        public BitSet<T> ofAll(Iterable<? extends T> values) {
             Objects.requireNonNull(values, "values is null");
             return empty().addAll(values);
         }
@@ -152,19 +156,21 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param f function to tabulate
          * @return new BitSet
          */
-        public BitSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+        public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
 
         /**
-         * Builds a new BitSet containing n copies of the same value
+         * Builds a new BitSet from the values supplied by {@code n} invocations of {@code s}.
+         * Because a BitSet cannot contain duplicates, equal values collapse into a single element
+         * (e.g. a constant supplier yields a BitSet of size 1, not n).
          *
-         * @param n number of times to copy the value
+         * @param n number of times to invoke the supplier
          * @param s value supplier
          * @return new BitSet
          */
-        public BitSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
+        public BitSet<T> fill(int n, Supplier<? extends T> s) {
             Objects.requireNonNull(s, "s is null");
             return empty().addAll(Collections.fill(n, s));
         }
@@ -178,7 +184,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param toInt function to convert from T to Integer
      * @return new Builder
      */
-    static <T> Builder<T> withRelations(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
+    static <T extends @Nullable Object> Builder<T> withRelations(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
         return new Builder<>(fromInt, toInt);
     }
 
@@ -214,6 +220,9 @@ public interface BitSet<T> extends SortedSet<T> {
 
     /**
      * Returns new {@link BitSet} Builder for type {@link Long}
+     * <p>
+     * Values are converted via {@link Long#intValue()}, i.e. only values in {@code [0, Integer.MAX_VALUE]} are
+     * supported; larger values are silently truncated to their low 32 bits (and rejected if the result is negative).
      *
      * @return new Builder
      */
@@ -260,7 +269,8 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet of the given int values.
+     *
      * @param values int values
      * @return A new BitSet of int values
      */
@@ -269,12 +279,12 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Returns a BitSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
+     * Returns a BitSet containing the distinct values of a given Function {@code f}
+     * applied over a range of integer values from 0 to {@code n - 1}.
      *
-     * @param n The number of elements in the BitSet
+     * @param n The number of times {@code f} is invoked
      * @param f The Function computing element values
-     * @return A BitSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A BitSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
     static BitSet<Integer> tabulate(int n, Function<Integer, Integer> f) {
@@ -282,11 +292,11 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Returns a BitSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a BitSet containing the distinct values supplied by {@code n} invocations of a given Supplier {@code s}.
      *
-     * @param n The number of elements in the BitSet
+     * @param n The number of times the supplier is invoked
      * @param s The Supplier computing element values
-     * @return A BitSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A BitSet of at most {@code n} elements, containing the distinct values returned by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
     static BitSet<Integer> fill(int n, Supplier<Integer> s) {
@@ -294,7 +304,8 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet of the given Iterable of int values.
+     *
      * @param values int values
      * @return A new BitSet of int values
      */
@@ -303,7 +314,8 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates a BitSet from a {@link java.util.stream.Stream} of int values.
+     *
      * @param javaStream A java.util.stream.Stream of int values
      * @return A new BitSet of int values
      */
@@ -389,6 +401,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Integer> range(int from, int toExclusive) {
         return BitSet.ofAll(Iterator.range(from, toExclusive));
@@ -411,6 +424,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Long> range(long from, long toExclusive) {
         return BitSet.withLongs().ofAll(Iterator.range(from, toExclusive));
@@ -423,10 +437,10 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
         return BitSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -439,8 +453,8 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static BitSet<Character> rangeBy(char from, char toExclusive, int step) {
@@ -454,9 +468,9 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Long> rangeBy(long from, long toExclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -468,6 +482,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Integer> rangeClosed(int from, int toInclusive) {
         return BitSet.ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -490,6 +505,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     * @throws IllegalArgumentException if the range contains a negative number
      */
     static BitSet<Long> rangeClosed(long from, long toInclusive) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -505,7 +521,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @return a range of int values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         return BitSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
@@ -537,26 +553,46 @@ public interface BitSet<T> extends SortedSet<T> {
      * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero or the range contains a negative number
      */
     static BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
     @Override
     BitSet<T> add(T element);
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if one of the {@code elements} maps to a negative int
+     */
     @Override
-    BitSet<T> addAll(@NonNull Iterable<? extends T> elements);
+    BitSet<T> addAll(Iterable<? extends T> elements);
+
+    /**
+     * Tests if the given {@code element} is contained, by comparing its int mapping.
+     *
+     * @param element An element
+     * @return true, if element is contained, false otherwise.
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
+    @Override
+    boolean contains(T element);
 
     @Override
-    default <R> SortedSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    default <R extends @Nullable Object> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().collect(partialFunction));
     }
 
     @Override
-    default BitSet<T> diff(@NonNull Set<? extends T> elements) {
+    default BitSet<T> diff(Set<? extends T> elements) {
         return removeAll(elements);
     }
 
@@ -566,10 +602,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    BitSet<T> distinctBy(@NonNull Comparator<? super T> comparator);
+    BitSet<T> distinctBy(Comparator<? super T> comparator);
 
     @Override
-    <U> BitSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
     BitSet<T> drop(int n);
@@ -578,39 +614,39 @@ public interface BitSet<T> extends SortedSet<T> {
     BitSet<T> dropRight(int n);
 
     @Override
-    default BitSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    default BitSet<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    BitSet<T> dropWhile(@NonNull Predicate<? super T> predicate);
+    BitSet<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
-    BitSet<T> filter(@NonNull Predicate<? super T> predicate);
+    BitSet<T> filter(Predicate<? super T> predicate);
 
     @Override
-    BitSet<T> reject(@NonNull Predicate<? super T> predicate);
+    BitSet<T> reject(Predicate<? super T> predicate);
 
     @Override
-    default <U> SortedSet<U> flatMap(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U extends @Nullable Object> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }
 
     @Override
-    default <U> SortedSet<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U extends @Nullable Object> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return flatMap(Comparators.naturalComparator(), mapper);
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 
     @Override
-    <C> Map<C, BitSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
+    <C extends @Nullable Object> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
     default Iterator<BitSet<T>> grouped(int size) {
@@ -656,7 +692,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    BitSet<T> intersect(@NonNull Set<? extends T> elements);
+    BitSet<T> intersect(Set<? extends T> elements);
 
     @Override
     default T last() {
@@ -664,10 +700,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    Tuple2<BitSet<T>, BitSet<T>> partition(@NonNull Predicate<? super T> predicate);
+    Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate);
 
     @Override
-    default BitSet<T> peek(@NonNull Consumer<? super T> action) {
+    default BitSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -681,31 +717,41 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default <U> SortedSet<U> map(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> SortedSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().map(mapper));
     }
 
     @Override
-    default <U> SortedSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> SortedSet<U> map(Function<? super T, ? extends U> mapper) {
         return map(Comparators.naturalComparator(), mapper);
     }
 
     @Override
-    default <U> SortedSet<U> mapTo(U value) {
+    default <U extends @Nullable Object> SortedSet<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default SortedSet<Void> mapToVoid() {
-        return map(ignored -> null);
+    default SortedSet<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map((o1, o2) -> 0, ignored -> null);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code element} maps to a negative int
+     */
     @Override
     BitSet<T> remove(T element);
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Elements that cannot be contained in this BitSet (e.g. values mapping to a negative int) are ignored.
+     */
     @Override
-    BitSet<T> removeAll(@NonNull Iterable<? extends T> elements);
+    BitSet<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     default BitSet<T> replace(T currentElement, T newElement) {
@@ -723,25 +769,25 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    default BitSet<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
     @Override
-    BitSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    default <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U extends @Nullable Object> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    default <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U extends @Nullable Object> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    Iterator<BitSet<T>> slideBy(@NonNull Function<? super T, ?> classifier);
+    Iterator<BitSet<T>> slideBy(Function<? super T, ?> classifier);
 
     @Override
     default Iterator<BitSet<T>> sliding(int size) {
@@ -752,7 +798,7 @@ public interface BitSet<T> extends SortedSet<T> {
     Iterator<BitSet<T>> sliding(int size, int step);
 
     @Override
-    Tuple2<BitSet<T>, BitSet<T>> span(@NonNull Predicate<? super T> predicate);
+    Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate);
 
     @Override
     default BitSet<T> tail() {
@@ -775,13 +821,13 @@ public interface BitSet<T> extends SortedSet<T> {
     BitSet<T> takeRight(int n);
 
     @Override
-    default BitSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    default BitSet<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    BitSet<T> takeWhile(@NonNull Predicate<? super T> predicate);
+    BitSet<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     default java.util.SortedSet<T> toJavaSet() {
@@ -789,22 +835,22 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> union(@NonNull Set<? extends T> elements) {
+    default BitSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return elements.isEmpty() ? this : addAll(elements);
     }
 
     @Override
-    default <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
                 i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
     }
 
     @Override
-    default <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    default <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(
                 i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
@@ -813,21 +859,21 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default <U> TreeSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    default <U extends @Nullable Object> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
-    default <U, R> TreeSet<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    default <U extends @Nullable Object, R extends @Nullable Object> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
-    default <U> TreeSet<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    default <U extends @Nullable Object> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
@@ -841,7 +887,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default <U> TreeSet<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    default <U extends @Nullable Object> TreeSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
     }
@@ -852,7 +898,7 @@ interface BitSetModule {
     int ADDRESS_BITS_PER_WORD = 6;
     int BITS_PER_WORD = 64;
 
-    abstract class AbstractBitSet<T> implements BitSet<T>, Serializable {
+    abstract class AbstractBitSet<T extends @Nullable Object> implements BitSet<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -919,13 +965,13 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+        public BitSet<T> distinctBy(Comparator<? super T> comparator) {
             Objects.requireNonNull(comparator, "comparator is null");
             return isEmpty() ? this : createFromAll(iterator().distinctBy(comparator));
         }
 
         @Override
-        public <U> BitSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+        public <U extends @Nullable Object> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
             Objects.requireNonNull(keyExtractor, "keyExtractor is null");
             return isEmpty() ? this : createFromAll(iterator().distinctBy(keyExtractor));
         }
@@ -953,14 +999,14 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+        public BitSet<T> dropWhile(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().dropWhile(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
-        public BitSet<T> intersect(@NonNull Set<? extends T> elements) {
+        public BitSet<T> intersect(Set<? extends T> elements) {
             Objects.requireNonNull(elements, "elements is null");
             if (isEmpty()) {
                 return this;
@@ -978,33 +1024,33 @@ interface BitSetModule {
         }
 
         /**
-         * Returns this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         * Returns this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code other}.
+         * If {@code other} is itself a {@code BitSet} it is returned as-is (keeping its own element encoding),
+         * otherwise a new {@code BitSet} using this instance's element encoding is created.
          *
          * @param other An alternative {@code Traversable}
-         * @return this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         * @return this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code other}
          */
         @Override
-        public BitSet<T> orElse(@NonNull Iterable<? extends T> other) {
+        public BitSet<T> orElse(Iterable<? extends T> other) {
             return isEmpty() ? createFromAll(other) : this;
         }
 
         /**
-         * Returns this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         * Returns this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from the result of
+         * evaluating {@code supplier}. If that result is itself a {@code BitSet} it is returned as-is (keeping its
+         * own element encoding), otherwise a new {@code BitSet} using this instance's element encoding is created.
          *
-         * @param supplier An alternative {@code Traversable}
-         * @return this {@code BitSet} if it is nonempty,
-         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         * @param supplier A supplier of an alternative {@code Iterable}, evaluated only if this BitSet is empty
+         * @return this {@code BitSet} if it is nonempty, otherwise a {@code BitSet} built from {@code supplier.get()}
          */
         @Override
-        public BitSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+        public BitSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
             return isEmpty() ? createFromAll(supplier.get()) : this;
         }
 
         @Override
-        public Iterator<BitSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+        public Iterator<BitSet<T>> slideBy(Function<? super T, ?> classifier) {
             return iterator().slideBy(classifier).map(this::createFromAll);
         }
 
@@ -1014,37 +1060,37 @@ interface BitSetModule {
         }
 
         @Override
-        public Tuple2<BitSet<T>, BitSet<T>> span(@NonNull Predicate<? super T> predicate) {
+        public Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return iterator().span(predicate).map(this::createFromAll, this::createFromAll);
         }
 
         @Override
-        public BitSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+        public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
             return Collections.scanLeft(this, zero, operation, this::createFromAll);
         }
 
         @Override
-        public Tuple2<BitSet<T>, BitSet<T>> partition(@NonNull Predicate<? super T> predicate) {
+        public Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
             return Collections.partition(this, this::createFromAll, predicate);
         }
 
         @Override
-        public BitSet<T> filter(@NonNull Predicate<? super T> predicate) {
+        public BitSet<T> filter(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().filter(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
-        public BitSet<T> reject(@NonNull Predicate<? super T> predicate) {
+        public BitSet<T> reject(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().reject(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
-        public <C> Map<C, BitSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+        public <C extends @Nullable Object> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
             return Collections.groupBy(this, classifier, this::createFromAll);
         }
 
@@ -1054,7 +1100,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+        public BitSet<T> takeWhile(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> result = createFromAll(iterator().takeWhile(predicate));
             return (result.length() == length()) ? this : result;
@@ -1062,7 +1108,7 @@ interface BitSetModule {
 
         @Override
         @SuppressWarnings("unchecked")
-        public BitSet<T> addAll(@NonNull Iterable<? extends T> elements) {
+        public BitSet<T> addAll(Iterable<? extends T> elements) {
             final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
             if (source.isEmpty()) {
                 return this;
@@ -1102,7 +1148,7 @@ interface BitSetModule {
         }
 
         @Override
-        public @NonNull Iterator<T> iterator() {
+        public Iterator<T> iterator() {
             return new BitSetIterator<>(this);
         }
 
@@ -1141,7 +1187,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
+        public BitSet<T> removeAll(Iterable<? extends T> elements) {
             if (isEmpty()) {
                 return this;
             } else {
@@ -1149,8 +1195,14 @@ interface BitSetModule {
                 if (source.isEmpty()) {
                     return this;
                 } else {
-                    final long[] copy = copyExpand(getWordsNum());
-                    source.forEach(element -> unsetElement(copy, element));
+                    final int wordsNum = getWordsNum();
+                    final long[] copy = copyExpand(wordsNum);
+                    source.forEach(element -> {
+                        // elements that cannot be present (negative or beyond the current words) are a no-op
+                        if (element >= 0 && (element >> ADDRESS_BITS_PER_WORD) < wordsNum) {
+                            unsetElement(copy, element);
+                        }
+                    });
                     return fromBitMaskNoCopy(shrink(copy));
                 }
             }
@@ -1162,7 +1214,7 @@ interface BitSetModule {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return Collections.equals(this, o);
         }
 
@@ -1172,7 +1224,7 @@ interface BitSetModule {
         }
     }
 
-    class BitSetIterator<T> extends AbstractIterator<T> {
+    class BitSetIterator<T extends @Nullable Object> extends AbstractIterator<T> {
 
         private final AbstractBitSet<T> bitSet;
 
@@ -1205,7 +1257,7 @@ interface BitSetModule {
         }
     }
 
-    class BitSet1<T> extends AbstractBitSet<T> {
+    class BitSet1<T extends @Nullable Object> extends AbstractBitSet<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -1271,7 +1323,7 @@ interface BitSetModule {
         }
     }
 
-    class BitSet2<T> extends AbstractBitSet<T> {
+    class BitSet2<T extends @Nullable Object> extends AbstractBitSet<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -1349,7 +1401,7 @@ interface BitSetModule {
         }
     }
 
-    class BitSetN<T> extends AbstractBitSet<T> {
+    class BitSetN<T extends @Nullable Object> extends AbstractBitSet<T> {
 
         private static final long serialVersionUID = 1L;
 

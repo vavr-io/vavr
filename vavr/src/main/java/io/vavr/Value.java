@@ -27,6 +27,7 @@ import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.LinkedHashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
+import io.vavr.collection.Multimap;
 import io.vavr.collection.Ordered;
 import io.vavr.collection.PriorityQueue;
 import io.vavr.collection.Queue;
@@ -62,7 +63,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.API.Invalid;
 import static io.vavr.API.Left;
@@ -92,7 +93,7 @@ import static io.vavr.API.Valid;
  * @param <T> the type of the wrapped value
  * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public interface Value<T> extends Iterable<T> {
+public interface Value<T extends @Nullable Object> extends Iterable<T> {
 
     /**
      * Narrows a widened {@code Value<? extends T>} to {@code Value<T>}
@@ -104,7 +105,7 @@ public interface Value<T> extends Iterable<T> {
      * @return the given {@code value} instance as narrowed type {@code Value<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Value<T> narrow(Value<? extends T> value) {
+    static <T extends @Nullable Object> Value<T> narrow(Value<? extends T> value) {
         return (Value<T>) value;
     }
 
@@ -116,7 +117,7 @@ public interface Value<T> extends Iterable<T> {
      * @param collector Collector performing reduction
      * @return R reduction result
      */
-    default <R, A> R collect(@NonNull Collector<? super T, A, R> collector) {
+    default <R extends @Nullable Object, A extends @Nullable Object> R collect(Collector<? super T, A, R> collector) {
         return StreamSupport.stream(spliterator(), false).collect(collector);
     }
 
@@ -131,14 +132,14 @@ public interface Value<T> extends Iterable<T> {
      *                    compatible with the accumulator.
      * @return R reduction result
      */
-    default <R> R collect(@NonNull Supplier<R> supplier, @NonNull BiConsumer<R, ? super T> accumulator, @NonNull BiConsumer<R, R> combiner) {
+    default <R extends @Nullable Object> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
         return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
     }
 
     /**
      * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
      *
-     * @param element An Object of type A, may be null.
+     * @param element An Object of type {@code T}, may be null.
      * @return true, if element is contained, false otherwise.
      */
     default boolean contains(T element) {
@@ -156,7 +157,7 @@ public interface Value<T> extends Iterable<T> {
      * is {@code true} for all corresponding elements {@code x} of this iterable and {@code y} of {@code that},
      * otherwise {@code false}.
      */
-    default <U> boolean corresponds(@NonNull Iterable<U> that, @NonNull BiPredicate<? super T, ? super U> predicate) {
+    default <U extends @Nullable Object> boolean corresponds(Iterable<U> that, BiPredicate<? super T, ? super U> predicate) {
         final java.util.Iterator<T> it1 = iterator();
         final java.util.Iterator<U> it2 = that.iterator();
         while (it1.hasNext() && it2.hasNext()) {
@@ -186,8 +187,9 @@ public interface Value<T> extends Iterable<T> {
      *
      * <pre>{@code
      * o == this             : true
-     * o instanceof Value    : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
-     * o instanceof Iterable : this eq Iterator.of((Iterable<?>) o);
+     * o instanceof Value    : elements that are Values are compared with eq (recursively), all other elements
+     *                         (including plain Iterables) with equals, for all (o1, o2) in (this, o)
+     * o instanceof Iterable : this eq Iterator.ofAll((Iterable<?>) o);
      * otherwise             : false
      * }</pre>
      *
@@ -223,7 +225,7 @@ public interface Value<T> extends Iterable<T> {
      * @return true, if predicate holds for one or more elements, false otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
-    default boolean exists(@NonNull Predicate<? super T> predicate) {
+    default boolean exists(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (T t : this) {
             if (predicate.test(t)) {
@@ -240,7 +242,7 @@ public interface Value<T> extends Iterable<T> {
      * @return true, if the predicate holds for all elements, false otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
-    default boolean forAll(@NonNull Predicate<? super T> predicate) {
+    default boolean forAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return !exists(predicate.negate());
     }
@@ -252,7 +254,7 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if {@code action} is null
      */
     @Override
-    default void forEach(@NonNull Consumer<? super T> action) {
+    default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         for (T t : this) {
             action.accept(t);
@@ -293,7 +295,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A value of type {@code T}
      * @throws NullPointerException if supplier is null
      */
-    default T getOrElse(@NonNull Supplier<? extends T> supplier) {
+    default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }
@@ -307,7 +309,7 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if supplier is null
      * @throws X                    if no value is present
      */
-    default <X extends Throwable> T getOrElseThrow(@NonNull Supplier<X> supplier) throws X {
+    default <X extends Throwable> T getOrElseThrow(Supplier<X> supplier) throws X {
         Objects.requireNonNull(supplier, "supplier is null");
         if (isEmpty()) {
             throw supplier.get();
@@ -323,7 +325,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A value of type {@code T}.
      * @throws NullPointerException if supplier is null
      */
-    default T getOrElseTry(@NonNull CheckedFunction0<? extends T> supplier) {
+    default T getOrElseTry(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
     }
@@ -333,7 +335,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A value of type {@code T} or {@code null}.
      */
-    default T getOrNull() {
+    default @Nullable T getOrNull() {
         return isEmpty() ? null : get();
     }
 
@@ -344,7 +346,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <U>    The new component type
      * @return A new value
      */
-    default <U> Value<U> mapTo(U value) {
+    default <U extends @Nullable Object> Value<U> mapTo(U value) {
         return map((ignored) -> value);
     }
 
@@ -353,8 +355,8 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A new value of type Void
      */
-    default Value<Void> mapToVoid() {
-        return map((ignored) -> null);
+    default Value<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map((ignored) -> null);
     }
 
     /**
@@ -370,7 +372,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
      *
-     * @return false, if no underlying value is present, true otherwise.
+     * @return true, if no underlying value is present, false otherwise.
      */
     boolean isEmpty();
 
@@ -395,17 +397,19 @@ public interface Value<T> extends Iterable<T> {
      * @param <U>    The new component type
      * @return A new value
      */
-    <U> Value<U> map(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> Value<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
-     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
-     * if this is a <em>lazy</em> implementation.
+     * Performs the given {@code action} on the element(s) of this {@code Value}. Most implementations, including
+     * {@link Lazy}, apply it immediately. {@link Stream} applies it to the head immediately and to the remaining
+     * elements as they are evaluated. {@link Iterator} defers the action for every element, including the first,
+     * until that element is consumed. {@link io.vavr.concurrent.Future} applies it asynchronously upon successful
+     * completion.
      *
      * @param action The action that will be performed on the element(s).
      * @return this instance
      */
-    Value<T> peek(@NonNull Consumer<? super T> action);
+    Value<T> peek(Consumer<? super T> action);
 
     /**
      * Returns the name of this Value type, which is used by toString().
@@ -473,17 +477,17 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Returns a rich {@code io.vavr.collection.Iterator}.
      *
-     * @return A new Iterator
+     * @return An {@link Iterator} over the element(s) of this value
      */
     @Override
-    @NonNull Iterator<T> iterator();
+    Iterator<T> iterator();
 
     // -- conversion methods
 
     /**
      * Converts this to a {@link Array}.
      *
-     * @return A new {@link Array}.
+     * @return An {@link Array} containing the elements of this value.
      */
     default Array<T> toArray() {
         return ValueModule.toTraversable(this, Array.empty(), Array::of, Array::ofAll);
@@ -492,7 +496,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link CharSeq}.
      *
-     * @return A new {@link CharSeq}.
+     * @return The {@link CharSeq} obtained by concatenating the string representations of the elements of this value.
      */
     default CharSeq toCharSeq() {
         if (this instanceof CharSeq) {
@@ -507,7 +511,9 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link CompletableFuture}
      *
-     * @return A new {@link CompletableFuture} containing the value
+     * @return A new {@link CompletableFuture}, completed with the value if present, or completed exceptionally
+     * with the exception thrown by {@link #get()} otherwise (e.g. a {@link java.util.NoSuchElementException} if
+     * this value is empty).
      */
     default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
@@ -524,10 +530,11 @@ public interface Value<T> extends Iterable<T> {
      * @param value An instance of a {@code Valid} value
      * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
      * a new {@link Validation.Invalid} containing this value.
-     * @deprecated Use {@link #toValidation(Object)} instead.
+     * @deprecated Use {@code toValidation(value).swap()} instead ({@link #toValidation(Object)} places this value on
+     * the {@code Valid} side, the opposite of {@code toInvalid}, so the result must be swapped).
      */
     @Deprecated
-    default <U> Validation<T, U> toInvalid(U value) {
+    default <U extends @Nullable Object> Validation<T, U> toInvalid(U value) {
         return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
     }
 
@@ -539,10 +546,10 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
      * otherwise a new {@link Validation.Invalid} containing this value.
      * @throws NullPointerException if {@code valueSupplier} is null
-     * @deprecated Use {@link #toValidation(Supplier)} instead.
+     * @deprecated Use {@code toValidation(valueSupplier).swap()} instead (same reasoning as {@link #toInvalid(Object)}).
      */
     @Deprecated
-    default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
+    default <U extends @Nullable Object> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
     }
@@ -642,9 +649,9 @@ public interface Value<T> extends Iterable<T> {
      *                     creates an array of the correct component
      *                     type with the specified size
      * @return The array provided by the factory filled with the values from this <code>Value</code>.
-     * @throws NullPointerException if componentType is null
+     * @throws NullPointerException if {@code arrayFactory} is null
      */
-    default T[] toJavaArray(@NonNull IntFunction<T[]> arrayFactory) {
+    default T[] toJavaArray(IntFunction<T[]> arrayFactory) {
         java.util.List<T> javaList = toJavaList();
         return javaList.toArray(arrayFactory.apply(javaList.size()));
     }
@@ -671,7 +678,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <C>     a sub-type of {@code java.util.Collection}
      * @return a new {@code java.util.Collection} of type {@code C}
      */
-    default <C extends java.util.Collection<T>> C toJavaCollection(@NonNull Function<Integer, C> factory) {
+    default <C extends java.util.Collection<T>> C toJavaCollection(Function<Integer, C> factory) {
         return ValueModule.toJavaCollection(this, factory);
     }
 
@@ -725,7 +732,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <LIST>  A sub-type of {@code java.util.List}
      * @return a new {@code java.util.List} of type {@code LIST}
      */
-    default <LIST extends java.util.List<T>> LIST toJavaList(@NonNull Function<Integer, LIST> factory) {
+    default <LIST extends java.util.List<T>> LIST toJavaList(Function<Integer, LIST> factory) {
         return ValueModule.toJavaCollection(this, factory);
     }
 
@@ -752,7 +759,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link java.util.HashMap}.
      */
-    default <K, V> java.util.Map<K, V> toJavaMap(@NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends @Nullable Object, V extends @Nullable Object> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         return toJavaMap(java.util.HashMap::new, f);
     }
 
@@ -782,7 +789,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <MAP>       a sub-type of {@code java.util.Map}
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
-    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, @NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends @Nullable Object, V extends @Nullable Object, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toJavaMap(factory, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -813,7 +820,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <MAP>   a sub-type of {@code java.util.Map}
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
-    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, @NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends @Nullable Object, V extends @Nullable Object, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final MAP map = factory.get();
         if (!isEmpty()) {
@@ -899,7 +906,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <SET>   a sub-type of {@code java.util.Set}
      * @return a new {@code java.util.Set} of type {@code SET}
      */
-    default <SET extends java.util.Set<T>> SET toJavaSet(@NonNull Function<Integer, SET> factory) {
+    default <SET extends java.util.Set<T>> SET toJavaSet(Function<Integer, SET> factory) {
         return ValueModule.toJavaCollection(this, factory);
     }
 
@@ -960,10 +967,11 @@ public interface Value<T> extends Iterable<T> {
      * @param right An instance of a right value
      * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
      * a new {@link Either.Left} containing this value.
-     * @deprecated Use {@link #toEither(Object)} instead.
+     * @deprecated Use {@code toEither(right).swap()} instead ({@link #toEither(Object)} places this value on the
+     * {@code Right} side, the opposite of {@code toLeft}, so the result must be swapped).
      */
     @Deprecated
-    default <R> Either<T, R> toLeft(R right) {
+    default <R extends @Nullable Object> Either<T, R> toLeft(R right) {
         return isEmpty() ? Either.right(right) : Either.left(get());
     }
 
@@ -975,10 +983,10 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Either.Right} containing the result of {@code right} if this is empty, otherwise
      * a new {@link Either.Left} containing this value.
      * @throws NullPointerException if {@code right} is null
-     * @deprecated Use {@link #toEither(Supplier)} instead.
+     * @deprecated Use {@code toEither(right).swap()} instead (same reasoning as {@link #toLeft(Object)}).
      */
     @Deprecated
-    default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
+    default <R extends @Nullable Object> Either<T, R> toLeft(Supplier<? extends R> right) {
         Objects.requireNonNull(right, "right is null");
         return isEmpty() ? Either.right(right.get()) : Either.left(get());
     }
@@ -986,7 +994,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link List}.
      *
-     * @return A new {@link List}.
+     * @return A {@link List} containing the elements of this value.
      */
     default List<T> toList() {
         return ValueModule.toTraversable(this, List.empty(), List::of, List::ofAll);
@@ -1001,7 +1009,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link HashMap}.
      */
-    default <K, V> Map<K, V> toMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1015,7 +1023,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link HashMap}.
      */
-    default <K, V> Map<K, V> toMap(@NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, Map<K, V>> ofElement = HashMap::of;
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, Map<K, V>> ofAll = HashMap::ofEntries;
@@ -1031,7 +1039,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link LinkedHashMap}.
      */
-    default <K, V> Map<K, V> toLinkedMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> toLinkedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toLinkedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1045,7 +1053,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link LinkedHashMap}.
      */
-    default <K, V> Map<K, V> toLinkedMap(@NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> toLinkedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, Map<K, V>> ofElement = LinkedHashMap::of;
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, Map<K, V>> ofAll = LinkedHashMap::ofEntries;
@@ -1061,7 +1069,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link TreeMap}.
      */
-    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends Comparable<? super K>, V extends @Nullable Object> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toSortedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1075,7 +1083,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link TreeMap}.
      */
-    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(@NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends Comparable<? super K>, V extends @Nullable Object> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return toSortedMap(Comparator.naturalOrder(), f);
     }
@@ -1090,7 +1098,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link TreeMap}.
      */
-    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, @NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends @Nullable Object, V extends @Nullable Object> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
@@ -1106,7 +1114,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>        The value type
      * @return A new {@link TreeMap}.
      */
-    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, @NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends @Nullable Object, V extends @Nullable Object> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, SortedMap<K, V>> ofElement = t -> TreeMap.of(comparator, t);
@@ -1117,7 +1125,8 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to an {@link Option}.
      *
-     * @return A new {@link Option}.
+     * @return this instance if it already is an {@link Option}, otherwise {@link Option#none()} if this value is
+     * empty, or a new {@link Option} wrapping the value.
      */
     default Option<T> toOption() {
         if (this instanceof Option) {
@@ -1132,9 +1141,10 @@ public interface Value<T> extends Iterable<T> {
      *
      * @param left A left value for the {@link Either}
      * @param <L>  Either left component type
-     * @return A new {@link Either}.
+     * @return this {@link Either} unchanged if it already is a {@code Right}, otherwise a new {@link Either.Left}
+     * containing {@code left} if this value is empty, or a new {@link Either.Right} containing this value.
      */
-    default <L> Either<L, T> toEither(L left) {
+    default <L extends @Nullable Object> Either<L, T> toEither(L left) {
         if (this instanceof Either) {
             return ((Either<?, T>) this).mapLeft(ignored -> left);
         } else {
@@ -1146,10 +1156,12 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
-     * @param <L>          Validation error component type
-     * @return A new {@link Either}.
+     * @param <L>          Either left component type
+     * @return this {@link Either} unchanged if it already is a {@code Right}, otherwise a new {@link Either.Left}
+     * containing the value supplied by {@code leftSupplier} if this value is empty, or a new {@link Either.Right}
+     * containing this value.
      */
-    default <L> Either<L, T> toEither(@NonNull Supplier<? extends L> leftSupplier) {
+    default <L extends @Nullable Object> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
         Objects.requireNonNull(leftSupplier, "leftSupplier is null");
         if (this instanceof Either) {
             return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
@@ -1163,9 +1175,11 @@ public interface Value<T> extends Iterable<T> {
      *
      * @param invalid An invalid value for the {@link Validation}
      * @param <E>     Validation error component type
-     * @return A new {@link Validation}.
+     * @return this {@link Validation} unchanged if it already is a {@code Valid}, otherwise a new
+     * {@link Validation.Invalid} containing {@code invalid} if this value is empty, or a new {@link Validation.Valid}
+     * containing this value.
      */
-    default <E> Validation<E, T> toValidation(E invalid) {
+    default <E extends @Nullable Object> Validation<E, T> toValidation(E invalid) {
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
@@ -1178,9 +1192,11 @@ public interface Value<T> extends Iterable<T> {
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
      * @param <E>             Validation error component type
-     * @return A new {@link Validation}.
+     * @return this {@link Validation} unchanged if it already is a {@code Valid}, otherwise a new
+     * {@link Validation.Invalid} containing the value supplied by {@code invalidSupplier} if this value is empty, or
+     * a new {@link Validation.Valid} containing this value.
      */
-    default <E> Validation<E, T> toValidation(@NonNull Supplier<? extends E> invalidSupplier) {
+    default <E extends @Nullable Object> Validation<E, T> toValidation(Supplier<? extends E> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
@@ -1192,7 +1208,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Queue}.
      *
-     * @return A new {@link Queue}.
+     * @return A {@link Queue} containing the elements of this value.
      */
     default Queue<T> toQueue() {
         return ValueModule.toTraversable(this, Queue.empty(), Queue::of, Queue::ofAll);
@@ -1200,18 +1216,21 @@ public interface Value<T> extends Iterable<T> {
 
     /**
      * Converts this to a {@link PriorityQueue}.
+     * <p>
+     * If this is a {@link SortedSet} or a {@link PriorityQueue}, its comparator is reused. Otherwise the elements
+     * must be comparable and are ordered naturally; in particular, a {@link SortedMap} or
+     * {@link io.vavr.collection.SortedMultimap} is converted using the natural order of its {@link Tuple2} entries,
+     * not its key comparator.
      *
-     * @return A new {@link PriorityQueue}.
+     * @return A {@link PriorityQueue} containing the elements of this value.
+     * @throws ClassCastException if items are not comparable
      */
     @SuppressWarnings("unchecked")
     default PriorityQueue<T> toPriorityQueue() {
         if (this instanceof PriorityQueue<?>) {
             return (PriorityQueue<T>) this;
         } else {
-            final Comparator<T> comparator = (this instanceof Ordered<?>)
-                    ? ((Ordered<T>) this).comparator()
-                    : (Comparator<T>) Comparator.naturalOrder();
-            return toPriorityQueue(comparator);
+            return toPriorityQueue(ValueModule.comparatorOf(this));
         }
     }
 
@@ -1219,9 +1238,9 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to a {@link PriorityQueue}.
      *
      * @param comparator A comparator that induces an order of the PriorityQueue elements.
-     * @return A new {@link PriorityQueue}.
+     * @return A {@link PriorityQueue} ordered by {@code comparator}, containing the elements of this value.
      */
-    default PriorityQueue<T> toPriorityQueue(@NonNull Comparator<? super T> comparator) {
+    default PriorityQueue<T> toPriorityQueue(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final PriorityQueue<T> empty = PriorityQueue.empty(comparator);
         final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
@@ -1239,7 +1258,7 @@ public interface Value<T> extends Iterable<T> {
      * @deprecated Use {@link #toEither(Object)} instead.
      */
     @Deprecated
-    default <L> Either<L, T> toRight(L left) {
+    default <L extends @Nullable Object> Either<L, T> toRight(L left) {
         return isEmpty() ? Either.left(left) : Either.right(get());
     }
 
@@ -1254,7 +1273,7 @@ public interface Value<T> extends Iterable<T> {
      * @deprecated Use {@link #toEither(Supplier)} instead.
      */
     @Deprecated
-    default <L> Either<L, T> toRight(Supplier<? extends L> left) {
+    default <L extends @Nullable Object> Either<L, T> toRight(Supplier<? extends L> left) {
         Objects.requireNonNull(left, "left is null");
         return isEmpty() ? Either.left(left.get()) : Either.right(get());
     }
@@ -1262,7 +1281,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Set}.
      *
-     * @return A new {@link HashSet}.
+     * @return A {@link HashSet} containing the elements of this value.
      */
     default Set<T> toSet() {
         return ValueModule.toTraversable(this, HashSet.empty(), HashSet::of, HashSet::ofAll);
@@ -1271,7 +1290,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Set}.
      *
-     * @return A new {@link LinkedHashSet}.
+     * @return A {@link LinkedHashSet} containing the elements of this value.
      */
     default Set<T> toLinkedSet() {
         return ValueModule.toTraversable(this, LinkedHashSet.empty(), LinkedHashSet::of, LinkedHashSet::ofAll);
@@ -1279,9 +1298,13 @@ public interface Value<T> extends Iterable<T> {
 
     /**
      * Converts this to a {@link SortedSet}.
-     * Current items must be comparable
+     * <p>
+     * If this is a {@link SortedSet} or a {@link PriorityQueue}, its comparator is reused. Otherwise the elements
+     * must be comparable and are ordered naturally; in particular, a {@link SortedMap} or
+     * {@link io.vavr.collection.SortedMultimap} is converted using the natural order of its {@link Tuple2} entries,
+     * not its key comparator.
      *
-     * @return A new {@link TreeSet}.
+     * @return A {@link TreeSet} containing the elements of this value.
      * @throws ClassCastException if items are not comparable
      */
     @SuppressWarnings("unchecked")
@@ -1289,10 +1312,7 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof TreeSet<?>) {
             return (TreeSet<T>) this;
         } else {
-            final Comparator<T> comparator = (this instanceof Ordered<?>)
-                    ? ((Ordered<T>) this).comparator()
-                    : (Comparator<T>) Comparator.naturalOrder();
-            return toSortedSet(comparator);
+            return toSortedSet(ValueModule.comparatorOf(this));
         }
     }
 
@@ -1300,9 +1320,9 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to a {@link SortedSet}.
      *
      * @param comparator A comparator that induces an order of the SortedSet elements.
-     * @return A new {@link TreeSet}.
+     * @return A {@link TreeSet} ordered by {@code comparator}, containing the elements of this value.
      */
-    default SortedSet<T> toSortedSet(@NonNull Comparator<? super T> comparator) {
+    default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ValueModule.toTraversable(this, TreeSet.empty(comparator), value -> TreeSet.of(comparator, value), values -> TreeSet.ofAll(comparator, values));
     }
@@ -1310,7 +1330,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Stream}.
      *
-     * @return A new {@link Stream}.
+     * @return A {@link Stream} containing the elements of this value.
      */
     default Stream<T> toStream() {
         return ValueModule.toTraversable(this, Stream.empty(), Stream::of, Stream::ofAll);
@@ -1319,10 +1339,12 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Try}.
      * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
-     * otherwise a new {@code Success(value)} is returned.
+     * If this is already a {@link Try}, this instance is returned unchanged. Otherwise, if this value is empty,
+     * a new {@code Failure} wrapping the exception thrown by {@link #get()} is returned (typically a
+     * {@link java.util.NoSuchElementException}, or the original cause for a failed
+     * {@link io.vavr.concurrent.Future}); otherwise a new {@code Success(get())} is returned.
      *
-     * @return A new {@link Try}.
+     * @return A {@link Try} representing this value.
      */
     default Try<T> toTry() {
         if (this instanceof Try) {
@@ -1341,7 +1363,7 @@ public interface Value<T> extends Iterable<T> {
      * @param ifEmpty an exception supplier
      * @return A new {@link Try}.
      */
-    default Try<T> toTry(@NonNull Supplier<? extends Throwable> ifEmpty) {
+    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
         Objects.requireNonNull(ifEmpty, "ifEmpty is null");
         return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
     }
@@ -1349,22 +1371,24 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Tree}.
      *
-     * @return A new {@link Tree}.
+     * @return A {@link Tree} containing the elements of this value.
      */
     default Tree<T> toTree() {
         return ValueModule.toTraversable(this, Tree.empty(), Tree::of, Tree::ofAll);
     }
 
     /**
-     * Converts this to a {@link Tree} using a {@code idMapper} and {@code parentMapper}.
+     * Builds a forest of {@link Tree.Node}s from the elements of this value, using {@code idMapper} and
+     * {@code parentMapper}.
      *
-     * @param <ID> Id type
+     * @param <ID>         Id type
      * @param idMapper     A mapper from source item to unique identifier of that item
      * @param parentMapper A mapper from source item to unique identifier of parent item. Need return null for root items
-     * @return A new {@link Tree}.
+     * @return A new, possibly empty {@link List} of root {@link Tree.Node}s, one per element for which
+     * {@code parentMapper} returns null.
      * @see Tree#build(Iterable, Function, Function)
      */
-    default <ID> List<Tree.Node<T>> toTree(@NonNull Function<? super T, ? extends ID> idMapper, @NonNull Function<? super T, ? extends ID> parentMapper) {
+    default <ID extends @Nullable Object> List<Tree.Node<T>> toTree(Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         return Tree.build(this, idMapper, parentMapper);
     }
 
@@ -1378,7 +1402,7 @@ public interface Value<T> extends Iterable<T> {
      * @deprecated Use {@link #toValidation(Object)} instead.
      */
     @Deprecated
-    default <E> Validation<E, T> toValid(E error) {
+    default <E extends @Nullable Object> Validation<E, T> toValid(E error) {
         return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
     }
 
@@ -1389,11 +1413,11 @@ public interface Value<T> extends Iterable<T> {
      * @param errorSupplier A supplier of an error
      * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
      * otherwise a new {@link Validation.Valid} containing this value.
-     * @throws NullPointerException if {@code valueSupplier} is null
+     * @throws NullPointerException if {@code errorSupplier} is null
      * @deprecated Use {@link #toValidation(Supplier)} instead.
      */
     @Deprecated
-    default <E> Validation<E, T> toValid(@NonNull Supplier<? extends E> errorSupplier) {
+    default <E extends @Nullable Object> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }
@@ -1401,7 +1425,7 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Vector}.
      *
-     * @return A new {@link Vector}.
+     * @return A {@link Vector} containing the elements of this value.
      */
     default Vector<T> toVector() {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
@@ -1424,7 +1448,7 @@ public interface Value<T> extends Iterable<T> {
      * @return true, if this equals o, false otherwise
      */
     @Override
-    boolean equals(Object o);
+    boolean equals(@Nullable Object o);
 
     /**
      * Clarifies that values have a proper hashCode() method implemented.
@@ -1449,8 +1473,19 @@ public interface Value<T> extends Iterable<T> {
 }
 
 interface ValueModule {
+
+    // SortedMap<K, V> and SortedMultimap<K, V> are Ordered<K> but Value<Tuple2<K, V>>: their key comparator
+    // must not be applied to the entries, so only comparators of element-typed Ordered values are reused.
+    @SuppressWarnings("unchecked")
+    static <T extends @Nullable Object> Comparator<T> comparatorOf(Value<T> value) {
+        if (value instanceof Ordered<?> && !(value instanceof Map<?, ?>) && !(value instanceof Multimap<?, ?>)) {
+            return ((Ordered<T>) value).comparator();
+        } else {
+            return (Comparator<T>) Comparator.naturalOrder();
+        }
+    }
     
-    static <T, R extends Traversable<T>> R toTraversable(
+    static <T extends @Nullable Object, R extends Traversable<T>> R toTraversable(
             Value<T> value, R empty, Function<T, R> ofElement, Function<Iterable<T>, R> ofAll) {
         if (value.isEmpty()) {
             return empty;
@@ -1461,7 +1496,7 @@ interface ValueModule {
         }
     }
 
-    static <T, K, V, E extends Tuple2<? extends K, ? extends V>, R extends Map<K, V>> R toMap(
+    static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object, E extends Tuple2<? extends K, ? extends V>, R extends Map<K, V>> R toMap(
             Value<T> value, R empty, Function<E, R> ofElement, Function<Iterable<E>, R> ofAll, Function<? super T, ? extends E> f) {
         if (value.isEmpty()) {
             return empty;
@@ -1472,12 +1507,12 @@ interface ValueModule {
         }
     }
 
-    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+    static <T extends @Nullable Object, R extends java.util.Collection<T>> R toJavaCollection(
             Value<T> value, Function<Integer, R> containerSupplier) {
         return toJavaCollection(value, containerSupplier, 16);
     }
 
-    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+    static <T extends @Nullable Object, R extends java.util.Collection<T>> R toJavaCollection(
             Value<T> value, Function<Integer, R> containerSupplier, int defaultInitialCapacity) {
         final int size;
         if (value instanceof Traversable && ((Traversable<?>) value).isTraversableAgain() && !value.isLazy()) {

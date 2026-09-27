@@ -23,6 +23,7 @@ package io.vavr.collection;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -31,12 +32,12 @@ import java.util.Collection;
  *
  * @author Pap Lőrinc
  */
-interface ArrayType<T> extends Serializable {
+interface ArrayType<T extends @Nullable Object> extends Serializable {
 
     long serialVersionUID = 1L;
 
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
+    static <T extends @Nullable Object> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 
     Class<T> type();
     int lengthOf(Object array);
@@ -47,10 +48,10 @@ interface ArrayType<T> extends Serializable {
     Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
-    static <T> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
+    static <T extends @Nullable Object> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
+    static <T extends @Nullable Object> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> ofPrimitive(Class<T> type) {
+    static <T extends @Nullable Object> ArrayType<T> ofPrimitive(Class<T> type) {
         if (boolean.class == type) {
             return (ArrayType<T>) BooleanArrayType.INSTANCE;
         } else if (byte.class == type) {
@@ -74,13 +75,13 @@ interface ArrayType<T> extends Serializable {
 
     default Object newInstance(int length) { return copy(empty(), length); }
 
-    /** System.arrayCopy with same source and destination */
+    /** copy the range [from, to) of the source into a new array of length (to - from), starting at index 0 */
     default Object copyRange(Object array, int from, int to) {
         final int length = to - from;
         return copy(array, length, from, 0, length);
     }
 
-    /** Repeatedly group an array into equal sized sub-trees */
+    /** group an array into sub-arrays of groupSize elements each (the last one may be shorter) */
     default Object grouped(Object array, int groupSize) {
         final int arrayLength = lengthOf(array);
         final Object results = obj().newInstance(1 + ((arrayLength - 1) / groupSize));
@@ -108,7 +109,7 @@ interface ArrayType<T> extends Serializable {
         return copy(array, length, 0, 0, arrayLength);
     }
 
-    /** clone the source and keep everything after the index (pre-padding the values with null) */
+    /** clone the source and keep everything at and after the index; the leading slots hold null (or the default value for primitive array types) */
     default Object copyDrop(Object array, int index) {
         final int length = lengthOf(array);
         return copy(array, length, index, index, length - index);
@@ -136,7 +137,7 @@ interface ArrayType<T> extends Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+    static <T extends @Nullable Object> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
         final Object[] array = Array.ofAll(values).toJavaArray();
         final ArrayType<T> type = of((Class<T>) primitiveClass);
         final Object results = type.newInstance(array.length);

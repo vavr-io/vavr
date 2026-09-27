@@ -19,7 +19,7 @@
 package io.vavr;
 
 import java.util.function.Predicate;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.CheckedPredicateModule.sneakyThrow;
 
@@ -29,7 +29,7 @@ import static io.vavr.CheckedPredicateModule.sneakyThrow;
  * @param <T> the type of the input to the predicate
  */
 @FunctionalInterface
-public interface CheckedPredicate<T> {
+public interface CheckedPredicate<T extends @Nullable Object> {
 
     /**
      * Creates a {@code CheckedPredicate} from the given method reference or lambda.
@@ -51,7 +51,7 @@ public interface CheckedPredicate<T> {
      * @return a new {@code CheckedPredicate} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static <T> CheckedPredicate<T> of(@NonNull CheckedPredicate<T> methodReference) {
+    static <T extends @Nullable Object> CheckedPredicate<T> of(CheckedPredicate<T> methodReference) {
         return methodReference;
     }
 
@@ -94,7 +94,7 @@ interface CheckedPredicateModule {
 
     // DEV-NOTE: we do not plan to expose this as public API
     @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    static <T extends Throwable, R extends @Nullable Object> R sneakyThrow(Throwable t) throws T {
         throw (T) t;
     }
 

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.ArrayType.obj;
 import static io.vavr.collection.Collections.withSize;
@@ -35,13 +36,13 @@ import static java.util.function.Function.identity;
  * Access to a given position is done by converting the index to a base 32 number and using each digit to descend down the tree.
  * Modifying the tree is done similarly, but along the way the path is copied, returning a new root every time.
  * `Append` inserts in the last leaf, or if the tree is full from the right, it adds another layer on top of it (the old root will be the first of the new one).
- * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root would be the last node of the new root)
- * shifts the indices by half of the current tree's full size. The `offset` shifts them back to the correct index.
+ * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root becomes the last child of the new root,
+ * at index `BRANCHING_FACTOR - 1`) shifts the indices by `BRANCHING_FACTOR - 1` times the old tree's full size. The `offset` shifts them back to the correct index.
  * `Slice` is done by trimming the path from the root and discarding any `leading`/`trailing` values in effectively constant time (without memory leak, as in `Java`/`Clojure`).
  *
  * @author Pap Lőrinc
  */
-final class BitMappedTrie<T> implements Serializable {
+final class BitMappedTrie<T extends @Nullable Object> implements Serializable {
 
     static final int BRANCHING_BASE = 5;
     static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
@@ -56,7 +57,7 @@ final class BitMappedTrie<T> implements Serializable {
     private static final BitMappedTrie<?> EMPTY = new BitMappedTrie<>(obj(), obj().empty(), 0, 0, 0);
 
     @SuppressWarnings("unchecked")
-    static <T> BitMappedTrie<T> empty() { return (BitMappedTrie<T>) EMPTY; }
+    static <T extends @Nullable Object> BitMappedTrie<T> empty() { return (BitMappedTrie<T>) EMPTY; }
 
     final ArrayType<T> type;
     @SuppressWarnings("serial") // Conditionally serializable
@@ -77,12 +78,12 @@ final class BitMappedTrie<T> implements Serializable {
         return branchCount * fullBranchSize;
     }
 
-    static <T> BitMappedTrie<T> ofAll(Object array) {
+    static <T extends @Nullable Object> BitMappedTrie<T> ofAll(Object array) {
         final ArrayType<T> type = ArrayType.of(array);
         final int size = type.lengthOf(array);
         return (size == 0) ? empty() : ofAll(array, type, size);
     }
-    private static <T> BitMappedTrie<T> ofAll(Object array, ArrayType<T> type, int size) {
+    private static <T extends @Nullable Object> BitMappedTrie<T> ofAll(Object array, ArrayType<T> type, int size) {
         int shift = 0;
         for (ArrayType<T> t = type; t.lengthOf(array) > BRANCHING_FACTOR; shift += BRANCHING_BASE) {
             array = t.grouped(array, BRANCHING_FACTOR);
@@ -215,7 +216,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     /* drop root node while it has a single element */
-    private static <T> BitMappedTrie<T> collapsed(ArrayType<T> type, Object array, int offset, int length, int shift) {
+    private static <T extends @Nullable Object> BitMappedTrie<T> collapsed(ArrayType<T> type, Object array, int offset, int length, int shift) {
         for (; shift > 0; shift -= BRANCHING_BASE) {
             final int skippedElements = obj().lengthOf(array) - 1;
             if (skippedElements != digit(offset, shift)) {
@@ -319,7 +320,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    <T2> int visit(LeafVisitor<T2> visitor) {
+    <T2 extends @Nullable Object> int visit(LeafVisitor<T2> visitor) {
         int globalIndex = 0, start = lastDigit(offset);
         for (int index = 0; index < length; ) {
             final T2 leaf = (T2) getLeaf(index);
@@ -351,12 +352,12 @@ final class BitMappedTrie<T> implements Serializable {
         return index;
     }
 
-    <U> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
+    <U extends @Nullable Object> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
         final Object results = obj().newInstance(length);
         this.<T> visit((index, leaf, start, end) -> map(mapper, results, index, leaf, start, end));
         return BitMappedTrie.ofAll(results);
     }
-    private <U> int map(Function<? super T, ? extends U> mapper, Object results, int index, T leaf, int start, int end) {
+    private <U extends @Nullable Object> int map(Function<? super T, ? extends U> mapper, Object results, int index, T leaf, int start, int end) {
         for (int i = start; i < end; i++) {
             obj().setAt(results, index++, mapper.apply(type.getAt(leaf, i)));
         }
@@ -375,6 +376,6 @@ interface NodeModifier {
 }
 
 @FunctionalInterface
-interface LeafVisitor<T> {
+interface LeafVisitor<T extends @Nullable Object> {
     int visit(int index, T leaf, int start, int end);
 }

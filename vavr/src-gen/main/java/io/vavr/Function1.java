@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a function with one argument.
@@ -41,7 +41,7 @@ import org.jspecify.annotations.NonNull;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function1<T1, R> extends Serializable, Function<T1, R> {
+public interface Function1<T1 extends @Nullable Object, R extends @Nullable Object> extends Serializable, Function<T1, R> {
 
     /**
      * The serial version UID for serialization.
@@ -57,7 +57,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @param value the value to be returned
      * @return a function always returning the given value
      */
-    static <T1, R> Function1<T1, R> constant(R value) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, R> constant(R value) {
         return (t1) -> value;
     }
 
@@ -78,50 +78,43 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * // using a lambda reference
      * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
      * }</pre>
-     * <p>
-     * <strong>Caution:</strong> Reflection loses type information of lambda references.
-     * <pre>{@code // type of a lambda expression
-     * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
-     *
-     * // type of a method reference
-     * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
-     *
-     * // type of a lambda reference
-     * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
-     * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type
      * @param <T1> 1st argument
      * @return a {@code Function1}
      */
-    static <T1, R> Function1<T1, R> of(@NonNull Function1<T1, R> methodReference) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, R> of(Function1<T1, R> methodReference) {
         return methodReference;
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     * Lifts the given {@code partialFunction} into a function that returns an {@code Option} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @param <T1> 1st argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     *         if the function is defined for the given arguments, and {@code None} if it throws a non-fatal
+     *         throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being turned into {@code None}.
      */
-    static <T1, R> Function1<T1, Option<R>> lift(@NonNull Function<? super T1, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Option<R>> lift(Function<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     * Lifts the given {@code partialFunction} into a function that returns a {@code Try} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @param <T1> 1st argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} if it throws a
+     *         non-fatal throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being wrapped.
      */
-    static <T1, R> Function1<T1, Try<R>> liftTry(@NonNull Function<? super T1, ? extends R> partialFunction) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Try<R>> liftTry(Function<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.of(() -> partialFunction.apply(t1));
     }
 
@@ -134,7 +127,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return the given {@code f} instance as narrowed type {@code Function1<T1, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, R> Function1<T1, R> narrow(Function1<? super T1, ? extends R> f) {
+    static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, R> narrow(Function1<? super T1, ? extends R> f) {
         return (Function1<T1, R>) f;
     }
 
@@ -144,7 +137,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @param <T> argument type (and return type) of the identity function
      * @return the identity Function1
      */
-    static <T> Function1<T, T> identity() {
+    static <T extends @Nullable Object> Function1<T, T> identity() {
         return t -> t;
     }
 
@@ -197,7 +190,8 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
      * On subsequent calls given the same arguments the memoized value is returned.
      * <p>
-     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     * Note that {@code null} arguments and {@code null} return values are permitted; a {@code null} result
+     * is cached like any other value.
      *
      * @return a memoizing function equivalent to this.
      */
@@ -240,7 +234,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
      * @throws NullPointerException if {@code isDefinedAt} is null
      */
-    default PartialFunction<T1, R> partial(@NonNull Predicate<? super T1> isDefinedAt) {
+    default PartialFunction<T1, R> partial(Predicate<? super T1> isDefinedAt) {
         Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
         final Function1<T1, R> self = this;
         return new PartialFunction<T1, R>() {
@@ -268,7 +262,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function1<T1, V> andThen(@NonNull Function<? super R, ? extends V> after) {
+    default <V extends @Nullable Object> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1) -> after.apply(apply(t1));
     }
@@ -282,7 +276,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <V> Function1<V, R> compose(@NonNull Function<? super V, ? extends T1> before) {
+    default <V extends @Nullable Object> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }
@@ -296,7 +290,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function1<S, R> compose1(@NonNull Function1<? super S, ? extends T1> before) {
+    default <S extends @Nullable Object> Function1<S, R> compose1(Function1<? super S, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return (S s) -> apply(before.apply(s));
     }

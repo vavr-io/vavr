@@ -26,6 +26,7 @@ import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
+import org.jspecify.annotations.Nullable;
 
 /**
  * <strong>INTERNAL TYPE - turned to io.vavr.Patterns by vavr-match annotation processor.</strong>
@@ -39,59 +40,59 @@ class $ {
     @Unapply
     static Tuple0 Tuple0(Tuple0 tuple0) { return tuple0; }
     @Unapply
-    static <T1> Tuple1<T1> Tuple1(Tuple1<T1> tuple1) { return tuple1; }
+    static <T1 extends @Nullable Object> Tuple1<T1> Tuple1(Tuple1<T1> tuple1) { return tuple1; }
     @Unapply
-    static <T1, T2> Tuple2<T1, T2> Tuple2(Tuple2<T1, T2> tuple2) { return tuple2; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<T1, T2> Tuple2(Tuple2<T1, T2> tuple2) { return tuple2; }
     @Unapply
-    static <T1, T2, T3> Tuple3<T1, T2, T3> Tuple3(Tuple3<T1, T2, T3> tuple3) { return tuple3; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<T1, T2, T3> Tuple3(Tuple3<T1, T2, T3> tuple3) { return tuple3; }
     @Unapply
-    static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> Tuple4(Tuple4<T1, T2, T3, T4> tuple4) { return tuple4; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object> Tuple4<T1, T2, T3, T4> Tuple4(Tuple4<T1, T2, T3, T4> tuple4) { return tuple4; }
     @Unapply
-    static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> Tuple5(Tuple5<T1, T2, T3, T4, T5> tuple5) { return tuple5; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object> Tuple5<T1, T2, T3, T4, T5> Tuple5(Tuple5<T1, T2, T3, T4, T5> tuple5) { return tuple5; }
     @Unapply
-    static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> Tuple6(Tuple6<T1, T2, T3, T4, T5, T6> tuple6) { return tuple6; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object> Tuple6<T1, T2, T3, T4, T5, T6> Tuple6(Tuple6<T1, T2, T3, T4, T5, T6> tuple6) { return tuple6; }
     @Unapply
-    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> Tuple7(Tuple7<T1, T2, T3, T4, T5, T6, T7> tuple7) { return tuple7; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object> Tuple7<T1, T2, T3, T4, T5, T6, T7> Tuple7(Tuple7<T1, T2, T3, T4, T5, T6, T7> tuple7) { return tuple7; }
     @Unapply
-    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple8(Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> tuple8) { return tuple8; }
+    static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple8(Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> tuple8) { return tuple8; }
 
     // -- io.vavr.collection
 
     // List
     @Unapply
-    static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
+    static <T extends @Nullable Object> Tuple2<T, List<T>> Cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
     @Unapply
-    static <T> Tuple0 Nil(List.Nil<T> nil) { return Tuple.empty(); }
+    static <T extends @Nullable Object> Tuple0 Nil(List.Nil<T> nil) { return Tuple.empty(); }
 
     // -- io.vavr.concurrent
 
     @Unapply
-    static <T> Tuple1<Option<Try<T>>> Future(Future<T> future) { return Tuple.of(future.getValue()); }
+    static <T extends @Nullable Object> Tuple1<Option<Try<T>>> Future(Future<T> future) { return Tuple.of(future.getValue()); }
 
     // -- io.vavr.control
 
     // Either
     @Unapply
-    static <L, R> Tuple1<R> Right(Either.Right<L, R> right) { return Tuple.of(right.get()); }
+    static <L extends @Nullable Object, R extends @Nullable Object> Tuple1<R> Right(Either.Right<L, R> right) { return Tuple.of(right.get()); }
     @Unapply
-    static <L, R> Tuple1<L> Left(Either.Left<L, R> left) { return Tuple.of(left.getLeft()); }
+    static <L extends @Nullable Object, R extends @Nullable Object> Tuple1<L> Left(Either.Left<L, R> left) { return Tuple.of(left.getLeft()); }
 
     // Option
     @Unapply
-    static <T> Tuple1<T> Some(Option.Some<T> some) { return Tuple.of(some.get()); }
+    static <T extends @Nullable Object> Tuple1<T> Some(Option.Some<T> some) { return Tuple.of(some.get()); }
     @Unapply
-    static <T> Tuple0 None(Option.None<T> none) { return Tuple.empty(); }
+    static <T extends @Nullable Object> Tuple0 None(Option.None<T> none) { return Tuple.empty(); }
 
     // Try
     @Unapply
-    static <T> Tuple1<T> Success(Try.Success<T> success) { return Tuple.of(success.get()); }
+    static <T extends @Nullable Object> Tuple1<T> Success(Try.Success<T> success) { return Tuple.of(success.get()); }
     @Unapply
-    static <T> Tuple1<Throwable> Failure(Try.Failure<T> failure) { return Tuple.of(failure.getCause()); }
+    static <T extends @Nullable Object> Tuple1<Throwable> Failure(Try.Failure<T> failure) { return Tuple.of(failure.getCause()); }
 
     // Validation
     @Unapply
-    static <E, T> Tuple1<T> Valid(Validation.Valid<E, T> valid) { return Tuple.of(valid.get()); }
+    static <E extends @Nullable Object, T extends @Nullable Object> Tuple1<T> Valid(Validation.Valid<E, T> valid) { return Tuple.of(valid.get()); }
     @Unapply
-    static <E, T> Tuple1<E> Invalid(Validation.Invalid<E, T> invalid) { return Tuple.of(invalid.getError()); }
+    static <E extends @Nullable Object, T extends @Nullable Object> Tuple1<E> Invalid(Validation.Invalid<E, T> invalid) { return Tuple.of(invalid.getError()); }
 
 }

@@ -33,11 +33,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the result of an asynchronous computation that becomes available at some point in the future.
- * All operations provided by this {@code Future} are non-blocking.
+ * Callback-based operations (e.g. {@link #map(Function)}, {@link #flatMap(Function)}, {@link #onComplete(Consumer)},
+ * {@link #andThen(Consumer)}) are non-blocking. {@link #await()}, {@link #await(long, TimeUnit)}, {@link #get()},
+ * {@link #isEmpty()}, {@link #iterator()} and the other {@link Value} accessors built on them block the calling
+ * thread until this {@code Future} completes.
  *
  * <p>The underlying {@link java.util.concurrent.Executor} is used to execute asynchronous handlers, for example via
  * {@code onComplete(...)}.</p>
@@ -56,7 +59,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T> the type of the computation result
  * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public interface Future<T> extends Value<T> {
+public interface Future<T extends @Nullable Object> extends Value<T> {
 
     Executor DEFAULT_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -69,7 +72,7 @@ public interface Future<T> extends Value<T> {
      * @return a failed {@code Future} containing the given exception
      * @throws NullPointerException if {@code exception} is null
      */
-    static <T> Future<T> failed(@NonNull Throwable exception) {
+    static <T extends @Nullable Object> Future<T> failed(Throwable exception) {
         Objects.requireNonNull(exception, "exception is null");
         return failed(DEFAULT_EXECUTOR, exception);
     }
@@ -83,7 +86,7 @@ public interface Future<T> extends Value<T> {
      * @return a failed {@code Future} containing the given exception
      * @throws NullPointerException if {@code executor} or {@code exception} is null
      */
-    static <T> Future<T> failed(@NonNull Executor executor, @NonNull Throwable exception) {
+    static <T extends @Nullable Object> Future<T> failed(Executor executor, Throwable exception) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(exception, "exception is null");
         return FutureImpl.of(executor, Try.failure(exception));
@@ -101,7 +104,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} of an {@link Option} containing the first matching result, or {@link Option.None} if none match
      * @throws NullPointerException if {@code futures} or {@code predicate} is null
      */
-    static <T> Future<Option<T>> find(@NonNull Iterable<? extends Future<? extends T>> futures, @NonNull Predicate<? super T> predicate) {
+    static <T extends @Nullable Object> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         return find(DEFAULT_EXECUTOR, futures, predicate);
     }
 
@@ -118,7 +121,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} of an {@link Option} containing the first matching result, or {@link Option.None} if none match
      * @throws NullPointerException if any argument is null
      */
-    static <T> Future<Option<T>> find(@NonNull Executor executor, @NonNull Iterable<? extends Future<? extends T>> futures, @NonNull Predicate<? super T> predicate) {
+    static <T extends @Nullable Object> Future<Option<T>> find(Executor executor, Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(predicate, "predicate is null");
@@ -163,7 +166,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the first completed future
      * @throws NullPointerException if {@code futures} is null
      */
-    static <T> Future<T> firstCompletedOf(@NonNull Iterable<? extends Future<? extends T>> futures) {
+    static <T extends @Nullable Object> Future<T> firstCompletedOf(Iterable<? extends Future<? extends T>> futures) {
         return firstCompletedOf(DEFAULT_EXECUTOR, futures);
     }
 
@@ -177,7 +180,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the first completed future
      * @throws NullPointerException if {@code executor} or {@code futures} is null
      */
-    static <T> Future<T> firstCompletedOf(@NonNull Executor executor, @NonNull Iterable<? extends Future<? extends T>> futures) {
+    static <T extends @Nullable Object> Future<T> firstCompletedOf(Executor executor, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(futures, "futures is null");
         return run(executor, complete -> futures.forEach(future -> future.onComplete(complete::with)));
@@ -197,7 +200,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the fold result
      * @throws NullPointerException if {@code futures} or {@code f} is null
      */
-    static <T, U> Future<U> fold(@NonNull Iterable<? extends Future<? extends T>> futures, U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> f) {
+    static <T extends @Nullable Object, U extends @Nullable Object> Future<U> fold(Iterable<? extends Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         return fold(DEFAULT_EXECUTOR, futures, zero, f);
     }
 
@@ -216,7 +219,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the fold result
      * @throws NullPointerException if {@code executor}, {@code futures}, or {@code f} is null
      */
-    static <T, U> Future<U> fold(@NonNull Executor executor, @NonNull Iterable<? extends Future<? extends T>> futures, U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> f) {
+    static <T extends @Nullable Object, U extends @Nullable Object> Future<U> fold(Executor executor, Iterable<? extends Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(f, "f is null");
@@ -236,7 +239,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given Java future
      * @throws NullPointerException if {@code future} is null
      */
-    static <T> Future<T> fromJavaFuture(java.util.concurrent.@NonNull Future<T> future) {
+    static <T extends @Nullable Object> Future<T> fromJavaFuture(java.util.concurrent.Future<T> future) {
         Objects.requireNonNull(future, "future is null");
         return of(DEFAULT_EXECUTOR, future::get);
     }
@@ -251,7 +254,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given Java future
      * @throws NullPointerException if {@code executor} or {@code future} is null
      */
-    static <T> Future<T> fromJavaFuture(@NonNull Executor executor, java.util.concurrent.@NonNull Future<T> future) {
+    static <T extends @Nullable Object> Future<T> fromJavaFuture(Executor executor, java.util.concurrent.Future<T> future) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(future, "future is null");
         return of(executor, future::get);
@@ -266,7 +269,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given {@link java.util.concurrent.CompletableFuture}
      * @throws NullPointerException if {@code future} is null
      */
-    static <T> Future<T> fromCompletableFuture(@NonNull CompletableFuture<T> future) {
+    static <T extends @Nullable Object> Future<T> fromCompletableFuture(CompletableFuture<T> future) {
         return fromCompletableFuture(DEFAULT_EXECUTOR, future);
     }
 
@@ -280,11 +283,16 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given {@link java.util.concurrent.CompletableFuture}
      * @throws NullPointerException if {@code executor} or {@code future} is null
      */
-    static <T> Future<T> fromCompletableFuture(@NonNull Executor executor, @NonNull CompletableFuture<T> future) {
+    static <T extends @Nullable Object> Future<T> fromCompletableFuture(Executor executor, CompletableFuture<T> future) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(future, "future is null");
         if (future.isDone() || future.isCompletedExceptionally() || future.isCancelled()) {
-            return fromTry(Try.of(future::get).recoverWith(error -> Try.failure(error.getCause())));
+            return fromTry(executor, Try.of(future::get).recoverWith(error -> {
+                // ExecutionException/CompletionException normally wrap the real failure,
+                // but getCause() is not guaranteed to be present -- fall back to the error itself.
+                final Throwable cause = error.getCause();
+                return Try.failure(cause != null ? cause : error);
+            }));
         } else {
             return run(executor, complete ->
                     future.handle((t, err) -> complete.with((err == null) ? Try.success(t) : Try.failure(err)))
@@ -300,7 +308,7 @@ public interface Future<T> extends Value<T> {
      * @return a completed {@code Future} containing either a {@code Success} or a {@code Failure}
      * @throws NullPointerException if {@code result} is null
      */
-    static <T> Future<T> fromTry(@NonNull Try<? extends T> result) {
+    static <T extends @Nullable Object> Future<T> fromTry(Try<? extends T> result) {
         return fromTry(DEFAULT_EXECUTOR, result);
     }
 
@@ -313,7 +321,7 @@ public interface Future<T> extends Value<T> {
      * @return a completed {@code Future} containing either a {@code Success} or a {@code Failure}
      * @throws NullPointerException if {@code executor} or {@code result} is null
      */
-    static <T> Future<T> fromTry(@NonNull Executor executor, @NonNull Try<? extends T> result) {
+    static <T extends @Nullable Object> Future<T> fromTry(Executor executor, Try<? extends T> result) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(result, "result is null");
         return FutureImpl.of(executor, result);
@@ -328,7 +336,7 @@ public interface Future<T> extends Value<T> {
      * @return the given {@code future} instance as a {@code Future<T>}
      */
     @SuppressWarnings("unchecked")
-    static <T> Future<T> narrow(Future<? extends T> future) {
+    static <T extends @Nullable Object> Future<T> narrow(Future<? extends T> future) {
         return (Future<T>) future;
     }
 
@@ -340,7 +348,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the computation
      * @throws NullPointerException if {@code computation} is null
      */
-    static <T> Future<T> of(@NonNull CheckedFunction0<? extends T> computation) {
+    static <T extends @Nullable Object> Future<T> of(CheckedFunction0<? extends T> computation) {
         return of(DEFAULT_EXECUTOR, computation);
     }
 
@@ -353,36 +361,36 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the computation
      * @throws NullPointerException if {@code executor} or {@code computation} is null
      */
-    static <T> Future<T> of(@NonNull Executor executor, @NonNull CheckedFunction0<? extends T> computation) {
+    static <T extends @Nullable Object> Future<T> of(Executor executor, CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(computation, "computation is null");
         return FutureImpl.async(executor, complete -> complete.with(Try.of(computation)));
     }
 
     /**
-     * Creates a (possibly blocking) Future that runs the results of the given {@code computation}
-     * using a completion handler:
+     * Creates a (possibly blocking) Future that runs the given {@code task}, which produces its result
+     * through a completion handler:
      *
      * <pre>{@code
-     * CheckedConsumer<Predicate<Try<T>>> computation = complete -> {
+     * Task<T> task = complete -> {
      *     // computation
      * };
      * }</pre>
      *
-     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
-     * A common use-case is to hand over the {@code complete} predicate to another {@code Future}
+     * The {@code task} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code complete} handler to another {@code Future}
      * in order to prevent blocking:
      *
      * <pre>{@code
      * Future<String> greeting(Future<String> nameFuture) {
      *     return Future.run(complete -> {
-     *         nameFuture.onComplete(name -> complete.test("Hi " + name));
+     *         nameFuture.onComplete(name -> complete.with(name.map(n -> "Hi " + n)));
      *     });
      * }}</pre>
      *
-     * The computation receives a {@link Predicate}, named {@code complete} by convention,
-     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
-     * Future was completed.
+     * The task receives a {@link Task.Complete}, named {@code complete} by convention, whose
+     * {@code with(Try)} method takes a result of type {@code Try<T>} and returns a boolean that states
+     * whether the Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code complete}
      * will return true, successive calls will return false.
@@ -393,52 +401,55 @@ public interface Future<T> extends Value<T> {
      * @deprecated Experimental API
      */
     @Deprecated
-    static <T> Future<T> run(@NonNull Task<? extends T> task) {
+    static <T extends @Nullable Object> Future<T> run(Task<? extends T> task) {
         return run(DEFAULT_EXECUTOR, task);
     }
 
     /**
-     * Creates a (possibly blocking) Future that runs the results of the given {@code computation}
-     * using a completion handler:
+     * Creates a (possibly blocking) Future that runs the given {@code task}, which produces its result
+     * through a completion handler:
      *
      * <pre>{@code
-     * CheckedConsumer<Predicate<Try<T>>> computation = complete -> {
+     * Task<T> task = complete -> {
      *     // computation
      * };
      * }</pre>
      *
-     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
-     * A common use-case is to hand over the {@code complete} predicate to another {@code Future}
+     * The {@code task} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code complete} handler to another {@code Future}
      * in order to prevent blocking:
      *
      * <pre>{@code
      * Future<String> greeting(Future<String> nameFuture) {
      *     return Future.run(complete -> {
-     *         nameFuture.onComplete(name -> complete.with("Hi " + name));
+     *         nameFuture.onComplete(name -> complete.with(name.map(n -> "Hi " + n)));
      *     });
      * }}</pre>
      *
-     * The computation receives a {@link Predicate}, named {@code complete} by convention,
-     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
-     * Future was completed.
+     * The task receives a {@link Task.Complete}, named {@code complete} by convention, whose
+     * {@code with(Try)} method takes a result of type {@code Try<T>} and returns a boolean that states
+     * whether the Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code complete}
      * will return true, successive calls will return false.
      *
-     * @param executor An {@link Executor} that runs the given {@code computation}
+     * @param executor the {@link Executor} used to run this {@code Future}'s completion callbacks; the given
+     *                 {@code task} itself is executed synchronously on the calling thread
      * @param task     A computational task
      * @param <T>      Type of the result
      * @return a new {@code Future} instance
      * @deprecated Experimental API
      */
     @Deprecated
-    static <T> Future<T> run(@NonNull Executor executor, @NonNull Task<? extends T> task) {
+    static <T extends @Nullable Object> Future<T> run(Executor executor, Task<? extends T> task) {
         return FutureImpl.sync(executor, task);
     }
 
     /**
      * Returns a {@code Future} containing the result of reducing the given future values.
-     * The first completed future serves as the initial (zero) value.
+     * The first future in {@code futures}' iteration order serves as the initial (zero) value; the reduce
+     * operation is applied left-to-right in that order (like {@link io.vavr.collection.Traversable#reduceLeft(BiFunction)}),
+     * independent of which future actually completes first.
      * If any future or the reduce operation fails, the resulting {@code Future} will also fail.
      *
      * <p>The resulting {@code Future} executes using the {@link #DEFAULT_EXECUTOR}.</p>
@@ -447,15 +458,18 @@ public interface Future<T> extends Value<T> {
      * @param f       the reduce operation
      * @param <T>     the type of the values in the given futures
      * @return a new {@code Future} containing the reduce result
-     * @throws NullPointerException if {@code futures} or {@code f} is null
+     * @throws NullPointerException   if {@code futures} or {@code f} is null
+     * @throws NoSuchElementException if {@code futures} is empty
      */
-    static <T> Future<T> reduce(@NonNull Iterable<? extends Future<? extends T>> futures, @NonNull BiFunction<? super T, ? super T, ? extends T> f) {
+    static <T extends @Nullable Object> Future<T> reduce(Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         return reduce(DEFAULT_EXECUTOR, futures, f);
     }
 
     /**
      * Returns a {@code Future} containing the result of reducing the given future values.
-     * The first completed future serves as the initial (zero) value.
+     * The first future in {@code futures}' iteration order serves as the initial (zero) value; the reduce
+     * operation is applied left-to-right in that order (like {@link io.vavr.collection.Traversable#reduceLeft(BiFunction)}),
+     * independent of which future actually completes first.
      * If any future or the reduce operation fails, the resulting {@code Future} will also fail.
      *
      * <p>The resulting {@code Future} executes using the specified {@link Executor}.</p>
@@ -465,9 +479,10 @@ public interface Future<T> extends Value<T> {
      * @param f        the reduce operation
      * @param <T>      the type of the values in the given futures
      * @return a new {@code Future} containing the reduce result
-     * @throws NullPointerException if {@code executor}, {@code futures}, or {@code f} is null
+     * @throws NullPointerException   if {@code executor}, {@code futures}, or {@code f} is null
+     * @throws NoSuchElementException if {@code futures} is empty
      */
-    static <T> Future<T> reduce(@NonNull Executor executor, @NonNull Iterable<? extends Future<? extends T>> futures, @NonNull BiFunction<? super T, ? super T, ? extends T> f) {
+    static <T extends @Nullable Object> Future<T> reduce(Executor executor, Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(f, "f is null");
@@ -485,7 +500,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} representing the completion of the computation, with no result
      * @throws NullPointerException if {@code unit} is null
      */
-    static Future<Void> run(@NonNull CheckedRunnable unit) {
+    static Future<@Nullable Void> run(CheckedRunnable unit) {
         return run(DEFAULT_EXECUTOR, unit);
     }
 
@@ -498,7 +513,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if {@code executor} or {@code unit} is null
      */
 
-    static Future<Void> run(@NonNull Executor executor, @NonNull CheckedRunnable unit) {
+    static Future<@Nullable Void> run(Executor executor, CheckedRunnable unit) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(unit, "unit is null");
         return of(executor, () -> {
@@ -545,7 +560,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} containing a {@link Seq} of results
      * @throws NullPointerException if {@code futures} is null
      */
-    static <T> Future<Seq<T>> sequence(@NonNull Iterable<? extends Future<? extends T>> futures) {
+    static <T extends @Nullable Object> Future<Seq<T>> sequence(Iterable<? extends Future<? extends T>> futures) {
         return sequence(DEFAULT_EXECUTOR, futures);
     }
 
@@ -561,7 +576,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} containing a {@link Seq} of results
      * @throws NullPointerException if {@code executor} or {@code futures} is null
      */
-    static <T> Future<Seq<T>> sequence(@NonNull Executor executor, @NonNull Iterable<? extends Future<? extends T>> futures) {
+    static <T extends @Nullable Object> Future<Seq<T>> sequence(Executor executor, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(futures, "futures is null");
         final Future<Seq<T>> zero = successful(executor, Stream.empty());
@@ -578,7 +593,7 @@ public interface Future<T> extends Value<T> {
      * @param <T>    the type of the result
      * @return a succeeded {@code Future} containing the given result
      */
-    static <T> Future<T> successful(T result) {
+    static <T extends @Nullable Object> Future<T> successful(T result) {
         return successful(DEFAULT_EXECUTOR, result);
     }
 
@@ -591,7 +606,7 @@ public interface Future<T> extends Value<T> {
      * @return a succeeded {@code Future} containing the given result
      * @throws NullPointerException if {@code executor} is null
      */
-    static <T> Future<T> successful(@NonNull Executor executor, T result) {
+    static <T extends @Nullable Object> Future<T> successful(Executor executor, T result) {
         Objects.requireNonNull(executor, "executor is null");
         return FutureImpl.of(executor, Try.success(result));
     }
@@ -617,7 +632,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} containing a {@link Seq} of mapped results
      * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
-    static <T, U> Future<Seq<U>> traverse(@NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Future<? extends U>> mapper) {
+    static <T extends @Nullable Object, U extends @Nullable Object> Future<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Future<? extends U>> mapper) {
         return traverse(DEFAULT_EXECUTOR, values, mapper);
     }
 
@@ -635,7 +650,7 @@ public interface Future<T> extends Value<T> {
      * @return a {@code Future} containing a {@link Seq} of mapped results
      * @throws NullPointerException if {@code executor}, {@code values}, or {@code mapper} is null
      */
-    static <T, U> Future<Seq<U>> traverse(@NonNull Executor executor, @NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Future<? extends U>> mapper) {
+    static <T extends @Nullable Object, U extends @Nullable Object> Future<Seq<U>> traverse(Executor executor, Iterable<? extends T> values, Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
@@ -662,7 +677,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the original result, completed after the action executes
      * @throws NullPointerException if {@code action} is null
      */
-    default Future<T> andThen(@NonNull Consumer<? super Try<T>> action) {
+    default Future<T> andThen(Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
         final FutureImpl<T> result = FutureImpl.of(executor());
         onComplete(t -> {
@@ -677,8 +692,8 @@ public interface Future<T> extends Value<T> {
     /**
      * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
+     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned whose failure
+     * is an {@link ExecutionException} wrapping the {@link InterruptedException}.</p>
      *
      * @return this {@code Future} instance
      */
@@ -687,8 +702,8 @@ public interface Future<T> extends Value<T> {
     /**
      * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
+     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned whose failure
+     * is an {@link ExecutionException} wrapping the {@link InterruptedException}.</p>
      *
      * <p>If the specified timeout is reached before completion, a failed {@code Future} is returned containing
      * a {@link TimeoutException}.</p>
@@ -715,7 +730,9 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Cancels this {@code Future}. A pending future may be interrupted depending on the underlying {@code Executor}.
+     * Cancels this {@code Future}. If the computation is already running, its thread is interrupted only if
+     * {@code mayInterruptIfRunning} is {@code true}; if it has not started yet, it is simply prevented from running.
+     * The underlying {@code Executor} plays no role in this decision.
      *
      * <p>If the future is successfully cancelled, its result becomes a {@code Failure(CancellationException)}.</p>
      *
@@ -743,7 +760,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the mapped value
      * @throws NullPointerException if {@code partialFunction} is null
      */
-    default <R> Future<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    default <R extends @Nullable Object> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         return run(executor(), complete ->
             onComplete(result -> complete.with(result.collect(partialFunction)))
@@ -765,9 +782,9 @@ public interface Future<T> extends Value<T> {
      * THE DEFAULT IMPLEMENTATION (obtained by one of the {@link Future} factory methods) MIGHT THROW AN
      * {@link UnsupportedOperationException} AT RUNTIME.
      *
-     * @return (never)
+     * @return the underlying {@link Executor} cast to {@link ExecutorService}, if it is one
      * @throws UnsupportedOperationException if the underlying {@link Executor} isn't an {@link ExecutorService}.
-     * @deprecated Removed starting with Vavr 0.10.0, use {@link #executor()} instead.
+     * @deprecated Deprecated since Vavr 0.10.0, use {@link #executor()} instead.
      */
     @Deprecated
     ExecutorService executorService() throws UnsupportedOperationException;
@@ -811,7 +828,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} representing the result or fallback
      * @throws NullPointerException if {@code that} is null
      */
-    default Future<T> fallbackTo(@NonNull Future<? extends T> that) {
+    default Future<T> fallbackTo(Future<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return run(executor(), complete ->
             onComplete(t -> {
@@ -831,7 +848,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the value if the predicate passes, or a failure otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Future<T> filter(@NonNull Predicate<? super T> predicate) {
+    default Future<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate::test);
     }
@@ -844,7 +861,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the value if the predicate passes, or a failure otherwise
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Future<T> filterTry(@NonNull CheckedPredicate<? super T> predicate) {
+    default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return run(executor(), complete -> onComplete(result -> complete.with(result.filterTry(predicate))));
     }
@@ -907,7 +924,7 @@ public interface Future<T> extends Value<T> {
      * @return this {@code Future}
      * @throws NullPointerException if {@code action} is null
      */
-    Future<T> onComplete(@NonNull Consumer<? super Try<T>> action);
+    Future<T> onComplete(Consumer<? super Try<T>> action);
 
     /**
      * Performs the given action once this {@code Future} is complete and its result is a {@link Try.Failure}.
@@ -918,7 +935,7 @@ public interface Future<T> extends Value<T> {
      * @return this {@code Future}
      * @throws NullPointerException if {@code action} is null
      */
-    default Future<T> onFailure(@NonNull Consumer<? super Throwable> action) {
+    default Future<T> onFailure(Consumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onFailure(action));
     }
@@ -930,7 +947,7 @@ public interface Future<T> extends Value<T> {
      * @return this {@code Future}
      * @throws NullPointerException if {@code action} is null
      */
-    default Future<T> onSuccess(@NonNull Consumer<? super T> action) {
+    default Future<T> onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onSuccess(action));
     }
@@ -949,7 +966,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing either the original success or the recovered value
      * @throws NullPointerException if {@code f} is null
      */
-    default Future<T> recover(@NonNull Function<? super Throwable, ? extends T> f) {
+    default Future<T> recover(Function<? super Throwable, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return transformValue(t -> t.recover(f));
     }
@@ -968,7 +985,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing either the original success or the result of the recovered {@code Future}
      * @throws NullPointerException if {@code f} is null
      */
-    default Future<T> recoverWith(@NonNull Function<? super Throwable, ? extends Future<? extends T>> f) {
+    default Future<T> recoverWith(Function<? super Throwable, ? extends Future<? extends T>> f) {
         Objects.requireNonNull(f, "f is null");
         return run(executor(), complete ->
             onComplete(t -> {
@@ -983,14 +1000,16 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Transforms the result of this {@code Future} using the given function.
+     * Applies the given function to this {@code Future} itself and returns its result directly. Unlike
+     * {@link #map(Function)}, {@code f} receives this whole {@code Future<T>} (not its unwrapped value),
+     * and the result is whatever {@code f} produces &mdash; not necessarily a {@code Future}.
      *
-     * @param f   a function to transform the result
-     * @param <U> the type of the transformed result
-     * @return a new {@code Future} containing the transformed result
+     * @param f   a function that receives this {@code Future} and produces a value of type {@code U}
+     * @param <U> the type of the value produced by {@code f}
+     * @return the result of applying {@code f} to this {@code Future}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(@NonNull Function<? super Future<T>, ? extends U> f) {
+    default <U extends @Nullable Object> U transform(Function<? super Future<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -1003,7 +1022,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the transformed result
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> Future<U> transformValue(@NonNull Function<? super Try<T>, ? extends Try<? extends U>> f) {
+    default <U extends @Nullable Object> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         return run(executor(), complete ->
             onComplete(t -> Try.run(() -> complete.with(f.apply(t)))
@@ -1023,7 +1042,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing either a failure or a tuple of both results
      * @throws NullPointerException if {@code that} is null
      */
-    default <U> Future<Tuple2<T, U>> zip(@NonNull Future<? extends U> that) {
+    default <U extends @Nullable Object> Future<Tuple2<T, U>> zip(Future<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return zipWith(that, Tuple::of);
     }
@@ -1042,7 +1061,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if {@code that} or {@code combinator} is null
      */
     @SuppressWarnings({"unchecked"})
-    default <U, R> Future<R> zipWith(@NonNull Future<? extends U> that, @NonNull BiFunction<? super T, ? super U, ? extends R> combinator) {
+    default <U extends @Nullable Object, R extends @Nullable Object> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(combinator, "combinator is null");
         return run(executor(), complete ->
@@ -1072,7 +1091,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} resulting from applying the mapper, or a {@code Future} with the failure if this {@code Future} fails
      * @throws NullPointerException if {@code mapper} is {@code null}
      */
-    default <U> Future<U> flatMap(@NonNull Function<? super T, ? extends Future<? extends U>> mapper) {
+    default <U extends @Nullable Object> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return flatMapTry(mapper::apply);
     }
@@ -1088,7 +1107,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} resulting from applying the mapper, or a {@code Future} with the failure if this {@code Future} fails
      * @throws NullPointerException if {@code mapper} is {@code null}
      */
-    default <U> Future<U> flatMapTry(@NonNull CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
+    default <U extends @Nullable Object> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return run(executor(), complete ->
             onComplete(result -> result.mapTry(mapper)
@@ -1107,7 +1126,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if {@code action} is null
      */
     @Override
-    default void forEach(@NonNull Consumer<? super T> action) {
+    default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         onComplete(result -> result.forEach(action));
     }
@@ -1136,9 +1155,9 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Checks, if this future has a value.
+     * Checks, if this future has no value. Blocks until this {@code Future} completes, via {@link #await()}.
      *
-     * @return true, if this future succeeded with a value, false otherwise.
+     * @return true, if this future failed (has no value), false if it succeeded with a value.
      */
     @Override
     default boolean isEmpty() {
@@ -1166,24 +1185,24 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
     @Override
-    default <U> Future<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.map(mapper));
     }
 
     @Override
-    default <U> Future<U> mapTo(U value) {
+    default <U extends @Nullable Object> Future<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default Future<Void> mapToVoid() {
-        return map(ignored -> null);
+    default Future<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     /**
@@ -1202,19 +1221,21 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the mapped value if this {@code Future} completes successfully, otherwise a {@code Future} with the failure
      * @throws NullPointerException if {@code mapper} is {@code null}
      */
-    default <U> Future<U> mapTry(@NonNull CheckedFunction1<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper));
     }
 
     /**
-     * Returns this {@code Future} if it completes successfully, or the given alternative {@code Future} if this {@code Future} fails.
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of {@code other}.
      *
-     * @param other the alternative {@code Future} to return if this {@code Future} fails
-     * @return this {@code Future} if it completes successfully, otherwise {@code other}
+     * @param other the alternative {@code Future} whose result is used if this {@code Future} fails
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with {@code other}'s result
      * @throws NullPointerException if {@code other} is null
      */
-    default Future<T> orElse(@NonNull Future<? extends T> other) {
+    default Future<T> orElse(Future<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return run(executor(), complete ->
             onComplete(result -> {
@@ -1228,15 +1249,17 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Returns this {@code Future} if it completes successfully, or a {@code Future} supplied by the given {@link Supplier} if this {@code Future} fails.
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of the {@code Future} returned by the given {@link Supplier}.
      * <p>
      * The supplier is only invoked if this {@code Future} fails.
      *
      * @param supplier a supplier of an alternative {@code Future}
-     * @return this {@code Future} if it completes successfully, otherwise the {@code Future} returned by {@code supplier}
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with the result of the {@code Future} returned by {@code supplier}
      * @throws NullPointerException if {@code supplier} is null
      */
-    default Future<T> orElse(@NonNull Supplier<? extends Future<? extends T>> supplier) {
+    default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return run(executor(), complete ->
             onComplete(result -> {
@@ -1249,8 +1272,18 @@ public interface Future<T> extends Value<T> {
         );
     }
 
+    /**
+     * Registers {@code action} to be performed asynchronously with the successful result once this
+     * {@code Future} completes; equivalent to {@link #onSuccess(Consumer)}. Unlike the inherited
+     * {@link Value#peek(Consumer)} contract for an eager implementation, the action is not performed
+     * synchronously during this call, even though {@link #isLazy()} is {@code false}.
+     *
+     * @param action a {@code Consumer} to be executed with the successful result
+     * @return this {@code Future}
+     * @throws NullPointerException if {@code action} is null
+     */
     @Override
-    default Future<T> peek(@NonNull Consumer<? super T> action) {
+    default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         onSuccess(action);
         return this;

@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable {@code HashSet} implementation.
@@ -35,7 +35,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
-public final class HashSet<T> implements Set<T>, Serializable {
+public final class HashSet<T extends @Nullable Object> implements Set<T>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -55,7 +55,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return The empty HashSet.
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> empty() {
+    public static <T extends @Nullable Object> HashSet<T> empty() {
         return (HashSet<T>) EMPTY;
     }
 
@@ -66,7 +66,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param <T> Component type of the HashSet.
      * @return A io.vavr.collection.HashSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
+    public static <T extends @Nullable Object> Collector<T, ArrayList<T>, HashSet<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -87,7 +87,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return the same set viewed as {@code HashSet<T>}
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> narrow(HashSet<? extends T> hashSet) {
+    public static <T extends @Nullable Object> HashSet<T> narrow(HashSet<? extends T> hashSet) {
         return (HashSet<T>) hashSet;
     }
 
@@ -98,7 +98,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param <T>     The component type
      * @return A new HashSet instance containing the given element
      */
-    public static <T> HashSet<T> of(T element) {
+    public static <T extends @Nullable Object> HashSet<T> of(T element) {
         return HashSet.<T> empty().add(element);
     }
 
@@ -113,7 +113,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> HashSet<T> of(T @NonNull ... elements) {
+    public static <T extends @Nullable Object> HashSet<T> of(T ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -123,30 +123,32 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Returns an HashSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
+     * Returns a HashSet containing the distinct results of applying {@code f} to the integers
+     * {@code 0} through {@code n - 1}. Because a HashSet deduplicates its elements, the resulting
+     * set may contain fewer than {@code n} elements if {@code f} produces duplicate values.
      *
      * @param <T> Component type of the HashSet
-     * @param n   The number of elements in the HashSet
+     * @param n   The number of times {@code f} is invoked
      * @param f   The Function computing element values
-     * @return An HashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @return A HashSet consisting of the distinct elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> HashSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T extends @Nullable Object> HashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, HashSet.empty(), HashSet::of);
     }
 
     /**
-     * Returns a HashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     * Returns a HashSet containing the distinct values returned by {@code n} calls to a given
+     * Supplier {@code s}.
      *
      * @param <T> Component type of the HashSet
-     * @param n   The number of elements in the HashSet
+     * @param n   The number of times {@code s} is invoked
      * @param s   The Supplier computing element values
-     * @return An HashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @return A HashSet of at most {@code n} distinct values supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> HashSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T extends @Nullable Object> HashSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, HashSet.empty(), HashSet::of);
     }
@@ -156,10 +158,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      *
      * @param elements Set elements
      * @param <T>      The value type
-     * @return A new HashSet containing the given entries
+     * @return A HashSet containing the given elements; if {@code elements} is already a
+     *         HashSet, it is returned unchanged.
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(@NonNull Iterable<? extends T> elements) {
+    public static <T extends @Nullable Object> HashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof HashSet) {
             return (HashSet<T>) elements;
@@ -174,9 +177,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
      *
      * @param javaStream A {@link java.util.stream.Stream}
      * @param <T>        Component type of the Stream.
-     * @return A HashSet containing the given elements in the same order.
+     * @return A HashSet containing the given elements.
      */
-    public static <T> HashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T extends @Nullable Object> HashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return HashSet.ofAll(Iterator.ofAll(javaStream.iterator()));
     }
@@ -188,7 +191,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Boolean> ofAll(boolean @NonNull ... elements) {
+    public static HashSet<Boolean> ofAll(boolean ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -200,7 +203,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Byte> ofAll(byte @NonNull ... elements) {
+    public static HashSet<Byte> ofAll(byte ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -212,7 +215,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Character values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Character> ofAll(char @NonNull ... elements) {
+    public static HashSet<Character> ofAll(char ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -224,7 +227,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Double values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Double> ofAll(double @NonNull ... elements) {
+    public static HashSet<Double> ofAll(double ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -236,7 +239,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Float values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Float> ofAll(float @NonNull ... elements) {
+    public static HashSet<Float> ofAll(float ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -248,7 +251,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Integer> ofAll(int @NonNull ... elements) {
+    public static HashSet<Integer> ofAll(int ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -260,7 +263,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Long values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Long> ofAll(long @NonNull ... elements) {
+    public static HashSet<Long> ofAll(long ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -272,7 +275,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Short values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Short> ofAll(short @NonNull ... elements) {
+    public static HashSet<Short> ofAll(short ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -318,8 +321,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of int numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -332,11 +335,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -344,8 +347,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of char numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -358,7 +361,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * </pre>
      *
      * @param from        the first char
-     * @param toExclusive the last char + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
@@ -370,8 +373,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Creates a HashSet of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of double numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -384,7 +387,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * </pre>
      *
      * @param from        the first double
-     * @param toExclusive the last double + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of double values as specified or the empty range if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
@@ -416,8 +419,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates a HashSet of long numbers starting from {@code from}, extending up to but excluding
+     * {@code toExclusive}, in increments of {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -430,11 +433,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the exclusive bound (never part of the result)
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Long> rangeBy(long from, long toExclusive, long step) {
@@ -596,7 +599,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -611,7 +614,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> addAll(@NonNull Iterable<? extends T> elements) {
+    public HashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof HashSet) {
             @SuppressWarnings("unchecked")
@@ -627,7 +630,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <R> HashSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R extends @Nullable Object> HashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -637,7 +640,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> diff(@NonNull Set<? extends T> elements) {
+    public HashSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return this;
@@ -652,13 +655,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    public HashSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return HashSet.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
-    public <U> HashSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    public <U extends @Nullable Object> HashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return HashSet.ofAll(iterator().distinctBy(keyExtractor));
     }
@@ -672,26 +675,32 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #drop(int)}:
+     * it removes {@code n} elements from the front of the iteration order, not from the end.
+     */
     @Override
     public HashSet<T> dropRight(int n) {
         return drop(n);
     }
 
     @Override
-    public HashSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    public HashSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> dropped = HashSet.ofAll(iterator().dropWhile(predicate));
         return dropped.length() == length() ? this : dropped;
     }
 
     @Override
-    public HashSet<T> filter(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
 
@@ -705,13 +714,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> reject(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
-    public <U> HashSet<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U extends @Nullable Object> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -723,12 +732,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
-        return foldLeft(zero, (u, t) -> f.apply(t, u));
+    public <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
     }
 
     @Override
-    public <C> Map<C, HashSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+    public <C extends @Nullable Object> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, HashSet::ofAll);
     }
 
@@ -755,18 +765,29 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return iterator().headOption();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #tail()}:
+     * it removes the first element in iteration order, not the last one.
+     */
     @Override
     public HashSet<T> init() {
         return tail();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #tailOption()}.
+     */
     @Override
     public Option<HashSet<T>> initOption() {
         return tailOption();
     }
 
     @Override
-    public HashSet<T> intersect(@NonNull Set<? extends T> elements) {
+    public HashSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return empty();
@@ -812,7 +833,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return tree.keysIterator();
     }
 
@@ -827,7 +848,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U extends @Nullable Object> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -841,13 +862,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> mapTo(U value) {
+    public <U extends @Nullable Object> HashSet<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    public HashSet<Void> mapToVoid() {
-        return map(ignored -> null);
+    public HashSet<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     @Override
@@ -856,22 +877,22 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> orElse(@NonNull Iterable<? extends T> other) {
+    public HashSet<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    public HashSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    public HashSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     @Override
-    public Tuple2<HashSet<T>, HashSet<T>> partition(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         return Collections.partition(this, HashSet::ofAll, predicate);
     }
 
     @Override
-    public HashSet<T> peek(@NonNull Consumer<? super T> action) {
+    public HashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(iterator().head());
@@ -886,7 +907,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
     }
 
@@ -905,27 +926,27 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
     @Override
-    public HashSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public HashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> HashSet<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U extends @Nullable Object> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    public <U> HashSet<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U extends @Nullable Object> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    public Iterator<HashSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    public Iterator<HashSet<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(HashSet::ofAll);
     }
 
@@ -940,7 +961,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Tuple2<HashSet<T>, HashSet<T>> span(@NonNull Predicate<? super T> predicate) {
+    public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
@@ -974,19 +995,25 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code HashSet} has no defined element order, so this method is an alias of {@link #take(int)}:
+     * it keeps the first {@code n} elements in iteration order, not the last {@code n}.
+     */
     @Override
     public HashSet<T> takeRight(int n) {
         return take(n);
     }
 
     @Override
-    public HashSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    public HashSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+    public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
@@ -1000,7 +1027,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super HashSet<T>, ? extends U> f) {
+    public <U extends @Nullable Object> U transform(Function<? super HashSet<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -1012,7 +1039,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public HashSet<T> union(@NonNull Set<? extends T> elements) {
+    public HashSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             if (elements instanceof HashSet) {
@@ -1033,35 +1060,47 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<HashSet<T1>, HashSet<T2>, HashSet<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<HashSet<T1>, HashSet<T2>, HashSet<T3>> unzip3(
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2), HashSet.ofAll(t._3));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    public <U extends @Nullable Object> HashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is collected into a {@code HashSet}, equal results of {@code mapper} are merged,
+     * so the resulting size may be smaller than the length guaranteed by {@link Traversable#zipWith(Iterable, BiFunction)}.
+     */
     @Override
-    public <U, R> HashSet<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U extends @Nullable Object, R extends @Nullable Object> HashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Because the result is collected into a {@code HashSet}, equal pairs are merged, so the resulting
+     * size may be smaller than the length guaranteed by {@link Traversable#zipAll(Iterable, Object, Object)}.
+     */
     @Override
-    public <U> HashSet<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U extends @Nullable Object> HashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1072,7 +1111,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U extends @Nullable Object> HashSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1080,7 +1119,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     // -- Object
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return Collections.equals(this, o);
     }
 
@@ -1099,7 +1138,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
+    private static <T extends @Nullable Object> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
             Iterable<? extends T> additional) {
         HashArrayMappedTrie<T, T> that = initial;
         for (T t : additional) {
@@ -1137,14 +1176,14 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
+     * A serialization proxy which, in this context, is used to deserialize immutable HashSets with final
      * instance fields.
      *
-     * @param <T> The component type of the underlying list.
+     * @param <T> The component type of the underlying set.
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
-    private static final class SerializationProxy<T> implements Serializable {
+    private static final class SerializationProxy<T extends @Nullable Object> implements Serializable {
 
         @Serial
         private static final long serialVersionUID = 1L;
@@ -1158,7 +1197,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param tree a Cons
+         * @param tree the HashArrayMappedTrie backing the HashSet to be serialized
          */
         SerializationProxy(HashArrayMappedTrie<T, T> tree) {
             this.tree = tree;
@@ -1184,7 +1223,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          *
          * @param s An object deserialization stream.
          * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-         * @throws InvalidObjectException If the stream contains no list elements.
+         * @throws InvalidObjectException If the stream contains a negative element count.
          * @throws IOException            If an error occurs reading from the stream.
          */
         @Serial

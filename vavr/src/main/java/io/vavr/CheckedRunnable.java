@@ -18,7 +18,7 @@
  */
 package io.vavr;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.CheckedRunnableModule.sneakyThrow;
 
@@ -37,18 +37,18 @@ public interface CheckedRunnable {
      * final CheckedRunnable checkedRunnable = CheckedRunnable.of(Evil::sideEffect);
      * final Runnable runnable = checkedRunnable.unchecked();
      *
-     * // may or may not perform the side-effect without throwing checked exceptions
-     * runnable.run();
+     * // performs the side-effect; a checked exception must be declared or caught by the caller
+     * checkedRunnable.run();
      *
-     * // may or may not perform the side-effect while potentially throwing
+     * // performs the side-effect; a checked exception is sneakily rethrown without being declared
      * runnable.run();
      * }</pre>
      *
      * @param methodReference typically a method reference, e.g. {@code Type::method}
-     * @return a new {@code CheckedRunnable} wrapping the given method reference
+     * @return the given {@code CheckedRunnable} unchanged (this method only aids type inference)
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static CheckedRunnable of(@NonNull CheckedRunnable methodReference) {
+    static CheckedRunnable of(CheckedRunnable methodReference) {
         return methodReference;
     }
 
@@ -81,7 +81,7 @@ interface CheckedRunnableModule {
 
     // DEV-NOTE: we do not plan to expose this as public API
     @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    static <T extends Throwable, R extends @Nullable Object> R sneakyThrow(Throwable t) throws T {
         throw (T) t;
     }
 

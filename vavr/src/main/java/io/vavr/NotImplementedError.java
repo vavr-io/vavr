@@ -28,7 +28,7 @@ public class NotImplementedError extends Error {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates a {@code NotImplementedError} containing the message "an implementation is missing".
+     * Creates a {@code NotImplementedError} containing the message "An implementation is missing.".
      */
     public NotImplementedError() {
         super("An implementation is missing.");

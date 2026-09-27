@@ -22,12 +22,12 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * THIS CLASS IS INTENDED TO BE USED INTERNALLY ONLY!
  * <p>
- * This helper class provides methods that return views on Java collections.
+ * This helper class provides methods that return {@link java.util.List} views on Vavr {@link Seq} collections.
  * The view creation and back conversion take O(1).
  *
  * @author Daniel Dietrich
@@ -37,7 +37,7 @@ class JavaConverters {
     private JavaConverters() {
     }
 
-    static <T, C extends Seq<T>> ListView<T, C> asJava(C seq, ChangePolicy changePolicy) {
+    static <T extends @Nullable Object, C extends Seq<T>> ListView<T, C> asJava(C seq, ChangePolicy changePolicy) {
         return new ListView<>(seq, changePolicy.isMutable());
     }
 
@@ -101,7 +101,7 @@ class JavaConverters {
         }
     }
 
-    static class ListView<T, C extends Seq<T>> extends HasDelegate<C> implements java.util.List<T> {
+    static class ListView<T extends @Nullable Object, C extends Seq<T>> extends HasDelegate<C> implements java.util.List<T> {
 
         private static final long serialVersionUID = 1L;
 
@@ -124,14 +124,14 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean addAll(@NonNull Collection<? extends T> collection) {
+        public boolean addAll(Collection<? extends T> collection) {
             Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().appendAll(collection));
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean addAll(int index, @NonNull Collection<? extends T> collection) {
+        public boolean addAll(int index, Collection<? extends T> collection) {
             Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().insertAll(index, collection));
         }
@@ -153,7 +153,7 @@ class JavaConverters {
         }
 
         @Override
-        public boolean containsAll(@NonNull Collection<?> collection) {
+        public boolean containsAll(Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return getDelegate().containsAll(that);
@@ -176,7 +176,7 @@ class JavaConverters {
         }
 
         @Override
-        public java.util.@NonNull Iterator<T> iterator() {
+        public java.util.Iterator<T> iterator() {
             return new Iterator<>(this);
         }
 
@@ -187,12 +187,12 @@ class JavaConverters {
         }
 
         @Override
-        public java.util.@NonNull ListIterator<T> listIterator() {
+        public java.util.ListIterator<T> listIterator() {
             return new ListIterator<>(this, 0);
         }
 
         @Override
-        public java.util.@NonNull ListIterator<T> listIterator(int index) {
+        public java.util.ListIterator<T> listIterator(int index) {
             return new ListIterator<>(this, index);
         }
 
@@ -211,7 +211,7 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean removeAll(@NonNull Collection<?> collection) {
+        public boolean removeAll(Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().removeAll(that));
@@ -219,7 +219,7 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean retainAll(@NonNull Collection<?> collection) {
+        public boolean retainAll(Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().retainAll(that));
@@ -246,19 +246,29 @@ class JavaConverters {
             setDelegate(() -> (C) getDelegate().sorted(comparator));
         }
 
+        /**
+         * {@inheritDoc}
+         * <p>
+         * Unlike the general {@link java.util.List#subList(int, int)} contract, the returned list is
+         * <strong>not</strong> backed by this list: it is an independent view over a snapshot of the
+         * requested range, so changes made through either list are not reflected in the other.
+         * In particular, {@code list.subList(from, to).clear()} does not remove elements from this list.
+         */
         @Override
-        public java.util.@NonNull List<T> subList(int fromIndex, int toIndex) {
+        public java.util.List<T> subList(int fromIndex, int toIndex) {
             return new ListView<>(getDelegate().subSequence(fromIndex, toIndex), isMutable());
         }
 
         @Override
-        public Object @NonNull [] toArray() {
+        public Object [] toArray() {
             return getDelegate().toJavaArray();
         }
 
-        @SuppressWarnings("unchecked")
+        // Collection.toArray(T[]) mandates writing null just past the last element, even when
+        // the caller's array has non-null components.
+        @SuppressWarnings({"unchecked", "NullAway"})
         @Override
-        public <U> U @NonNull [] toArray(U @NonNull [] array) {
+        public <U extends @Nullable Object> U [] toArray(U [] array) {
             Objects.requireNonNull(array, "array is null");
             final U[] target;
             final C delegate = getDelegate();
@@ -284,7 +294,7 @@ class JavaConverters {
         // -- Object.*
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return o == this || o instanceof java.util.List && Collections.areEqual(getDelegate(), (java.util.List<?>) o);
         }
 
@@ -309,7 +319,7 @@ class JavaConverters {
         }
 
         // DEV-NOTE: Iterator is intentionally not Serializable
-        private static class Iterator<T, C extends Seq<T>> implements java.util.Iterator<T> {
+        private static class Iterator<T extends @Nullable Object, C extends Seq<T>> implements java.util.Iterator<T> {
 
             ListView<T, C> list;
             int expectedSize;
@@ -380,7 +390,7 @@ class JavaConverters {
         }
 
         // DEV-NOTE: ListIterator is intentionally not Serializable
-        private static class ListIterator<T, C extends Seq<T>> extends ListView.Iterator<T, C> implements java.util.ListIterator<T> {
+        private static class ListIterator<T extends @Nullable Object, C extends Seq<T>> extends ListView.Iterator<T, C> implements java.util.ListIterator<T> {
 
             ListIterator(ListView<T, C> list, int index) {
                 super(list);

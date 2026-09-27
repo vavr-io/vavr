@@ -28,7 +28,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a recursive, multi-valued data structure whose elements can be traversed in order.
@@ -50,7 +50,7 @@ import org.jspecify.annotations.NonNull;
  * @param <T> the type of elements contained in this Traversable
  * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public interface Traversable<T> extends Foldable<T>, Value<T> {
+public interface Traversable<T extends @Nullable Object> extends Foldable<T>, Value<T> {
 
     /**
      * Narrows a {@code Traversable<? extends T>} to {@code Traversable<T>} with a type-safe cast.
@@ -62,7 +62,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return the same {@code traversable} instance with type {@code Traversable<T>}
      */
     @SuppressWarnings("unchecked")
-    static <T> Traversable<T> narrow(Traversable<? extends T> traversable) {
+    static <T extends @Nullable Object> Traversable<T> narrow(Traversable<? extends T> traversable) {
         return (Traversable<T>) traversable;
     }
 
@@ -78,7 +78,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code getKey} is null
      * @see #groupBy(Function)
      */
-    default <K> Option<Map<K, T>> arrangeBy(@NonNull Function<? super T, ? extends K> getKey) {
+    default <K extends @Nullable Object> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
         Objects.requireNonNull(getKey, "getKey is null");
         return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
           .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
@@ -97,7 +97,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * List.empty().average()                       // = None
      * List.of(1, 2, 3).average()                   // = Some(2.0)
      * List.of(1.0, 1e100, 2.0, -1e100).average()  // = Some(0.75)
-     * List.of(1.0, Double.NaN).average()           // = NaN
+     * List.of(1.0, Double.NaN).average()           // = Some(NaN)
      * List.of("apple", "pear").average()           // throws
      * }</pre>
      *
@@ -141,7 +141,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing the results of applying the partial function
      * @throws NullPointerException if {@code partialFunction} is null
      */
-    <R> Traversable<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction);
+    <R extends @Nullable Object> Traversable<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     /**
      * Checks whether this {@code Traversable} contains all elements from the given iterable.
@@ -156,7 +156,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code true} if all elements are present, {@code false} otherwise
      * @throws NullPointerException if {@code elements} is null
      */
-    default boolean containsAll(@NonNull Iterable<? extends T> elements) {
+    default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         for (T element : elements) {
             if (!contains(element)) {
@@ -173,7 +173,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return the number of elements matching the predicate (always >= 0)
      * @throws NullPointerException if {@code predicate} is null
      */
-    default int count(@NonNull Predicate<? super T> predicate) {
+    default int count(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return foldLeft(0, (i, t) -> predicate.test(t) ? i + 1 : i);
     }
@@ -194,7 +194,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} with duplicates removed
      * @throws NullPointerException if {@code comparator} is null
      */
-    Traversable<T> distinctBy(@NonNull Comparator<? super T> comparator);
+    Traversable<T> distinctBy(Comparator<? super T> comparator);
 
     /**
      * Returns a new {@code Traversable} containing the elements of this instance
@@ -207,7 +207,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} with duplicates removed based on keys
      * @throws NullPointerException if {@code keyExtractor} is null
      */
-    <U> Traversable<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
+    <U extends @Nullable Object> Traversable<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Returns a new {@code Traversable} without the first {@code n} elements,
@@ -235,7 +235,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new instance starting from the first element matching the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<T> dropUntil(@NonNull Predicate<? super T> predicate);
+    Traversable<T> dropUntil(Predicate<? super T> predicate);
 
     /**
      * Returns a new {@code Traversable} starting from the first element
@@ -248,7 +248,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new instance starting from the first element not matching the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<T> dropWhile(@NonNull Predicate<? super T> predicate);
+    Traversable<T> dropWhile(Predicate<? super T> predicate);
 
 
     /**
@@ -277,14 +277,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *     <li>Null elements are allowed and treated as expected
      *         (e.g., {@code List(null, 1) == Stream(null, 1)}, {@code HashMap((null,1)) == LinkedHashMap((null,1))})</li>
      *     <li>Element order matters only for {@code Seq}</li>
-     *     <li>Other collection classes are equal if their types and elements (in iteration order) are equal</li>
+     *     <li>Other collection classes are equal if their types and elements are equal, regardless of iteration order</li>
      *     <li>Iterators are compared by reference only</li>
      * </ul>
      *
      * @param obj the object to compare with, may be {@code null}
      * @return {@code true} if the collections are equal according to the rules above, {@code false} otherwise
      */
-    boolean equals(Object obj);
+    boolean equals(@Nullable Object obj);
 
     /**
      * Checks whether there is exactly one element in this traversable for which the given predicate holds.
@@ -293,7 +293,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code true} if exactly one element satisfies the predicate, {@code false} otherwise
      * @throws NullPointerException if {@code predicate} is {@code null}
      */
-    default boolean existsUnique(@NonNull Predicate<? super T> predicate) {
+    default boolean existsUnique(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         boolean exists = false;
         for (T t : this) {
@@ -315,7 +315,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a traversable with elements matching the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<T> filter(@NonNull Predicate<? super T> predicate);
+    Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
      * Returns a new traversable containing only the elements that do not satisfy the given predicate.
@@ -326,7 +326,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a traversable with elements not matching the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Traversable<T> reject(@NonNull Predicate<? super T> predicate) {
+    default Traversable<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
@@ -338,7 +338,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *         the element may be {@code null}
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Option<T> find(@NonNull Predicate<? super T> predicate) {
+    default Option<T> find(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (T a : this) {
             if (predicate.test(a)) {
@@ -358,7 +358,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *         the element may be {@code null}
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Option<T> findLast(@NonNull Predicate<? super T> predicate) {
+    default Option<T> findLast(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator().findLast(predicate);
     }
@@ -372,10 +372,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Traversable containing all elements produced by applying {@code mapper} and flattening
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Traversable<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U extends @Nullable Object> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    default <U> U foldLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> f) {
+    default <U extends @Nullable Object> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         U xs = zero;
         for (T x : this) {
@@ -385,7 +385,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     @Override
-    <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f);
+    <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
 
     /**
      * Performs the given action on each element of this Traversable along with its index.
@@ -400,7 +400,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param action an action to perform on each element and its index
      * @throws NullPointerException if {@code action} is null
      */
-    default void forEachWithIndex(@NonNull ObjIntConsumer<? super T> action) {
+    default void forEachWithIndex(ObjIntConsumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         int index = 0;
         for (T t : this) {
@@ -428,7 +428,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code classifier} is null
      * @see #arrangeBy(Function)
      */
-    <C> Map<C, ? extends Traversable<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
+    <C extends @Nullable Object> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     /**
      * Splits this {@code Traversable} into consecutive blocks of the given size.
@@ -528,7 +528,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *     public K key() { return key; }
      *
      *     @Override
-     *     public boolean equals(Object o) {
+     *     public boolean equals(@Nullable Object o) {
      *         if (o == key) return true;
      *         if (key != null && o instanceof Hashed) return key.equals(((Hashed<?>) o).key);
      *         return false;
@@ -631,7 +631,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@link Iterator} over the elements of this Traversable
      */
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         final Traversable<T> that = this;
         return new AbstractIterator<T>() {
 
@@ -686,17 +686,17 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     @Override
-    <U> Traversable<U> map(@NonNull Function<? super T, ? extends U> mapper);
+    <U extends @Nullable Object> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
 
     @Override
-    default <U> Traversable<U> mapTo(U value) {
+    default <U extends @Nullable Object> Traversable<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
     @Override
-    default Traversable<Void> mapToVoid() {
-        return map(ignored -> null);
+    default Traversable<@Nullable Void> mapToVoid() {
+        return this.<@Nullable Void>map(ignored -> null);
     }
 
     /**
@@ -709,13 +709,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * List.empty().max()             // = None
      * List.of(1, 2, 3).max()         // = Some(3)
      * List.of("a", "b", "c").max()   // = Some("c")
-     * List.of(1.0, Double.NaN).max() // = NaN
+     * List.of(1.0, Double.NaN).max() // = Some(NaN)
      * List.of(1, "a").max()          // throws ClassCastException
      * }</pre>
      *
      * @return {@code Some(maximum)} if this Traversable is not empty, otherwise {@code None}
-     * @throws NullPointerException if any element is null
-     * @throws ClassCastException if elements do not implement {@link Comparable}
+     * @throws NullPointerException if this Traversable contains 2 or more elements and any of them is null
+     *                              (a single null element is returned as {@code Some(null)} without being compared)
+     * @throws ClassCastException if this Traversable contains 2 or more elements that do not implement {@link Comparable}
      */
     default Option<T> max() {
         return maxBy(Comparators.naturalComparator());
@@ -730,7 +731,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code Some(maximum)} if this Traversable is not empty, otherwise {@code None}
      * @throws NullPointerException if {@code comparator} is null
      */
-    default Option<T> maxBy(@NonNull Comparator<? super T> comparator) {
+    default Option<T> maxBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Option.none();
@@ -752,7 +753,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code Some(element)} whose mapped value is maximal, or {@code None} if this Traversable is empty
      * @throws NullPointerException if {@code f} is null
      */
-    default <U extends Comparable<? super U>> Option<T> maxBy(@NonNull Function<? super T, ? extends U> f) {
+    default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Option.none();
@@ -784,14 +785,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * List.empty().min()             // = None
      * List.of(1, 2, 3).min()         // = Some(1)
      * List.of("a", "b", "c").min()   // = Some("a")
-     * List.of(1.0, Double.NaN).min() // = NaN
+     * List.of(1.0, Double.NaN).min() // = Some(NaN)
      * List.of(1, "a").min()          // throws
      * }
      * </pre>
      *
      * @return {@code Some(minimum)} of this elements, or {@code None} if this Traversable is empty
-     * @throws NullPointerException if an element is null
-     * @throws ClassCastException   if the elements do not have a natural order, i.e., do not implement {@link Comparable}
+     * @throws NullPointerException if this Traversable contains 2 or more elements and any of them is null
+     *                              (a single null element is returned as {@code Some(null)} without being compared)
+     * @throws ClassCastException   if this Traversable contains 2 or more elements that do not have a natural order,
+     *                              i.e., do not implement {@link Comparable}
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
@@ -821,7 +824,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code Some(minimum)} of this elements, or {@code None} if this Traversable is empty
      * @throws NullPointerException if {@code comparator} is null
      */
-    default Option<T> minBy(@NonNull Comparator<? super T> comparator) {
+    default Option<T> minBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Option.none();
@@ -839,7 +842,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return the element of type T whose mapped value is minimal, wrapped in {@code Some}, or {@code None} if empty
      * @throws NullPointerException if {@code f} is null
      */
-    default <U extends Comparable<? super U>> Option<T> minBy(@NonNull Function<? super T, ? extends U> f) {
+    default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Option.none();
@@ -951,17 +954,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @param other an alternative {@code Traversable} to return if this is empty
      * @return this {@code Traversable} if non-empty, otherwise {@code other}
+     * @throws NullPointerException if this {@code Traversable} is empty and {@code other} is null
+     *                              (a non-empty {@code Traversable} returns itself without inspecting {@code other})
      */
     Traversable<T> orElse(Iterable<? extends T> other);
 
     /**
      * Returns this {@code Traversable} if it is non-empty; otherwise, returns the result of evaluating the given supplier.
+     * <p>
+     * The supplier is only evaluated if this {@code Traversable} is empty.
      *
      * @param supplier a supplier of an alternative {@code Traversable} if this is empty
      * @return this {@code Traversable} if non-empty, otherwise the result of {@code supplier.get()}
-     * @throws NullPointerException if {@code supplier} is null
+     * @throws NullPointerException if this {@code Traversable} is empty and {@code supplier} is null
+     *                              (a non-empty {@code Traversable} returns itself without evaluating {@code supplier})
      */
-    Traversable<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier);
+    Traversable<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     /**
      * Splits this {@code Traversable} into two partitions according to a predicate.
@@ -973,30 +981,32 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a {@link Tuple2} containing the two resulting {@code Traversable} instances
      * @throws NullPointerException if {@code predicate} is null
      */
-    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
 
     @Override
-    Traversable<T> peek(@NonNull Consumer<? super T> action);
+    Traversable<T> peek(Consumer<? super T> action);
 
     /**
      * Calculates the product of the elements in this {@code Traversable}.
      * <p>
-     * Supported element types are {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long},
-     * {@code Short}, {@code BigInteger}, and {@code BigDecimal}.
+     * The types {@code Byte}, {@code Short}, {@code Integer}, and {@code Long} are multiplied as {@code long},
+     * and {@code BigInteger}/{@code BigDecimal} use their own arithmetic; any other {@link Number} (including
+     * {@code Double}, {@code Float}, and custom {@code Number} subtypes) is multiplied via
+     * {@link Number#doubleValue()}. The arithmetic to use is chosen based on the first element.
      * <p>
      * Examples:
      * <pre>{@code
      * List.empty().product()              // = 1
      * List.of(1, 2, 3).product()          // = 6L
-     * List.of(0.1, 0.2, 0.3).product()    // = 0.006
+     * List.of(0.5, 2.0, 3.0).product()    // = 3.0
      * List.of("apple", "pear").product()  // throws
      * }</pre>
      * <p>
      * For type-safe multiplication of elements, consider using {@link #fold(Object, BiFunction)}.
      *
      * @return a {@code Number} representing the product of the elements
-     * @throws UnsupportedOperationException if the elements are not numeric
+     * @throws UnsupportedOperationException if an element is not a {@link Number}
      */
     @SuppressWarnings("unchecked")
     default Number product() {
@@ -1030,7 +1040,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException   if {@code op} is null
      */
     @Override
-    default T reduceLeft(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
+    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return iterator().reduceLeft(op);
     }
@@ -1044,7 +1054,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code op} is null
      */
     @Override
-    default Option<T> reduceLeftOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
+    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
     }
@@ -1058,7 +1068,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException   if {@code op} is null
      */
     @Override
-    default T reduceRight(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on empty Traversable");
@@ -1076,7 +1086,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code op} is null
      */
     @Override
-    default Option<T> reduceRightOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
+    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
@@ -1106,7 +1116,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Traversable containing only the elements present in {@code elements}, in their original order
      * @throws NullPointerException if {@code elements} is null
      */
-    Traversable<T> retainAll(@NonNull Iterable<? extends T> elements);
+    Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Computes a prefix scan of the elements of this Traversable.
@@ -1118,12 +1128,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Traversable containing the prefix scan of the elements
      * @throws NullPointerException if {@code operation} is null
      */
-    Traversable<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     /**
      * Produces a collection containing cumulative results of applying the operator from left to right.
      * <p>
-     * Will not terminate for infinite collections. The results may vary across runs unless the collection is ordered.
+     * Lazy implementations ({@code Stream}, {@code Iterator}) compute the results on demand and may be used with
+     * infinite collections; eager implementations will not terminate for infinite collections. The results may
+     * vary across runs unless the collection is ordered.
      *
      * @param <U>       the type of the resulting elements
      * @param zero      the initial value
@@ -1131,7 +1143,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Traversable containing the cumulative results
      * @throws NullPointerException if {@code operation} is null
      */
-    <U> Traversable<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U extends @Nullable Object> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     /**
      * Produces a collection containing cumulative results of applying the operator from right to left.
@@ -1145,7 +1157,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Traversable containing the cumulative results
      * @throws NullPointerException if {@code operation} is null
      */
-    <U> Traversable<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U extends @Nullable Object> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     /**
      * Returns the single element of this Traversable.
@@ -1202,7 +1214,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return An {@code Iterator} of windows (grouped elements)
      * @throws NullPointerException if {@code classifier} is null
      */
-    Iterator<? extends Traversable<T>> slideBy(@NonNull Function<? super T, ?> classifier);
+    Iterator<? extends Traversable<T>> slideBy(Function<? super T, ?> classifier);
 
     /**
      * Slides a window of a given {@code size} over this {@code Traversable} with a step size of 1.
@@ -1224,7 +1236,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * [1,2,3,4,5].sliding(2, 3) = [[1,2],[4,5]]
      * [1,2,3,4,5].sliding(2, 4) = [[1,2],[5]]
      * [1,2,3,4,5].sliding(2, 5) = [[1,2]]
-     * [1,2,3,4].sliding(5, 3) = [[1,2,3,4],[4]]
+     * [1,2,3,4].sliding(5, 3) = [[1,2,3,4]]
      * }</pre>
      *
      * @param size a positive window size
@@ -1244,7 +1256,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a {@code Tuple} containing the prefix and remainder
      * @throws NullPointerException if {@code predicate} is null
      */
-    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(@NonNull Predicate<? super T> predicate);
+    Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
     @Override
     default Spliterator<T> spliterator() {
@@ -1267,9 +1279,13 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Calculates the sum of the elements in this {@code Traversable}. Supported numeric types are
-     * {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long}, {@code Short},
-     * {@code BigInteger}, and {@code BigDecimal}.
+     * Calculates the sum of the elements in this {@code Traversable}.
+     * <p>
+     * The types {@code Byte}, {@code Short}, {@code Integer}, and {@code Long} are summed as {@code long},
+     * and {@code BigInteger}/{@code BigDecimal} use their own arithmetic; any other {@link Number} (including
+     * {@code Double}, {@code Float}, and custom {@code Number} subtypes) is summed via
+     * {@link Number#doubleValue()} with Neumaier compensation. The arithmetic to use is chosen based on the
+     * first element.
      * <p>
      * Examples:
      * <pre>{@code
@@ -1282,7 +1298,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * See also {@link #fold(Object, BiFunction)} for type-safe summation of elements.
      *
      * @return a {@code Number} representing the sum of the elements
-     * @throws UnsupportedOperationException if elements are not numeric
+     * @throws UnsupportedOperationException if an element is not a {@link Number}
      */
     @SuppressWarnings("unchecked")
     default Number sum() {
@@ -1331,8 +1347,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Returns the first {@code n} elements of this {@code Traversable}, or all elements if {@code n} exceeds the length.
      * <p>
-     * Equivalent to {@code sublist(0, max(0, min(length(), n)))}, but safe for {@code n < 0} or {@code n > length()}.
-     * <p>
      * If {@code n < 0}, an empty instance is returned. If {@code n > length()}, the full instance is returned.
      *
      * @param n the number of elements to take
@@ -1342,8 +1356,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Returns the last {@code n} elements of this {@code Traversable}, or all elements if {@code n} exceeds the length.
-     * <p>
-     * Equivalent to {@code sublist(max(0, length() - n), length())}, but safe for {@code n < 0} or {@code n > length()}.
      * <p>
      * If {@code n < 0}, an empty instance is returned. If {@code n > length()}, the full instance is returned.
      *
@@ -1362,7 +1374,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing all elements before the first one that satisfies the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<T> takeUntil(@NonNull Predicate<? super T> predicate);
+    Traversable<T> takeUntil(Predicate<? super T> predicate);
 
     /**
      * Takes elements from this {@code Traversable} while the given predicate holds.
@@ -1372,7 +1384,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *         that does not satisfy the predicate
      * @throws NullPointerException if {@code predicate} is null
      */
-    Traversable<T> takeWhile(@NonNull Predicate<? super T> predicate);
+    Traversable<T> takeWhile(Predicate<? super T> predicate);
 
 
     /**
@@ -1385,8 +1397,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a {@code Tuple2} containing two {@code Traversable} collections with the split elements
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Unzips the elements of this {@code Traversable} by mapping each element to a triple
@@ -1399,8 +1411,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a {@code Tuple3} containing three {@code Traversable} collections with the split elements
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+    <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     /**
      * Returns a {@code Traversable} formed by pairing elements of this {@code Traversable} with elements of another
@@ -1415,7 +1427,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing pairs of corresponding elements
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
+    <U extends @Nullable Object> Traversable<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     /**
      * Returns a {@code Traversable} formed by pairing elements of this {@code Traversable} with elements of another
@@ -1434,7 +1446,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing pairs of elements, including fillers as needed
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem);
+    <U extends @Nullable Object> Traversable<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     /**
      * Returns a {@code Traversable} by combining elements of this {@code Traversable} with elements of another
@@ -1450,7 +1462,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing mapped elements
      * @throws NullPointerException if {@code that} or {@code mapper} is null
      */
-    <U, R> Traversable<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+    <U extends @Nullable Object, R extends @Nullable Object> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     /**
      * Zips this {@code Traversable} with its indices, starting at 0.
@@ -1467,7 +1479,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new {@code Traversable} containing the mapped elements
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Traversable<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper);
+    <U extends @Nullable Object> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 }
 
 interface TraversableModule {
@@ -1482,7 +1494,7 @@ interface TraversableModule {
      * @param toDouble function which maps elements to {@code double} values
      * @return A pair {@code [sum, size]}, where {@code sum} is the compensated sum and {@code size} is the number of elements which were summed.
      */
-    static <T> double[] neumaierSum(@NonNull Iterable<T> ts, @NonNull ToDoubleFunction<T> toDouble) {
+    static <T extends @Nullable Object> double[] neumaierSum(Iterable<T> ts, ToDoubleFunction<T> toDouble) {
         double simpleSum = 0.0;
         double sum = 0.0;
         double compensation = 0.0;

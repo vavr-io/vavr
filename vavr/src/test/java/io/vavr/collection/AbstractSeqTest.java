@@ -614,6 +614,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldNotFindEmptySliceWhenStartIsGreaterThanLength() {
+            assertThat(of(1, 2, 3).indexOfSlice(empty(), 4)).isEqualTo(-1);
+            assertThat(of(1, 2, 3).indexOfSliceOption(empty(), 4)).isEqualTo(Option.none());
+        }
+
+        @Test
         public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
             assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
 
@@ -750,6 +756,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldTreatNegativeFromAsZeroInIndexWhere() {
+            assertThat(of(1, 2, 3).indexWhere(i -> i == 1, -1)).isEqualTo(0);
+            assertThat(of(1, 2, 3).indexWhere(i -> i == 2, -3)).isEqualTo(1);
+            assertThat(of(1, 2, 3).indexWhere(i -> i == 8, -1)).isEqualTo(-1);
+            assertThat(of(1, 2, 3).indexWhereOption(i -> i == 1, -1)).isEqualTo(Option.some(0));
+        }
+
+        @Test
         public void shouldFailIndexWhereNullPredicate() {
             assertThrows(NullPointerException.class, () -> of(1).indexWhere(null));
         }
@@ -781,6 +795,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
             assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(1));
             assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(2));
             assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldReturnMinusOneForNegativeEndInLastIndexWhere() {
+            assertThat(of(1, 2, 3).lastIndexWhere(i -> true, -1)).isEqualTo(-1);
+            assertThat(of(1, 2, 3).lastIndexWhere(i -> true, -5)).isEqualTo(-1);
+            assertThat(of(1, 2, 3).lastIndexWhereOption(i -> true, -5)).isEqualTo(Option.none());
         }
 
         @Test
@@ -1177,6 +1198,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldTreatNegativeFromAsZeroInSegmentLength() {
+            assertThat(of(1, 3, 5, 6).segmentLength(i -> (i & 1) > 0, -1)).isEqualTo(3);
+            assertThat(of(2, 3).segmentLength(i -> (i & 1) > 0, -2)).isEqualTo(0);
+            assertThat(empty().segmentLength(i -> true, -1)).isEqualTo(0);
+        }
+
+        @Test
         public void shouldThrowSegmentLengthNullPredicate() {
             assertThrows(NullPointerException.class, () -> of(1).segmentLength(null, 0));
         }
@@ -1500,6 +1528,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         public void shouldRemoveIndexOutOfBoundsRight() {
             assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3)));
         }
+
+        @Test
+        public void shouldRemoveIndexEqualToLength() {
+            assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(3)).isEqualTo(of(1, 2, 3)));
+        }
     }
 
     @Nested
@@ -1557,6 +1590,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldRotateLeftForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(Integer.MIN_VALUE)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateLeftForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateLeft(Integer.MIN_VALUE)).isSameAs(seq);
+        }
+
+        @Test
         public void shouldRotateLeftForPositiveLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
         }
@@ -1595,6 +1639,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         @Test
         public void shouldRotateRightForNegativeLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(Integer.MIN_VALUE)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateRight(Integer.MIN_VALUE)).isSameAs(seq);
         }
 
         @Test
