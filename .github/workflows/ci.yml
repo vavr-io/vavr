@@ -32,7 +32,7 @@ jobs:
       - name: Verify jar
         uses: pivovarit/verify-jar-action@v1.4.0
         with:
-          directory: 'vavr/target'
+          directory: 'target'
           java-version: '21'
 
   nullness:
