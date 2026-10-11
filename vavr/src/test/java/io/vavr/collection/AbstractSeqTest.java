@@ -709,6 +709,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldFindLastIndexOfSliceGivenAnIterableThatCanBeIteratedOnlyOnce() {
+            // a stream's iterator() throws when called a second time
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(3);
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator, 2)).isEqualTo(0);
+            assertThat(of(1, 2, 3).lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(3);
+            assertThat(AbstractSeqTest.this.<Integer> empty().lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(0);
+
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(Option.some(3));
+        }
+
+        @Test
         public void shouldFindLastIndexOfSliceWithEnd() {
             assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
             assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
@@ -1314,6 +1325,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
         assertThat(t.remove(4)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldRemoveElementPrecededByNull() {
+        assertThat(of(1, null, 2).remove(2)).isEqualTo(of(1, null));
+    }
+
+    @Test
+    public void shouldRemoveNullElement() {
+        assertThat(of(1, null, 2, null).remove(null)).isEqualTo(of(1, 2, null));
+    }
+
+    @Test
+    public void shouldRemoveNonExistingElementFromSeqContainingNull() {
+        assertThat(of(1, null).remove(5)).isEqualTo(of(1, null));
     }
 
     // -- removeFirst(Predicate)

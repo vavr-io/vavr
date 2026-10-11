@@ -965,7 +965,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     private Object writeReplace() {
-        return new SerializationProxy<>(this.trie);
+        return new SerializationProxy<>(trie);
     }
 
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
