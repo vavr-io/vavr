@@ -1327,6 +1327,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(t.remove(4)).isSameAs(t);
     }
 
+    @Test
+    public void shouldRemoveElementPrecededByNull() {
+        assertThat(of(1, null, 2).remove(2)).isEqualTo(of(1, null));
+    }
+
+    @Test
+    public void shouldRemoveNullElement() {
+        assertThat(of(1, null, 2, null).remove(null)).isEqualTo(of(1, 2, null));
+    }
+
+    @Test
+    public void shouldRemoveNonExistingElementFromSeqContainingNull() {
+        assertThat(of(1, null).remove(5)).isEqualTo(of(1, null));
+    }
+
     // -- removeFirst(Predicate)
 
     @Test

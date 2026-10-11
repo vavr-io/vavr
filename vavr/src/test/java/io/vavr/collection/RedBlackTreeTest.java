@@ -484,25 +484,20 @@ public class RedBlackTreeTest {
     }
 
     private static void assertSameElements(RedBlackTree<Integer> actual, java.util.TreeSet<Integer> expected) {
-        assertThat(actual.iterator().toJavaList()).isEqualTo(new ArrayList<>(expected));
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     private static <T> void assertValid(RedBlackTree<T> tree) {
         if (tree.color() != Color.BLACK) {
             fail(tree, "root is red");
         }
-        checkNode(tree, tree.comparator(), tree);
-        final java.util.List<T> elements = tree.iterator().toJavaList();
-        for (int i = 1; i < elements.size(); i++) {
-            if (tree.comparator().compare(elements.get(i - 1), elements.get(i)) >= 0) {
-                fail(tree, "elements out of order");
-            }
-        }
+        checkNode(tree, tree.comparator(), tree, new Object[1]);
     }
 
     // returns {black height, size} of the given subtree, where the black height counts the black nodes on a path
-    // from the subtree's root down to an empty leaf
-    private static <T> int[] checkNode(RedBlackTree<T> tree, Comparator<T> comparator, RedBlackTree<T> root) {
+    // from the subtree's root down to an empty leaf; previous holds the value of the last node visited in-order
+    @SuppressWarnings("unchecked")
+    private static <T> int[] checkNode(RedBlackTree<T> tree, Comparator<T> comparator, RedBlackTree<T> root, Object[] previous) {
         if (tree.isEmpty()) {
             return new int[] { 0, 0 };
         }
@@ -510,8 +505,12 @@ public class RedBlackTreeTest {
         if (node.color == Color.RED && (node.left.color() == Color.RED || node.right.color() == Color.RED)) {
             fail(root, "red node " + node + " has a red child");
         }
-        final int[] left = checkNode(node.left, comparator, root);
-        final int[] right = checkNode(node.right, comparator, root);
+        final int[] left = checkNode(node.left, comparator, root, previous);
+        if (previous[0] != null && comparator.compare((T) previous[0], node.value) >= 0) {
+            fail(root, "elements out of order");
+        }
+        previous[0] = node.value;
+        final int[] right = checkNode(node.right, comparator, root, previous);
         if (left[0] != right[0]) {
             fail(root, "black heights differ below " + node);
         }
