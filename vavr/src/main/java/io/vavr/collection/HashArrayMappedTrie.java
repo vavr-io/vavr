@@ -481,7 +481,7 @@ interface HashArrayMappedTrieModule {
             this.hash = hash;
             this.key = key;
             this.value = value;
-            this.size = 1 + tail.size();
+            size = 1 + tail.size();
             this.tail = tail;
         }
 
@@ -555,7 +555,7 @@ interface HashArrayMappedTrieModule {
         }
 
         private AbstractNode<K, V> removeElement(K k) {
-            if (Objects.equals(k, this.key)) {
+            if (Objects.equals(k, key)) {
                 return tail;
             }
             LeafNode<K, V> leaf1 = new LeafSingleton<>(hash, key, value);

@@ -1553,4 +1553,15 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    /**
+     * Map entry hashes use {@code key ^ value} (see {@code Collections.hashMap}). Sequential
+     * index/value pairs from {@code of(1, 2)} vs {@code of(2, 3)} can collide under that scheme
+     * (same as {@link java.util.Map}); use values that remain distinct.
+     */
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        assertThat(of(1, 2).hashCode() != of(3, 4).hashCode()).isTrue();
+    }
+
 }

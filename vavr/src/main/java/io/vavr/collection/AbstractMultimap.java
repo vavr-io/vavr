@@ -442,7 +442,7 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
+    public <K2 extends @Nullable K, V2 extends @Nullable V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -450,7 +450,7 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            final Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
+            final Map<K, Traversable<V>> result = that.keySet().foldLeft(back, (map, key) -> {
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = map.get(key)
                         .map(thisValues -> collisionResolution.apply(thisValues, thatValues))
