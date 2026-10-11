@@ -709,6 +709,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldFindLastIndexOfSliceGivenAnIterableThatCanBeIteratedOnlyOnce() {
+            // a stream's iterator() throws when called a second time
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(3);
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(java.util.stream.Stream.of(1, 2)::iterator, 2)).isEqualTo(0);
+            assertThat(of(1, 2, 3).lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(3);
+            assertThat(AbstractSeqTest.this.<Integer> empty().lastIndexOfSlice(java.util.stream.Stream.<Integer> empty()::iterator)).isEqualTo(0);
+
+            assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(java.util.stream.Stream.of(1, 2)::iterator)).isEqualTo(Option.some(3));
+        }
+
+        @Test
         public void shouldFindLastIndexOfSliceWithEnd() {
             assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
             assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
@@ -1316,6 +1327,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(t.remove(4)).isSameAs(t);
     }
 
+    @Test
+    public void shouldRemoveElementPrecededByNull() {
+        assertThat(of(1, null, 2).remove(2)).isEqualTo(of(1, null));
+    }
+
+    @Test
+    public void shouldRemoveNullElement() {
+        assertThat(of(1, null, 2, null).remove(null)).isEqualTo(of(1, 2, null));
+    }
+
+    @Test
+    public void shouldRemoveNonExistingElementFromSeqContainingNull() {
+        assertThat(of(1, null).remove(5)).isEqualTo(of(1, null));
+    }
+
     // -- removeFirst(Predicate)
 
     @Test
@@ -1590,6 +1616,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldRotateLeftForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateLeft(Integer.MIN_VALUE)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateLeftForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateLeft(Integer.MIN_VALUE)).isSameAs(seq);
+        }
+
+        @Test
         public void shouldRotateLeftForPositiveLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
         }
@@ -1628,6 +1665,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         @Test
         public void shouldRotateRightForNegativeLessThatLen() {
             assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumInteger() {
+            assertThat(of(1, 2, 3, 4, 5).rotateRight(Integer.MIN_VALUE)).isEqualTo(of(4, 5, 1, 2, 3));
+        }
+
+        @Test
+        public void shouldRotateRightForMinimumIntegerModuloLen() {
+            Seq<Integer> seq = of(1, 2, 3, 4);
+            assertThat(seq.rotateRight(Integer.MIN_VALUE)).isSameAs(seq);
         }
 
         @Test
