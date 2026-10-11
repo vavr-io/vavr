@@ -339,4 +339,20 @@ public class ArrayTest extends AbstractIndexedSeqTest {
             assertThat(value.toArray()).isSameAs(value);
         }
     }
+
+    @Nested
+    class IndexOfNegativeFromTests {
+        @Test
+        public void shouldClampNegativeFromToZeroWhenSearchingIndexOf() {
+            assertThat(of(1, 2, 3).indexOf(1, -1)).isEqualTo(0);
+            assertThat(of(1, 2, 3).indexOf(3, -5)).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldReturnMinusOneWhenElementNotFoundFromNegativeIndex() {
+            assertThat(of(1, 2, 3).indexOf(4, -1)).isEqualTo(-1);
+            assertThat(empty().indexOf(1, -1)).isEqualTo(-1);
+        }
+    }
+
 }

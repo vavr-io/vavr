@@ -945,4 +945,25 @@ public class StreamTest extends AbstractLinearSeqTest {
         }
     }
 
+    @Nested
+    class RemoveAtLazyBoundsTests {
+        @Test
+        public void shouldThrowIndexOutOfBoundsWhenRemovingIndexZeroFromEmptyStream() {
+            assertThrows(IndexOutOfBoundsException.class, () -> empty().removeAt(0));
+        }
+
+        @Test
+        public void shouldThrowIndexOutOfBoundsWhenRemovingIndexEqualToLengthOnceTraversed() {
+            assertThrows(IndexOutOfBoundsException.class, () -> of(1, 2).removeAt(2).toList());
+        }
+    }
+
+    @Nested
+    class DistinctByFunctionNullCheckTests {
+        @Test
+        public void shouldThrowWhenDistinctByKeyExtractorIsNullOnEmptyStream() {
+            assertThrows(NullPointerException.class, () -> empty().distinctBy((Function<Object, Object>) null));
+        }
+    }
+
 }

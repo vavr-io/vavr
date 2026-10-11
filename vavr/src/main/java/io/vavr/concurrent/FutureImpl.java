@@ -45,7 +45,8 @@ import org.jspecify.annotations.Nullable;
 final class FutureImpl<T extends @Nullable Object> implements Future<T> {
 
     /**
-     * Used to start new threads.
+     * Used to run the computation and to perform the actions (whether a new thread is started depends on the
+     * supplied {@link Executor}).
      */
     private final Executor executor;
 
@@ -127,7 +128,8 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
     }
 
     /**
-     * Creates a {@code FutureImpl} that needs to be automatically completed by calling {@link #tryComplete(Try)}.
+     * Creates a {@code FutureImpl} that is not completed and must be completed manually by an external call to
+     * {@link #tryComplete(Try)}.
      *
      * @param executor An {@link Executor} to run and control the computation and to perform the actions.
      * @param <T> value type of the Future
@@ -151,7 +153,7 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
 
     /**
      * Creates a {@code FutureImpl} that is eventually completed.
-     * The given {@code computation} is <em>synchronously</em> executed, no thread is started.
+     * The given {@code task} is <em>synchronously</em> executed, no thread is started.
      *
      * @param executor An {@link Executor} to run and control the computation and to perform the actions.
      * @param task     A non-blocking computation
@@ -164,7 +166,9 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
 
     /**
      * Creates a {@code FutureImpl} that is eventually completed.
-     * The given {@code computation} is <em>asynchronously</em> executed, a new thread is started.
+     * The given {@code task} is submitted to the {@code executor} and executed asynchronously; whether a new
+     * thread is started depends on the {@code executor} implementation (a same-thread executor runs the task
+     * synchronously on the calling thread).
      *
      * @param executor An {@link Executor} to run and control the computation and to perform the actions.
      * @param task     A (possibly blocking) computation
@@ -200,12 +204,15 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
     /**
      * Blocks the current thread.
      * <p>
-     * If timeout = 0 then {@code LockSupport.park()} is called (start, timeout and unit are not used),
-     * otherwise {@code LockSupport.park(timeout, unit}} is called.
+     * If timeout &lt; 0 (i.e. the untimed {@link #await()}, where {@code unit == null}) then
+     * {@code LockSupport.park()} is called; otherwise (timeout &gt;= 0, including 0)
+     * {@code LockSupport.parkNanos(remaining)} is called, with the remaining nanos recomputed from
+     * {@code start}, {@code timeout} and {@code unit} on each iteration.
      * <p>
-     * If a timeout > -1 is specified and the deadline is not met, this Future fails with a {@link TimeoutException}.
+     * If a timeout &gt; -1 is specified and the deadline is not met, this Future fails with a {@link TimeoutException}.
      * <p>
-     * If this Thread was interrupted, this Future fails with a {@link InterruptedException}.
+     * If the waiting thread was interrupted, this Future fails with an {@link ExecutionException}
+     * whose cause is an {@link InterruptedException}.
      *
      * @param start   the start time in nanos, based on {@linkplain System#nanoTime()}
      * @param timeout a timeout in the given {@code unit} of time
@@ -221,7 +228,8 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
                 boolean threadEnqueued = false;
 
                 /**
-                 * Parks the Future's thread.
+                 * Parks the current thread (the thread that called {@code await()}), which may be
+                 * different from the {@code Thread} running this Future's computation.
                  * <p>
                  * LockSupport.park() / parkNanos() may return when the Thread is permitted to be scheduled again.
                  * If so, the Future's tryComplete() method wasn't called yet. In that case the block() method is
@@ -377,15 +385,16 @@ final class FutureImpl<T extends @Nullable Object> implements Future<T> {
     }
 
     /**
-     * INTERNAL METHOD, SHOULD BE USED BY THE CONSTRUCTOR, ONLY.
+     * INTERNAL METHOD, used by the constructor, {@code PromiseImpl}, {@code cancel()}, the await blocker and
+     * the failure-handling paths -- not to be called from outside this package.
      * <p>
      * Completes this Future with a value and performs all actions.
      * <p>
      * This method is idempotent. I.e. it does nothing, if this Future is already completed.
      *
      * @param value A Success containing a result or a Failure containing an Exception.
-     * @throws IllegalStateException if the Future is already completed or cancelled.
-     * @throws NullPointerException  if the given {@code value} is null.
+     * @return {@code true} if this call completed the Future, {@code false} if it was already completed.
+     * @throws NullPointerException if the given {@code value} is null.
      */
     boolean tryComplete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");

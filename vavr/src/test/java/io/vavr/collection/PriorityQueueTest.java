@@ -244,6 +244,19 @@ public class PriorityQueueTest extends AbstractTraversableTest {
             final Comparator<String> comparator = comparingInt(o -> o.charAt(1));
             assertThat(PriorityQueue.of(comparator, "5c", "1a", "3a", "1a", "2a", "4b", "3b").distinct().map(s -> s.substring(1))).isEqualTo(of("a", "b", "c"));
         }
+
+        @Test
+        public void shouldPreservePriorityOrderWhenDistinctByComparator() {
+            final PriorityQueue<Integer> distinct = PriorityQueue.of(1, 2, 3, 4)
+                    .distinctBy(comparingInt(i -> i % 2));
+            assertThat(distinct.toList()).isEqualTo(io.vavr.collection.List.of(1, 2));
+        }
+
+        @Test
+        public void shouldPreservePriorityOrderWhenEnqueuingAfterDistinctByComparator() {
+            final PriorityQueue<Integer> distinct = PriorityQueue.of(1).distinctBy(Comparator.reverseOrder());
+            assertThat(distinct.enqueue(2).toList()).isEqualTo(io.vavr.collection.List.of(1, 2));
+        }
     }
 
     @Nested
@@ -259,6 +272,30 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         @Test
         public void shouldEnqueueAllElements() {
             assertThat(of(3, 1, 4).enqueueAll(of(1, 5, 9, 2))).isEqualTo(of(3, 1, 4, 1, 5, 9, 2));
+        }
+    }
+
+    @Nested
+    class NullComparatorTests {
+        @Test
+        public void shouldThrowWhenOfWithNullComparator() {
+            final Comparator<Integer> comparator = null;
+            assertThrows(NullPointerException.class, () -> PriorityQueue.of(comparator, 1));
+        }
+
+        @Test
+        public void shouldThrowWhenOfAllWithNullComparator() {
+            final Comparator<Integer> comparator = null;
+            assertThrows(NullPointerException.class, () -> PriorityQueue.ofAll(comparator, io.vavr.collection.List.of(1)));
+        }
+    }
+
+    @Nested
+    class FoldRightTests {
+        @Test
+        public void shouldFoldRightWithNullZero() {
+            final String actual = of(1, 2, 3).foldRight((String) null, (x, acc) -> acc == null ? String.valueOf(x) : acc + x);
+            assertThat(actual).isEqualTo("321");
         }
     }
 

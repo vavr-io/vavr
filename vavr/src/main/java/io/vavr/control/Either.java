@@ -740,6 +740,7 @@ public interface Either<L extends @Nullable Object, R extends @Nullable Object> 
      * Returns this as {@code Validation}.
      *
      * @return {@code Validation.valid(get())} if this is right, otherwise {@code Validation.invalid(getLeft())}.
+     * @throws NullPointerException if this is a {@link Either.Left} holding a null value
      */
     default Validation<L, R> toValidation() {
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());

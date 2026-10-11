@@ -288,6 +288,24 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
             assertThat(rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, -1)).isEqualTo(of(Long.MAX_VALUE));
             assertThat(rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE, -3)).isEqualTo(of(Long.MAX_VALUE));
         }
+
+        @Test
+        public void shouldCreateRangeClosedByStartingAtTypeBoundary() {
+
+            // int
+            assertThat(rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 2, 1)).isEqualTo(of(Integer.MIN_VALUE, Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 2));
+            assertThat(rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 2, -1)).isEqualTo(of(Integer.MAX_VALUE, Integer.MAX_VALUE - 1, Integer.MAX_VALUE - 2));
+            assertThat(rangeClosedBy(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(of(Integer.MIN_VALUE, -1, Integer.MAX_VALUE - 1));
+            assertThat(rangeClosedBy(Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(of(Integer.MAX_VALUE, -1));
+            assertThat(rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 1, 5)).isEqualTo(of(Integer.MIN_VALUE));
+
+            // long
+            assertThat(rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE + 2, 1L)).isEqualTo(of(Long.MIN_VALUE, Long.MIN_VALUE + 1, Long.MIN_VALUE + 2));
+            assertThat(rangeClosedBy(Long.MAX_VALUE, Long.MAX_VALUE - 2, -1L)).isEqualTo(of(Long.MAX_VALUE, Long.MAX_VALUE - 1, Long.MAX_VALUE - 2));
+            assertThat(rangeClosedBy(Long.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE)).isEqualTo(of(Long.MIN_VALUE, -1L, Long.MAX_VALUE - 1));
+            assertThat(rangeClosedBy(Long.MAX_VALUE, Long.MIN_VALUE, Long.MIN_VALUE)).isEqualTo(of(Long.MAX_VALUE, -1L));
+            assertThat(rangeClosedBy(Long.MIN_VALUE, Long.MIN_VALUE + 1, 5L)).isEqualTo(of(Long.MIN_VALUE));
+        }
     }
 
     @Nested
@@ -533,6 +551,32 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
         @Test
         public void shouldProhibitLongRangeClosedByStepZero() {
             assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0L, 1L, 0L));
+        }
+
+        @Test
+        public void shouldProhibitRangeClosedByStepZeroWhenFromEqualsTo() {
+            assertThrows(IllegalArgumentException.class, () -> rangeClosedBy('a', 'a', 0));
+            assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(1.0, 1.0, 0.0));
+            assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(1, 1, 0));
+            assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(1L, 1L, 0L));
+        }
+
+        // toExclusive at the type boundary
+
+        @Test
+        public void shouldCreateRangeByWhereToExclusiveIsTypeBoundary() {
+
+            // int
+            assertThat(rangeBy(5, Integer.MIN_VALUE, 1)).isEmpty();
+            assertThat(rangeBy(5, Integer.MAX_VALUE, -1)).isEmpty();
+            assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 2, 1)).isEqualTo(of(Integer.MIN_VALUE, Integer.MIN_VALUE + 1));
+            assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 2, -1)).isEqualTo(of(Integer.MAX_VALUE, Integer.MAX_VALUE - 1));
+
+            // long
+            assertThat(rangeBy(5L, Long.MIN_VALUE, 1L)).isEmpty();
+            assertThat(rangeBy(5L, Long.MAX_VALUE, -1L)).isEmpty();
+            assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE + 2, 1L)).isEqualTo(of(Long.MIN_VALUE, Long.MIN_VALUE + 1));
+            assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE - 2, -1L)).isEqualTo(of(Long.MAX_VALUE, Long.MAX_VALUE - 1));
         }
 
         // double special cases

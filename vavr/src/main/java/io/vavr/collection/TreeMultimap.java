@@ -402,7 +402,10 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
          * @param <V2>    The value type
          * @param n       The number of elements in the TreeMultimap
          * @param element The element
-         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A TreeMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         *         container the duplicates collapse to a single value (size {@code 1}).
+         *         An empty TreeMultimap if {@code n <= 0}.
          */
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
@@ -417,7 +420,10 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
          * @param keyComparator The comparator used to sort the entries by their key
          * @param n             The number of elements in the TreeMultimap
          * @param element       The element
-         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A TreeMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         *         container the duplicates collapse to a single value (size {@code 1}).
+         *         An empty TreeMultimap if {@code n <= 0}.
          */
         @SuppressWarnings("unchecked")
         public <K extends @Nullable Object, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, Tuple2<? extends K, ? extends V2> element) {
@@ -646,7 +652,7 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
         }
 
         /**
-         * Creates a TreeMultimap of the given list of key-value pairs.
+         * Creates a TreeMultimap of the given key-value pair.
          *
          * @param <K>   The key type
          * @param <V2>  The value type

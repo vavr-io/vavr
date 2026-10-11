@@ -75,13 +75,13 @@ interface ArrayType<T extends @Nullable Object> extends Serializable {
 
     default Object newInstance(int length) { return copy(empty(), length); }
 
-    /** System.arrayCopy with same source and destination */
+    /** copy the range [from, to) of the source into a new array of length (to - from), starting at index 0 */
     default Object copyRange(Object array, int from, int to) {
         final int length = to - from;
         return copy(array, length, from, 0, length);
     }
 
-    /** Repeatedly group an array into equal sized sub-trees */
+    /** group an array into sub-arrays of groupSize elements each (the last one may be shorter) */
     default Object grouped(Object array, int groupSize) {
         final int arrayLength = lengthOf(array);
         final Object results = obj().newInstance(1 + ((arrayLength - 1) / groupSize));
@@ -109,7 +109,7 @@ interface ArrayType<T extends @Nullable Object> extends Serializable {
         return copy(array, length, 0, 0, arrayLength);
     }
 
-    /** clone the source and keep everything after the index (pre-padding the values with null) */
+    /** clone the source and keep everything at and after the index; the leading slots hold null (or the default value for primitive array types) */
     default Object copyDrop(Object array, int index) {
         final int length = lengthOf(array);
         return copy(array, length, index, index, length - index);

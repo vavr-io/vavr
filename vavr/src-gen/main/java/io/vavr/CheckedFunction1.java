@@ -79,17 +79,6 @@ public interface CheckedFunction1<T1 extends @Nullable Object, R extends @Nullab
      * // using a lambda reference
      * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
      * }</pre>
-     * <p>
-     * <strong>Caution:</strong> Reflection loses type information of lambda references.
-     * <pre>{@code // type of a lambda expression
-     * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
-     *
-     * // type of a method reference
-     * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
-     *
-     * // type of a lambda reference
-     * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
-     * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type
@@ -101,26 +90,30 @@ public interface CheckedFunction1<T1 extends @Nullable Object, R extends @Nullab
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     * Lifts the given {@code partialFunction} into a function that returns an {@code Option} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @param <T1> 1st argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     *         if the function is defined for the given arguments, and {@code None} if it throws a non-fatal
+     *         throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being turned into {@code None}.
      */
     static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     * Lifts the given {@code partialFunction} into a function that returns a {@code Try} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
      * @param <T1> 1st argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} if it throws a
+     *         non-fatal throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being wrapped.
      */
     static <T1 extends @Nullable Object, R extends @Nullable Object> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.of(() -> partialFunction.apply(t1));
@@ -198,7 +191,8 @@ public interface CheckedFunction1<T1 extends @Nullable Object, R extends @Nullab
      * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
      * On subsequent calls given the same arguments the memoized value is returned.
      * <p>
-     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     * Note that {@code null} arguments and {@code null} return values are permitted; a {@code null} result
+     * is cached like any other value.
      *
      * @return a memoizing function equivalent to this.
      */

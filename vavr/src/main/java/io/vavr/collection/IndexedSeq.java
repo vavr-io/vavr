@@ -221,7 +221,7 @@ public interface IndexedSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int i = Math.min(end, length() - 1);
+        int i = Math.max(-1, Math.min(end, length() - 1));
         while (i >= 0 && !predicate.test(this.get(i))) {
             i--;
         }
@@ -337,12 +337,13 @@ public interface IndexedSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int len = length();
-        int i = from;
+        final int len = length();
+        final int start = Math.max(from, 0);
+        int i = start;
         while (i < len && predicate.test(this.get(i))) {
             i++;
         }
-        return i - from;
+        return i - start;
     }
 
     @Override
@@ -523,15 +524,17 @@ interface IndexedSeqModule {
         static <T extends @Nullable Object> int lastIndexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
-            } else if (source.isEmpty()) {
-                return Collections.isEmpty(slice) ? 0 : -1;
-            } else if (Collections.isEmpty(slice)) {
+            }
+            // the slice is read once: an Iterable may not be iterable twice (e.g. a stream's iterator())
+            final IndexedSeq<T> _slice = toIndexedSeq(slice);
+            if (source.isEmpty()) {
+                return _slice.isEmpty() ? 0 : -1;
+            } else if (_slice.isEmpty()) {
                 final int len = source.length();
                 return len < end ? len : end;
             }
             int index = 0;
             int result = -1;
-            final IndexedSeq<T> _slice = toIndexedSeq(slice);
             final int maxIndex = source.length() - _slice.length();
             while (index <= maxIndex) {
                 int indexOfSlice = findSlice(source, _slice, index, maxIndex);

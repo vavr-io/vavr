@@ -347,8 +347,8 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * @param toExclusive the last char + 1
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Character> rangeBy(char from, char toExclusive, int step) {
@@ -356,8 +356,8 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
     }
 
     /**
-     * Creates an Array of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
+     * Creates an Array of double numbers starting from {@code from}, extending up to (but not including)
+     * {@code toExclusive}, with {@code step}.
      * <p>
      * Examples:
      * <pre>
@@ -370,11 +370,11 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * </pre>
      *
      * @param from        the first double
-     * @param toExclusive the last double + 1
+     * @param toExclusive the exclusive upper bound
      * @param step        the step
      * @return a range of double values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Double> rangeBy(double from, double toExclusive, double step) {
@@ -418,9 +418,9 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -465,8 +465,8 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * @param toExclusive the last number + 1
      * @param step        the step
      * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Long> rangeBy(long from, long toExclusive, long step) {
@@ -628,7 +628,7 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
+     * @return a range of long values as specified or the empty range if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -657,16 +657,16 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Array, otherwise {@code Some} {@code Tuple}
-     * of the element for the next call and the value to add to the
-     * resulting Array.
+     * of the value to add to the resulting Array and the element for
+     * the next call.
      * <p>
      * Example:
      * <pre>
      * {@code
      * Array.unfoldRight(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2<gt;(x, x-1)));
-     * // Array(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+     *             : Option.of(new Tuple2<>(x, x-1)));
+     * // Array(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
      * }
      * </pre>
      *
@@ -685,17 +685,17 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * Creates an Array from a seed value and a function.
      * The function takes the seed at first.
      * The function should return {@code None} when it's
-     * done generating the list, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting list and
-     * the element for the next call.
+     * done generating the Array, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and
+     * the value to add to the resulting Array.
      * <p>
      * Example:
      * <pre>
      * {@code
      * Array.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2<gt;(x-1, x)));
-     * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     *             : Option.of(new Tuple2<>(x-1, x)));
+     * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
      * }
      * </pre>
      *
@@ -714,17 +714,17 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
      * Creates an Array from a seed value and a function.
      * The function takes the seed at first.
      * The function should return {@code None} when it's
-     * done generating the list, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting list and
-     * the element for the next call.
+     * done generating the Array, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and
+     * the value to add to the resulting Array.
      * <p>
      * Example:
      * <pre>
      * {@code
      * Array.unfold(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2<gt;(x-1, x)));
-     * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     *             : Option.of(new Tuple2<>(x-1, x)));
+     * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
      * }
      * </pre>
      *
@@ -999,7 +999,7 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
 
     @Override
     public int indexOf(T element, int from) {
-        for (int i = from; i < length(); i++) {
+        for (int i = Math.max(from, 0); i < length(); i++) {
             if (Objects.equals(get(i), element)) {
                 return i;
             }

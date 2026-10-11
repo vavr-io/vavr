@@ -37,7 +37,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a lazily evaluated value. Unlike a standard {@link java.util.function.Supplier}, 
- * {@code Lazy} is memoizing: the computation is performed at most once, ensuring referential transparency.
+ * {@code Lazy} is memoizing: once the computation succeeds, its result is cached and the computation is not
+ * performed again, ensuring referential transparency. If the computation throws, the exception propagates,
+ * nothing is memoized, and the computation is retried on the next access.
  *
  * <p>This type behaves more like a <em>Functor</em> than a <em>Monad</em>: it represents a value rather than capturing
  * a specific state. Therefore, it does not provide operations like {@code flatMap} or {@code orElse}.</p>
@@ -91,7 +93,9 @@ public final class Lazy<T extends @Nullable Object> implements Value<T>, Supplie
 
     /**
      * Creates a {@code Lazy} instance that obtains its value from the given {@code Supplier}.
-     * The supplier is invoked at most once, and the result is cached for subsequent calls.
+     * The supplier is invoked at most once on successful evaluation, and its result is cached for subsequent
+     * calls. If the supplier throws, the exception propagates to the caller of {@link #get()}, the value is
+     * not memoized, and the supplier is invoked again on the next call to {@link #get()}.
      *
      * @param <T>      the type of the lazy value
      * @param supplier the supplier providing the value
@@ -200,7 +204,6 @@ public final class Lazy<T extends @Nullable Object> implements Value<T>, Supplie
      * <p>Note: The value is evaluated internally (at most once) when {@link #get()} is called.</p>
      *
      * @return {@code true} if the value has been evaluated, {@code false} otherwise
-     * @throws UnsupportedOperationException if this lazy value is undefined
      */
     public boolean isEvaluated() {
         return supplier == null;
@@ -250,12 +253,12 @@ public final class Lazy<T extends @Nullable Object> implements Value<T>, Supplie
     }
 
     /**
-     * Applies a transformation function to the value contained in this {@code Lazy}, producing a new {@code Lazy} instance
-     * of the transformed value.
+     * Applies {@code f} to this {@code Lazy} instance itself (not to its contained value) and returns the
+     * result of {@code f} directly; the result is not wrapped in a {@code Lazy}.
      *
-     * @param f   the function to transform the value
-     * @param <U> the type of the result of the transformation
-     * @return a new {@code Lazy} instance containing the transformed value
+     * @param f   a function that receives this {@code Lazy} and produces a result
+     * @param <U> the type of the result of {@code f}
+     * @return the result of {@code f.apply(this)}
      * @throws NullPointerException if {@code f} is null
      */
     public <U extends @Nullable Object> U transform(Function<? super Lazy<T>, ? extends U> f) {

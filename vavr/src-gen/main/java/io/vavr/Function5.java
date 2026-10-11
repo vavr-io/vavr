@@ -85,17 +85,6 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
      * // using a lambda reference
      * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
      * }</pre>
-     * <p>
-     * <strong>Caution:</strong> Reflection loses type information of lambda references.
-     * <pre>{@code // type of a lambda expression
-     * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
-     *
-     * // type of a method reference
-     * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
-     *
-     * // type of a lambda reference
-     * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
-     * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type
@@ -111,7 +100,7 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     * Lifts the given {@code partialFunction} into a function that returns an {@code Option} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
@@ -121,14 +110,16 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
      * @param <T4> 4th argument
      * @param <T5> 5th argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     *         if the function is defined for the given arguments, and {@code None} if it throws a non-fatal
+     *         throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being turned into {@code None}.
      */
     static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, Option<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5)).toOption();
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     * Lifts the given {@code partialFunction} into a function that returns a {@code Try} result.
      *
      * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
      * @param <R> return type
@@ -138,7 +129,9 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
      * @param <T4> 4th argument
      * @param <T5> 5th argument
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} if it throws a
+     *         non-fatal throwable. Fatal throwables (see {@link Try}) are rethrown
+     *         instead of being wrapped.
      */
     static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, R extends @Nullable Object> Function5<T1, T2, T3, T4, T5, Try<R>> liftTry(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5));
@@ -260,7 +253,8 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
      * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
      * On subsequent calls given the same arguments the memoized value is returned.
      * <p>
-     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     * Note that {@code null} arguments and {@code null} return values are permitted; a {@code null} result
+     * is cached like any other value.
      *
      * @return a memoizing function equivalent to this.
      */
@@ -298,7 +292,7 @@ public interface Function5<T1 extends @Nullable Object, T2 extends @Nullable Obj
     }
 
     /**
-     * Returns a composed function that first applies this Function5 to the given argument and then applies
+     * Returns a composed function that first applies this Function5 to the given arguments and then applies
      * {@linkplain Function} {@code after} to the result.
      *
      * @param <V> return type of after

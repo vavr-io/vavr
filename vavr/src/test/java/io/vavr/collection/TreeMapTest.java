@@ -402,6 +402,17 @@ public class TreeMapTest extends AbstractSortedMapTest {
         }
     }
 
+    @Nested
+    class ReplaceAllTests {
+        @Test
+        public void shouldKeepComparatorWhenReplacingAllValues() {
+            final TreeMap<Integer, String> testee = TreeMap.of(Comparator.reverseOrder(), 1, "a", 2, "b", 3, "c");
+            final TreeMap<Integer, String> actual = testee.replaceAll((k, v) -> v + k);
+            assertThat(actual.comparator()).isEqualTo(testee.comparator());
+            assertThat(actual.toList()).isEqualTo(List(Tuple(3, "c3"), Tuple(2, "b2"), Tuple(1, "a1")));
+        }
+    }
+
     // -- obsolete tests
 
     @Override

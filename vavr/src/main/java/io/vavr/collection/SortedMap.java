@@ -72,10 +72,10 @@ public interface SortedMap<K extends @Nullable Object, V extends @Nullable Objec
                                      Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     /**
-     * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given
+     * Same as {@link #flatMap(BiFunction)} but using a specific comparator for keys of the codomain of the given
      * {@code mapper}.
      *
-     * @param keyComparator A comparator for keys of type U
+     * @param keyComparator A comparator for keys of type K2
      * @param mapper        A function which maps key/value pairs to Iterables map entries
      * @param <K2>          New key type
      * @param <V2>          New value type
@@ -87,7 +87,7 @@ public interface SortedMap<K extends @Nullable Object, V extends @Nullable Objec
      * Same as {@link #map(BiFunction)}, using a specific comparator for keys of the codomain of the given
      * {@code mapper}.
      *
-     * @param keyComparator A comparator for keys of type U
+     * @param keyComparator A comparator for keys of type K2
      * @param <K2>          key's component type of the map result
      * @param <V2>          value's component type of the map result
      * @param mapper        a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}

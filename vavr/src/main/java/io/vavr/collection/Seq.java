@@ -178,9 +178,11 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      * is defined at an index if this sequence contains at least {@code index + 1} elements.
      * Applying the partial function to a defined index returns the element at that index.
      *
+     * <p>This method itself never throws. Applying the returned function to an index for which
+     * {@code isDefinedAt(index)} is {@code false} (i.e. {@code index < 0} or {@code index >= length()})
+     * throws an {@code IndexOutOfBoundsException}.</p>
+     *
      * @return a {@link PartialFunction} mapping indices to elements
-     * @throws IndexOutOfBoundsException if the sequence is empty, or if
-     *         {@code index < 0} or {@code index >= length()}
      */
     PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException;
 
@@ -210,8 +212,12 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
     Seq<? extends Seq<T>> combinations();
 
     /**
-     * Returns all subsets of this sequence containing exactly {@code k} distinct elements,
+     * Returns all subsets of size {@code k} selected from this sequence by position,
      * i.e., the k-combinations of this sequence.
+     *
+     * <p>Selection is positional, not by value: if this sequence contains duplicate elements,
+     * a resulting subset may itself contain duplicate values and the result may contain
+     * multiple equal subsets.</p>
      *
      * @param k the size of each subset
      * @return a sequence of sequences representing all k-element combinations
@@ -296,8 +302,8 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
     /**
      * Checks whether this sequence ends with the given sequence.
      *
-     * <p><strong>Note:</strong> If both this sequence and {@code that} are infinite,
-     * this method may not terminate.</p>
+     * <p><strong>Note:</strong> This method computes {@code length()} of both this sequence and
+     * {@code that} before comparing elements; it may not terminate if either of them is infinite.</p>
      *
      * @param that the sequence to check as a suffix; must not be {@code null}
      * @return {@code true} if this sequence ends with {@code that}, {@code false} otherwise
@@ -471,8 +477,7 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      * @param index   the position at which to insert the element
      * @param element the element to insert
      * @return a new {@code Seq} with the element inserted
-     * @throws IndexOutOfBoundsException if the sequence is empty, or if
-     *         {@code index < 0} or {@code index >= length()}
+     * @throws IndexOutOfBoundsException if {@code index < 0} or {@code index > length()}
      */
     Seq<T> insert(int index, T element);
 
@@ -482,8 +487,7 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      * @param index    the position at which to insert the elements
      * @param elements the elements to insert; must not be {@code null}
      * @return a new {@code Seq} with the elements inserted
-     * @throws IndexOutOfBoundsException if the sequence is empty, or if
-     *         {@code index < 0} or {@code index >= length()}
+     * @throws IndexOutOfBoundsException if {@code index < 0} or {@code index > length()}
      */
     Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
@@ -971,7 +975,8 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      *
      * @param that   the sequence to test; must not be {@code null}
      * @param offset the index at which to start checking for the prefix
-     * @return {@code true} if {@code that} is empty or matches a subsequence of this sequence starting at {@code offset}, {@code false} otherwise
+     * @return {@code false} if {@code offset} is negative; otherwise {@code true} if {@code that} is empty
+     *         or matches a subsequence of this sequence starting at {@code offset}, {@code false} otherwise
      */
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
@@ -1020,7 +1025,7 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      * List.of(1, 2, 3, 4).subSequence(1, 3); // = (2, 3)
      * List.of(1, 2, 3, 4).subSequence(0, 4); // = (1, 2, 3, 4)
      * List.of(1, 2, 3, 4).subSequence(2, 2); // = ()
-     * List.of(1, 2).subSequence(1, 0);       // throws IndexOutOfBoundsException
+     * List.of(1, 2).subSequence(1, 0);       // throws IllegalArgumentException
      * List.of(1, 2).subSequence(-10, 1);     // throws IndexOutOfBoundsException
      * List.of(1, 2).subSequence(0, 10);      // throws IndexOutOfBoundsException
      * }</pre>
@@ -1031,9 +1036,10 @@ public interface Seq<T extends @Nullable Object> extends Traversable<T>, Partial
      * @param beginIndex the starting index (inclusive) of the subsequence
      * @param endIndex   the ending index (exclusive) of the subsequence
      * @return a new {@code Seq} representing the subsequence from {@code beginIndex} to {@code endIndex - 1}
-     * @throws IndexOutOfBoundsException if {@code beginIndex} or {@code endIndex} is negative, or if
+     * @throws IndexOutOfBoundsException if {@code beginIndex} is negative, or if
      *                                   {@code endIndex} is greater than {@code length()}
      * @throws IllegalArgumentException  if {@code beginIndex} is greater than {@code endIndex}
+     *                                   (this includes a negative {@code endIndex} with a non-negative {@code beginIndex})
      */
     Seq<T> subSequence(int beginIndex, int endIndex);
 

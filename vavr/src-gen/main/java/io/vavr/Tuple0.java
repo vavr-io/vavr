@@ -73,6 +73,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
     @Override
     public int compareTo(Tuple0 that) {
+        Objects.requireNonNull(that, "that is null");
         return 0;
     }
 

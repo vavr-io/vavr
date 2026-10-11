@@ -101,7 +101,7 @@ public final class Tuple1<T1 extends @Nullable Object> implements Tuple, Compara
     }
 
     /**
-     * Sets the 1st element of this tuple to the given {@code value}.
+     * Returns a copy of this tuple with the 1st element replaced by the given {@code value}.
      *
      * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.

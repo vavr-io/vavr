@@ -215,7 +215,10 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
          * @param <V2>    The value type
          * @param n       The number of elements in the LinkedHashMultimap
          * @param element The element
-         * @return A LinkedHashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A LinkedHashMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         *         container the duplicates collapse to a single value (size {@code 1}).
+         *         An empty LinkedHashMultimap if {@code n <= 0}.
          */
         @SuppressWarnings("unchecked")
         public <K extends @Nullable Object, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
@@ -460,11 +463,12 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
         /**
          * Returns a {@link Collector} which may be used in conjunction with
          * {@link java.util.stream.Stream#collect(Collector)} to obtain a
-         * {@link LinkedHashMultimap}.
+         * {@link LinkedHashMultimap}. The collected result is a {@code LinkedHashMultimap}, but it is
+         * statically typed as {@link Multimap}.
          *
          * @param <K> The key type
          * @param <V2> The value type
-         * @return A {@link LinkedHashMultimap} Collector.
+         * @return A Collector whose result is a {@link LinkedHashMultimap}, typed as {@link Multimap}.
          */
         public <K extends @Nullable Object, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
             final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
@@ -517,6 +521,15 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
         return toJavaMap(new java.util.LinkedHashMap<>());
     }
 
+    /**
+     * Returns {@code true} because the keys of this multimap retain their insertion order. Note that the
+     * key-value pairs are iterated grouped by key, and that the values of a key follow the order of the
+     * configured container (insertion order for a {@code SEQ} container, unspecified for a {@code SET}
+     * container, sorted for a {@code SORTED_SET} container), so the pairs are not necessarily produced in
+     * the exact order they were inserted.
+     *
+     * @return {@code true}
+     */
     @Override
     public boolean isSequential() {
         return true;

@@ -62,20 +62,20 @@ public interface Set<T extends @Nullable Object> extends Traversable<T>, Functio
     }
 
     /**
-     * Returns a new set containing all elements of this set plus the given element,
+     * Returns a set containing all elements of this set plus the given element,
      * if it was not already present.
      *
      * @param element the element to add
-     * @return a new set including the element
+     * @return a set including the element; may be this instance if the element was already present
      */
     Set<T> add(T element);
 
     /**
-     * Returns a new set containing all elements of this set plus the given elements,
+     * Returns a set containing all elements of this set plus the given elements,
      * excluding duplicates.
      *
      * @param elements the elements to add
-     * @return a new set including the additional elements
+     * @return a set including the additional elements; may be this instance (or {@code elements} itself) if no change was necessary
      */
     Set<T> addAll(Iterable<? extends T> elements);
 
@@ -95,39 +95,41 @@ public interface Set<T extends @Nullable Object> extends Traversable<T>, Functio
     }
 
     /**
-     * Returns a new set containing all elements of this set except those in the given set.
+     * Returns a set containing all elements of this set except those in the given set.
      *
      * @param that the set of elements to remove
-     * @return a new set without the specified elements
+     * @return a set without the specified elements; may be this instance if none of them was present
      */
     Set<T> diff(Set<? extends T> that);
 
     /**
-     * Returns a new set containing only the elements present in both this set and the given set.
+     * Returns a set containing only the elements present in both this set and the given set.
      *
      * @param that the set to intersect with
-     * @return a new set with elements common to both sets
+     * @return a set with elements common to both sets; may be this instance if unchanged
      */
     Set<T> intersect(Set<? extends T> that);
 
     /**
-     * Returns a new set with the given element removed, if it was present.
+     * Returns a set with the given element removed, if it was present.
      *
      * @param element the element to remove
-     * @return a new set without the specified element
+     * @return a set without the specified element; may be this instance if the element was not present
      */
     Set<T> remove(T element);
 
     /**
-     * Returns a new set with all given elements removed, if present.
+     * Returns a set with all given elements removed, if present.
      *
      * @param elements the elements to remove
-     * @return a new set without the specified elements
+     * @return a set without the specified elements; may be this instance if none of them was present
      */
     Set<T> removeAll(Iterable<? extends T> elements);
 
     /**
-     * Converts this Vavr set to a {@code java.util.Set}, preserving insertion or sort order.
+     * Converts this Vavr set to a {@code java.util.Set}. Ordered implementations ({@code LinkedHashSet},
+     * {@code SortedSet}) preserve their insertion or sort order in the returned set; {@code HashSet} makes
+     * no ordering guarantee.
      *
      * @return a new {@code java.util.Set} instance
      */
@@ -135,10 +137,10 @@ public interface Set<T extends @Nullable Object> extends Traversable<T>, Functio
     java.util.Set<T> toJavaSet();
 
     /**
-     * Returns a new set containing all distinct elements from this set and the given set.
+     * Returns a set containing all distinct elements from this set and the given set.
      *
      * @param that the set to union with
-     * @return a new set with all elements from both sets
+     * @return a set with all elements from both sets; may be this instance (or {@code that} itself) if no change was necessary
      */
     Set<T> union(Set<? extends T> that);
 

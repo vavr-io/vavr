@@ -135,10 +135,12 @@ public interface Foldable<T extends @Nullable Object> {
     <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
-     * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
+     * Reduces the elements of this Foldable from the left by repeatedly applying the given binary
+     * operation {@code op} (see {@link #reduceLeft}).
      * <p>
-     * The order in which elements are combined is non-deterministic, so {@code op} should be associative
-     * to guarantee a consistent result.
+     * {@code op} should still be associative if the result is meant to be independent of how the
+     * elements are grouped, since other implementations of {@code Foldable} may combine elements
+     * in a different order.
      * <p>
      * This method throws {@link NoSuchElementException} if the Foldable is empty.
      *
@@ -153,10 +155,12 @@ public interface Foldable<T extends @Nullable Object> {
     }
 
     /**
-     * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
+     * Reduces the elements of this Foldable from the left by repeatedly applying the given binary
+     * operation {@code op} (see {@link #reduceLeftOption}).
      * <p>
-     * The order of element combination is non-deterministic, so {@code op} should be associative to
-     * guarantee a consistent result.
+     * {@code op} should still be associative if the result is meant to be independent of how the
+     * elements are grouped, since other implementations of {@code Foldable} may combine elements
+     * in a different order.
      *
      * @param op a binary function to combine two elements
      * @return an {@link Option} containing the reduced result, or {@link Option#none()} if this Foldable is empty

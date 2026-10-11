@@ -109,7 +109,8 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
 
         ),
         /**
-         * Values are stored in a sorted {@link Set}, ensuring uniqueness and natural ordering of values per key.
+         * Values are stored in a sorted {@link Set}, ensuring uniqueness of values per key and ordering them by their
+         * natural order or by the {@link java.util.Comparator} supplied via {@code withSortedSet(Comparator)}.
          */
         SORTED_SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
@@ -183,8 +184,8 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     Map<K, Traversable<V>> asMap();
 
     /**
-     * Turns this {@code Multimap} into a {@link PartialFunction} which is defined at a specific index, if this {@code Multimap}
-     * contains the given key. When applied to a defined key, the partial function will return
+     * Turns this {@code Multimap} into a {@link PartialFunction} which is defined for a given key, if this {@code Multimap}
+     * contains that key. When applied to a defined key, the partial function will return
      * the {@link Traversable} of this {@code Multimap} that is associated with the key.
      *
      * @return a new {@link PartialFunction}
@@ -451,7 +452,9 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     /**
      * Creates a new multimap which by merging the entries of {@code this} multimap and {@code that} multimap.
      * <p>
-     * If collisions occur, the value of {@code this} multimap is taken.
+     * If a key exists in both multimaps, the values of both are kept: the values of {@code that} are appended
+     * after the values of {@code this} for {@code SEQ} containers, or added to the value set for
+     * {@code SET}/{@code SORTED_SET} containers. No value of either multimap is discarded.
      *
      * @param that the other multimap
      * @return A merged multimap
@@ -464,7 +467,8 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
      * <p>
      * Uses the specified collision resolution function if two keys are the same.
      * The collision resolution function will always take the first argument from <code>this</code> multimap
-     * and the second from <code>that</code> multimap.
+     * and the second from <code>that</code> multimap. It is invoked only for keys present in both multimaps;
+     * the values of keys that exist in only one of the multimaps are taken as they are.
      *
      * @param <K2>                key type of that Multimap
      * @param <V2>                value type of that Multimap
@@ -476,9 +480,11 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     <K2 extends K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
     /**
-     * Associates the specified value with the specified key in this multimap.
-     * If the map previously contained a mapping for the key, the old value is
-     * replaced by the specified value.
+     * Adds the specified value to the values associated with the specified key in this multimap.
+     * Unlike {@code java.util.Map.put}, an existing mapping for the key is not replaced: the value is
+     * appended to the key's values for {@code SEQ} containers, or added to the value set for
+     * {@code SET}/{@code SORTED_SET} containers (adding a value that is already present leaves the
+     * multimap unchanged and returns this instance).
      *
      * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
@@ -569,8 +575,12 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     int size();
 
     /**
-     * Converts this Vavr {@code Map} to a {@code java.util.Map} while preserving characteristics
-     * like insertion order ({@code LinkedHashMultimap}) and sort order ({@code SortedMultimap}).
+     * Converts this Vavr {@code Multimap} to a {@code java.util.Map} that maps each key to a
+     * {@code java.util.Collection} of its values. The key order of the map follows this multimap
+     * (insertion order for {@code LinkedHashMultimap}, key order for {@code SortedMultimap}).
+     * The value collections are a {@code java.util.ArrayList} for {@code SEQ}, a {@code java.util.HashSet}
+     * for {@code SET} and a {@code java.util.TreeSet} with <em>natural</em> ordering for {@code SORTED_SET}
+     * containers; a value comparator supplied via {@code withSortedSet(Comparator)} is not carried over.
      *
      * @return a new {@code java.util.Map} instance
      */
@@ -752,11 +762,13 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     Multimap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     /**
-     * Replaces the entry for the specified key only if it is currently mapped to some value.
+     * Replaces all values currently associated with the specified key with the single given value, if the key
+     * is present. Every other value previously mapped to that key is discarded; use
+     * {@link #replace(Object, Object, Object)} to substitute just one value while keeping the rest.
      *
      * @param key   the key of the element to be substituted
      * @param value the new value to be associated with the key
-     * @return a new map containing key mapped to value if key was contained before. The old map otherwise
+     * @return a new multimap where key is mapped only to value if key was contained before. The old multimap otherwise
      */
     Multimap<K, V> replaceValue(K key, V value);
 

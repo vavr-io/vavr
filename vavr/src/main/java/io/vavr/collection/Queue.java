@@ -400,7 +400,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of int values as specified or an empty Queue if {@code from >= toExclusive}
      */
     public static Queue<Integer> range(int from, int toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
@@ -423,9 +423,9 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or an empty Queue if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -446,7 +446,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      *
      * @param from        the first number
      * @param toExclusive the last number + 1
-     * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
+     * @return a range of long values as specified or an empty Queue if {@code from >= toExclusive}
      */
     public static Queue<Long> range(long from, long toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
@@ -469,9 +469,9 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * @param from        the first number
      * @param toExclusive the last number + 1
      * @param step        the step
-     * @return a range of long values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of long values as specified or an empty Queue if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Long> rangeBy(long from, long toExclusive, long step) {
@@ -535,7 +535,8 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * @param step        the increment; must not be zero
      * @return a Queue over the specified double range, or empty if the step
      *         direction does not match the direction from {@code from} to {@code toInclusive}
-     * @throws IllegalArgumentException if {@code step} is zero
+     * @throws IllegalArgumentException if {@code step} is zero and {@code from != toInclusive}
+     *                                  (if {@code from == toInclusive}, a singleton Queue is returned regardless of {@code step})
      */
     public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
@@ -555,7 +556,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of int values as specified or an empty Queue if {@code from > toInclusive}
      */
     public static Queue<Integer> rangeClosed(int from, int toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -578,7 +579,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if<br>
+     * @return a range of int values as specified or an empty Queue if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -601,7 +602,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      *
      * @param from        the first number
      * @param toInclusive the last number
-     * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
+     * @return a range of long values as specified or an empty Queue if {@code from > toInclusive}
      */
     public static Queue<Long> rangeClosed(long from, long toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
@@ -641,7 +642,7 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or {@code Nil} if<br>
+     * @return a range of long values as specified or an empty Queue if<br>
      * {@code from > toInclusive} and {@code step > 0} or<br>
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
@@ -655,8 +656,8 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Queue, otherwise {@code Some} {@code Tuple}
-     * of the element for the next call and the value to add to the
-     * resulting Queue.
+     * of the value to add to the resulting Queue and the element for
+     * the next call.
      * <p>
      * Example:
      * <pre>
@@ -684,8 +685,8 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Queue, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting Queue and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting Queue.
      * <p>
      * Example:
      * <pre>
@@ -713,8 +714,8 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Queue, otherwise {@code Some} {@code Tuple}
-     * of the value to add to the resulting Queue and
-     * the element for the next call.
+     * of the element for the next call and
+     * the value to add to the resulting Queue.
      * <p>
      * Example:
      * <pre>
@@ -752,7 +753,9 @@ public final class Queue<T extends @Nullable Object> extends AbstractQueue<T, Qu
      * the first which will be retrieved.
      *
      * @param elements An Iterable of elements, may be empty
-     * @return a new {@code Queue} instance, containing the new elements
+     * @return a {@code Queue} containing this queue's elements followed by the given elements
+     *         (may be {@code this} if {@code elements} is empty, or {@code elements} itself if
+     *         this queue is empty and {@code elements} is a {@code Queue})
      * @throws NullPointerException if elements is null
      */
     @SuppressWarnings("unchecked")

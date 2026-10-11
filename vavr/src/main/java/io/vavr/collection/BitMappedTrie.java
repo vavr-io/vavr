@@ -36,8 +36,8 @@ import static java.util.function.Function.identity;
  * Access to a given position is done by converting the index to a base 32 number and using each digit to descend down the tree.
  * Modifying the tree is done similarly, but along the way the path is copied, returning a new root every time.
  * `Append` inserts in the last leaf, or if the tree is full from the right, it adds another layer on top of it (the old root will be the first of the new one).
- * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root would be the last node of the new root)
- * shifts the indices by half of the current tree's full size. The `offset` shifts them back to the correct index.
+ * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root becomes the last child of the new root,
+ * at index `BRANCHING_FACTOR - 1`) shifts the indices by `BRANCHING_FACTOR - 1` times the old tree's full size. The `offset` shifts them back to the correct index.
  * `Slice` is done by trimming the path from the root and discarding any `leading`/`trailing` values in effectively constant time (without memory leak, as in `Java`/`Clojure`).
  *
  * @author Pap Lőrinc

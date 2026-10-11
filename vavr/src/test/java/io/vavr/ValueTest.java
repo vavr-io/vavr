@@ -19,8 +19,13 @@
 package io.vavr;
 
 import io.vavr.collection.List;
+import io.vavr.collection.PriorityQueue;
+import io.vavr.collection.TreeMap;
+import io.vavr.collection.TreeMultimap;
+import io.vavr.collection.TreeSet;
 import io.vavr.control.Option;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
@@ -60,5 +65,28 @@ public class ValueTest {
         final Value<Double> doubles = Option.of(1.0d);
         assertThat(doubles.collect(ArrayList<Double>::new,
                 ArrayList::add, ArrayList::addAll).get(0)).isEqualTo(1.0d);
+    }
+
+    // -- toSortedSet() / toPriorityQueue() on key-ordered maps (Ordered<K> but Value<Tuple2<K, V>>)
+
+    @Test
+    public void shouldConvertSortedMapWithKeyComparatorToSortedSetUsingNaturalOrderOfEntries() {
+        final Comparator<Integer> keyComparator = Comparator.comparingInt(Integer::intValue); // not applicable to Tuple2
+        final Value<Tuple2<Integer, String>> map = TreeMap.of(keyComparator.reversed(), 1, "a", 2, "b");
+        assertThat(map.toSortedSet()).isEqualTo(TreeSet.of(Tuple.of(1, "a"), Tuple.of(2, "b")));
+    }
+
+    @Test
+    public void shouldConvertSortedMapWithKeyComparatorToPriorityQueueUsingNaturalOrderOfEntries() {
+        final Comparator<Integer> keyComparator = Comparator.comparingInt(Integer::intValue); // not applicable to Tuple2
+        final Value<Tuple2<Integer, String>> map = TreeMap.of(keyComparator.reversed(), 1, "a", 2, "b");
+        assertThat(map.toPriorityQueue()).isEqualTo(PriorityQueue.of(Tuple.of(1, "a"), Tuple.of(2, "b")));
+    }
+
+    @Test
+    public void shouldConvertSortedMultimapWithKeyComparatorToSortedSetUsingNaturalOrderOfEntries() {
+        final Comparator<Integer> keyComparator = Comparator.comparingInt(Integer::intValue); // not applicable to Tuple2
+        final Value<Tuple2<Integer, String>> multimap = TreeMultimap.withSeq().of(keyComparator.reversed(), 1, "a", 1, "b");
+        assertThat(multimap.toSortedSet()).isEqualTo(TreeSet.of(Tuple.of(1, "a"), Tuple.of(1, "b")));
     }
 }

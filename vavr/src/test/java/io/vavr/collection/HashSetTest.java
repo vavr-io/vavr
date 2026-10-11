@@ -350,9 +350,15 @@ public class HashSetTest extends AbstractSetTest {
 
     @Override
     public void shouldFoldRightNonNil() {
-        final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
-        final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
-        assertThat(actual).isIn(expected);
+        // a right fold with (x, xs) -> x + xs concatenates the elements in iteration order
+        final HashSet<Character> set = of('a', 'b', 'c');
+        final String actual = set.foldRight("!", (x, xs) -> x + xs);
+        assertThat(actual).isEqualTo(set.mkString() + "!");
+    }
+
+    @Test
+    public void shouldThrowWhenFoldRightNullOperatorOnNonNil() {
+        assertThrows(NullPointerException.class, () -> of(1, 2, 3).foldRight(0, null));
     }
 
     @Override

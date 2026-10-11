@@ -14,14 +14,14 @@
  * <p>
  * The Option control is a replacement for {@linkplain java.util.Optional}. An Option is either
  * {@linkplain io.vavr.control.Option.Some} value or {@linkplain io.vavr.control.Option.None}.
- * In contrast to Optional, Option supports null values, i.e. it is possible to call {@code new Some(null)}.
+ * In contrast to Optional, Option supports null values, i.e. {@code Option.some(null)} yields {@code Some(null)}.
  * However, {@code Option.of(null)} results in None.
  * <p>
  * <strong>Try</strong>
  * <p>
  * Exceptions are handled with the {@linkplain io.vavr.control.Try} control which is either a
  * {@linkplain io.vavr.control.Try.Success}, containing a result, or a {@linkplain io.vavr.control.Try.Failure},
- * containing an Exception.
+ * containing a (non-fatal) Throwable as its cause.
  */
 @NullMarked
 package io.vavr.control;

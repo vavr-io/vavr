@@ -56,7 +56,7 @@ public interface Tuple extends Serializable {
     /**
      * Converts this tuple to a sequence.
      *
-     * @return A new {@code Seq}.
+     * @return a {@code Seq} containing the elements of this tuple, in order (empty for {@code Tuple0}).
      */
     Seq<?> toSeq();
 
@@ -234,7 +234,7 @@ public interface Tuple extends Serializable {
      * @param o1 the 1st value to hash
      * @return the same result as {@link Objects#hashCode(Object)}
      */
-    static int hash(Object o1) {
+    static int hash(@Nullable Object o1) {
         return Objects.hashCode(o1);
     }
 
@@ -245,7 +245,7 @@ public interface Tuple extends Serializable {
      * @param o2 the 2nd value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2) {
+    static int hash(@Nullable Object o1, @Nullable Object o2) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -260,7 +260,7 @@ public interface Tuple extends Serializable {
      * @param o3 the 3rd value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -277,7 +277,7 @@ public interface Tuple extends Serializable {
      * @param o4 the 4th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3, Object o4) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3, @Nullable Object o4) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -296,7 +296,7 @@ public interface Tuple extends Serializable {
      * @param o5 the 5th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3, @Nullable Object o4, @Nullable Object o5) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -317,7 +317,7 @@ public interface Tuple extends Serializable {
      * @param o6 the 6th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3, @Nullable Object o4, @Nullable Object o5, @Nullable Object o6) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -340,7 +340,7 @@ public interface Tuple extends Serializable {
      * @param o7 the 7th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3, @Nullable Object o4, @Nullable Object o5, @Nullable Object o6, @Nullable Object o7) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);
@@ -365,7 +365,7 @@ public interface Tuple extends Serializable {
      * @param o8 the 8th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
      */
-    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
+    static int hash(@Nullable Object o1, @Nullable Object o2, @Nullable Object o3, @Nullable Object o4, @Nullable Object o5, @Nullable Object o6, @Nullable Object o7, @Nullable Object o8) {
         int result = 1;
         result = 31 * result + hash(o1);
         result = 31 * result + hash(o2);

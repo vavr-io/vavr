@@ -37,7 +37,10 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the result of an asynchronous computation that becomes available at some point in the future.
- * All operations provided by this {@code Future} are non-blocking.
+ * Callback-based operations (e.g. {@link #map(Function)}, {@link #flatMap(Function)}, {@link #onComplete(Consumer)},
+ * {@link #andThen(Consumer)}) are non-blocking. {@link #await()}, {@link #await(long, TimeUnit)}, {@link #get()},
+ * {@link #isEmpty()}, {@link #iterator()} and the other {@link Value} accessors built on them block the calling
+ * thread until this {@code Future} completes.
  *
  * <p>The underlying {@link java.util.concurrent.Executor} is used to execute asynchronous handlers, for example via
  * {@code onComplete(...)}.</p>
@@ -284,7 +287,7 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(future, "future is null");
         if (future.isDone() || future.isCompletedExceptionally() || future.isCancelled()) {
-            return fromTry(Try.of(future::get).recoverWith(error -> {
+            return fromTry(executor, Try.of(future::get).recoverWith(error -> {
                 // ExecutionException/CompletionException normally wrap the real failure,
                 // but getCause() is not guaranteed to be present -- fall back to the error itself.
                 final Throwable cause = error.getCause();
@@ -365,29 +368,29 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Creates a (possibly blocking) Future that runs the results of the given {@code computation}
-     * using a completion handler:
+     * Creates a (possibly blocking) Future that runs the given {@code task}, which produces its result
+     * through a completion handler:
      *
      * <pre>{@code
-     * CheckedConsumer<Predicate<Try<T>>> computation = complete -> {
+     * Task<T> task = complete -> {
      *     // computation
      * };
      * }</pre>
      *
-     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
-     * A common use-case is to hand over the {@code complete} predicate to another {@code Future}
+     * The {@code task} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code complete} handler to another {@code Future}
      * in order to prevent blocking:
      *
      * <pre>{@code
      * Future<String> greeting(Future<String> nameFuture) {
      *     return Future.run(complete -> {
-     *         nameFuture.onComplete(name -> complete.test("Hi " + name));
+     *         nameFuture.onComplete(name -> complete.with(name.map(n -> "Hi " + n)));
      *     });
      * }}</pre>
      *
-     * The computation receives a {@link Predicate}, named {@code complete} by convention,
-     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
-     * Future was completed.
+     * The task receives a {@link Task.Complete}, named {@code complete} by convention, whose
+     * {@code with(Try)} method takes a result of type {@code Try<T>} and returns a boolean that states
+     * whether the Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code complete}
      * will return true, successive calls will return false.
@@ -403,34 +406,35 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Creates a (possibly blocking) Future that runs the results of the given {@code computation}
-     * using a completion handler:
+     * Creates a (possibly blocking) Future that runs the given {@code task}, which produces its result
+     * through a completion handler:
      *
      * <pre>{@code
-     * CheckedConsumer<Predicate<Try<T>>> computation = complete -> {
+     * Task<T> task = complete -> {
      *     // computation
      * };
      * }</pre>
      *
-     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
-     * A common use-case is to hand over the {@code complete} predicate to another {@code Future}
+     * The {@code task} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code complete} handler to another {@code Future}
      * in order to prevent blocking:
      *
      * <pre>{@code
      * Future<String> greeting(Future<String> nameFuture) {
      *     return Future.run(complete -> {
-     *         nameFuture.onComplete(name -> complete.with("Hi " + name));
+     *         nameFuture.onComplete(name -> complete.with(name.map(n -> "Hi " + n)));
      *     });
      * }}</pre>
      *
-     * The computation receives a {@link Predicate}, named {@code complete} by convention,
-     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
-     * Future was completed.
+     * The task receives a {@link Task.Complete}, named {@code complete} by convention, whose
+     * {@code with(Try)} method takes a result of type {@code Try<T>} and returns a boolean that states
+     * whether the Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code complete}
      * will return true, successive calls will return false.
      *
-     * @param executor An {@link Executor} that runs the given {@code computation}
+     * @param executor the {@link Executor} used to run this {@code Future}'s completion callbacks; the given
+     *                 {@code task} itself is executed synchronously on the calling thread
      * @param task     A computational task
      * @param <T>      Type of the result
      * @return a new {@code Future} instance
@@ -443,7 +447,9 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
 
     /**
      * Returns a {@code Future} containing the result of reducing the given future values.
-     * The first completed future serves as the initial (zero) value.
+     * The first future in {@code futures}' iteration order serves as the initial (zero) value; the reduce
+     * operation is applied left-to-right in that order (like {@link io.vavr.collection.Traversable#reduceLeft(BiFunction)}),
+     * independent of which future actually completes first.
      * If any future or the reduce operation fails, the resulting {@code Future} will also fail.
      *
      * <p>The resulting {@code Future} executes using the {@link #DEFAULT_EXECUTOR}.</p>
@@ -452,7 +458,8 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
      * @param f       the reduce operation
      * @param <T>     the type of the values in the given futures
      * @return a new {@code Future} containing the reduce result
-     * @throws NullPointerException if {@code futures} or {@code f} is null
+     * @throws NullPointerException   if {@code futures} or {@code f} is null
+     * @throws NoSuchElementException if {@code futures} is empty
      */
     static <T extends @Nullable Object> Future<T> reduce(Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         return reduce(DEFAULT_EXECUTOR, futures, f);
@@ -460,7 +467,9 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
 
     /**
      * Returns a {@code Future} containing the result of reducing the given future values.
-     * The first completed future serves as the initial (zero) value.
+     * The first future in {@code futures}' iteration order serves as the initial (zero) value; the reduce
+     * operation is applied left-to-right in that order (like {@link io.vavr.collection.Traversable#reduceLeft(BiFunction)}),
+     * independent of which future actually completes first.
      * If any future or the reduce operation fails, the resulting {@code Future} will also fail.
      *
      * <p>The resulting {@code Future} executes using the specified {@link Executor}.</p>
@@ -470,7 +479,8 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
      * @param f        the reduce operation
      * @param <T>      the type of the values in the given futures
      * @return a new {@code Future} containing the reduce result
-     * @throws NullPointerException if {@code executor}, {@code futures}, or {@code f} is null
+     * @throws NullPointerException   if {@code executor}, {@code futures}, or {@code f} is null
+     * @throws NoSuchElementException if {@code futures} is empty
      */
     static <T extends @Nullable Object> Future<T> reduce(Executor executor, Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         Objects.requireNonNull(executor, "executor is null");
@@ -682,8 +692,8 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     /**
      * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
+     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned whose failure
+     * is an {@link ExecutionException} wrapping the {@link InterruptedException}.</p>
      *
      * @return this {@code Future} instance
      */
@@ -692,8 +702,8 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     /**
      * Blocks the current thread until this {@code Future} is completed, or returns immediately if it is already completed.
      *
-     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned containing
-     * the corresponding {@link InterruptedException}.</p>
+     * <p>If the current thread is interrupted while waiting, a failed {@code Future} is returned whose failure
+     * is an {@link ExecutionException} wrapping the {@link InterruptedException}.</p>
      *
      * <p>If the specified timeout is reached before completion, a failed {@code Future} is returned containing
      * a {@link TimeoutException}.</p>
@@ -720,7 +730,9 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Cancels this {@code Future}. A pending future may be interrupted depending on the underlying {@code Executor}.
+     * Cancels this {@code Future}. If the computation is already running, its thread is interrupted only if
+     * {@code mayInterruptIfRunning} is {@code true}; if it has not started yet, it is simply prevented from running.
+     * The underlying {@code Executor} plays no role in this decision.
      *
      * <p>If the future is successfully cancelled, its result becomes a {@code Failure(CancellationException)}.</p>
      *
@@ -770,9 +782,9 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
      * THE DEFAULT IMPLEMENTATION (obtained by one of the {@link Future} factory methods) MIGHT THROW AN
      * {@link UnsupportedOperationException} AT RUNTIME.
      *
-     * @return (never)
+     * @return the underlying {@link Executor} cast to {@link ExecutorService}, if it is one
      * @throws UnsupportedOperationException if the underlying {@link Executor} isn't an {@link ExecutorService}.
-     * @deprecated Removed starting with Vavr 0.10.0, use {@link #executor()} instead.
+     * @deprecated Deprecated since Vavr 0.10.0, use {@link #executor()} instead.
      */
     @Deprecated
     ExecutorService executorService() throws UnsupportedOperationException;
@@ -988,11 +1000,13 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Transforms the result of this {@code Future} using the given function.
+     * Applies the given function to this {@code Future} itself and returns its result directly. Unlike
+     * {@link #map(Function)}, {@code f} receives this whole {@code Future<T>} (not its unwrapped value),
+     * and the result is whatever {@code f} produces &mdash; not necessarily a {@code Future}.
      *
-     * @param f   a function to transform the result
-     * @param <U> the type of the transformed result
-     * @return a new {@code Future} containing the transformed result
+     * @param f   a function that receives this {@code Future} and produces a value of type {@code U}
+     * @param <U> the type of the value produced by {@code f}
+     * @return the result of applying {@code f} to this {@code Future}
      * @throws NullPointerException if {@code f} is null
      */
     default <U extends @Nullable Object> U transform(Function<? super Future<T>, ? extends U> f) {
@@ -1141,9 +1155,9 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Checks, if this future has a value.
+     * Checks, if this future has no value. Blocks until this {@code Future} completes, via {@link #await()}.
      *
-     * @return true, if this future succeeded with a value, false otherwise.
+     * @return true, if this future failed (has no value), false if it succeeded with a value.
      */
     @Override
     default boolean isEmpty() {
@@ -1213,10 +1227,12 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Returns this {@code Future} if it completes successfully, or the given alternative {@code Future} if this {@code Future} fails.
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of {@code other}.
      *
-     * @param other the alternative {@code Future} to return if this {@code Future} fails
-     * @return this {@code Future} if it completes successfully, otherwise {@code other}
+     * @param other the alternative {@code Future} whose result is used if this {@code Future} fails
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with {@code other}'s result
      * @throws NullPointerException if {@code other} is null
      */
     default Future<T> orElse(Future<? extends T> other) {
@@ -1233,12 +1249,14 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
-     * Returns this {@code Future} if it completes successfully, or a {@code Future} supplied by the given {@link Supplier} if this {@code Future} fails.
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of the {@code Future} returned by the given {@link Supplier}.
      * <p>
      * The supplier is only invoked if this {@code Future} fails.
      *
      * @param supplier a supplier of an alternative {@code Future}
-     * @return this {@code Future} if it completes successfully, otherwise the {@code Future} returned by {@code supplier}
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with the result of the {@code Future} returned by {@code supplier}
      * @throws NullPointerException if {@code supplier} is null
      */
     default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
@@ -1254,6 +1272,16 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
         );
     }
 
+    /**
+     * Registers {@code action} to be performed asynchronously with the successful result once this
+     * {@code Future} completes; equivalent to {@link #onSuccess(Consumer)}. Unlike the inherited
+     * {@link Value#peek(Consumer)} contract for an eager implementation, the action is not performed
+     * synchronously during this call, even though {@link #isLazy()} is {@code false}.
+     *
+     * @param action a {@code Consumer} to be executed with the successful result
+     * @return this {@code Future}
+     * @throws NullPointerException if {@code action} is null
+     */
     @Override
     default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");

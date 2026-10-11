@@ -142,6 +142,20 @@ public class TryTest extends AbstractValueTest {
             assertThat(result.getCause()).isSameAs(original);
             assertThat(result.getCause().getSuppressed()).containsExactly(finallyEx);
         }
+
+        @Test
+        public void shouldRethrowFatalThrowableFromRunnableOnSuccess() {
+            assertThrows(InterruptedException.class, () ->
+              Try.success(1).andFinallyTry(() -> { throw new InterruptedException(); }));
+        }
+
+        @Test
+        public void shouldRethrowFatalThrowableFromRunnableWhenAlreadyFailure() {
+            final IllegalStateException original = new IllegalStateException("original");
+            assertThrows(InterruptedException.class, () ->
+              Try.<Object>failure(original).andFinallyTry(() -> { throw new InterruptedException(); }));
+            assertThat(original.getSuppressed()).isEmpty();
+        }
     }
 
     @Nested

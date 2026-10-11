@@ -152,8 +152,8 @@ public interface LinearSeq<T extends @Nullable Object> extends Seq<T> {
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int i = from;
-        LinearSeq<T> these = drop(from);
+        int i = Math.max(from, 0);
+        LinearSeq<T> these = drop(i);
         while (!these.isEmpty()) {
             if (predicate.test(these.head())) {
                 return i;
@@ -453,15 +453,17 @@ interface LinearSeqModule {
         static <T extends @Nullable Object> int lastIndexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
-            } else if (source.isEmpty()) {
-                return Collections.isEmpty(slice) ? 0 : -1;
-            } else if (Collections.isEmpty(slice)) {
+            }
+            // the slice is read once: an Iterable may not be iterable twice (e.g. a stream's iterator())
+            final LinearSeq<T> _slice = toLinearSeq(slice);
+            if (source.isEmpty()) {
+                return _slice.isEmpty() ? 0 : -1;
+            } else if (_slice.isEmpty()) {
                 final int len = source.length();
                 return len < end ? len : end;
             }
             int index = 0;
             int result = -1;
-            final LinearSeq<T> _slice = toLinearSeq(slice);
             while (source.length() >= _slice.length()) {
                 final Tuple2<LinearSeq<T>, Integer> r = findNextSlice(source, _slice);
                 if (r == null) {
@@ -486,6 +488,10 @@ interface LinearSeqModule {
             while (hasMore.test(source)) {
                 if (index >= from && source.startsWith(slice)) {
                     return index;
+                }
+                if (source.isEmpty()) {
+                    // only reachable for an empty slice with from > length()
+                    return -1;
                 }
                 index++;
                 source = source.tail();

@@ -59,6 +59,12 @@ public class Tuple0Test {
     }
 
     @Test
+    public void shouldThrowWhenComparingToNull() {
+        final Tuple0 t0 = createIntTuple();
+        assertThrows(NullPointerException.class, () -> t0.compareTo(null));
+    }
+
+    @Test
     public void shouldApplyTuple() {
         final Tuple0 tuple = createTuple();
         final Tuple0 actual = tuple.apply(() -> Tuple0.instance());
