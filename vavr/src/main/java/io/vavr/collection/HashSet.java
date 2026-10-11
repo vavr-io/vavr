@@ -1159,7 +1159,7 @@ public final class HashSet<T extends @Nullable Object> implements Set<T>, Serial
      */
     @Serial
     private Object writeReplace() {
-        return new SerializationProxy<>(this.tree);
+        return new SerializationProxy<>(tree);
     }
 
     /**
