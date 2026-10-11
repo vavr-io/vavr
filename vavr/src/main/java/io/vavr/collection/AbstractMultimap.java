@@ -450,7 +450,7 @@ abstract class AbstractMultimap<K extends @Nullable Object, V extends @Nullable 
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            final Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
+            final Map<K, Traversable<V>> result = that.keySet().foldLeft(back, (map, key) -> {
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = map.get(key)
                         .map(thisValues -> collisionResolution.apply(thisValues, thatValues))
