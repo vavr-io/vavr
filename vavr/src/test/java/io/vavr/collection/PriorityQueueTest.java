@@ -244,6 +244,19 @@ public class PriorityQueueTest extends AbstractTraversableTest {
             final Comparator<String> comparator = comparingInt(o -> o.charAt(1));
             assertThat(PriorityQueue.of(comparator, "5c", "1a", "3a", "1a", "2a", "4b", "3b").distinct().map(s -> s.substring(1))).isEqualTo(of("a", "b", "c"));
         }
+
+        @Test
+        public void shouldPreservePriorityOrderWhenDistinctByComparator() {
+            final PriorityQueue<Integer> distinct = PriorityQueue.of(1, 2, 3, 4)
+                    .distinctBy(comparingInt(i -> i % 2));
+            assertThat(distinct.toList()).isEqualTo(io.vavr.collection.List.of(1, 2));
+        }
+
+        @Test
+        public void shouldPreservePriorityOrderWhenEnqueuingAfterDistinctByComparator() {
+            final PriorityQueue<Integer> distinct = PriorityQueue.of(1).distinctBy(Comparator.reverseOrder());
+            assertThat(distinct.enqueue(2).toList()).isEqualTo(io.vavr.collection.List.of(1, 2));
+        }
     }
 
     @Nested
