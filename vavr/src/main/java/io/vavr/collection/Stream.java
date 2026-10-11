@@ -2290,7 +2290,7 @@ interface StreamModule {
         private Supplier<Stream<T>> current;
 
         StreamIterator(Cons<T> stream) {
-            this.current = () -> stream;
+            current = () -> stream;
         }
 
         @Override
