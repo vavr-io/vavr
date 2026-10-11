@@ -1397,7 +1397,7 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
 
     @Override
     default List<T> remove(T element) {
-        final Deque<T> preceding = new ArrayDeque<>(size());
+        List<T> preceding = empty();
         List<T> result = this;
         boolean found = false;
         while (!found && !result.isEmpty()) {
@@ -1405,7 +1405,7 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
             if (Objects.equals(head, element)) {
                 found = true;
             } else {
-                preceding.addFirst(head);
+                preceding = preceding.prepend(head);
             }
             result = result.tail();
         }

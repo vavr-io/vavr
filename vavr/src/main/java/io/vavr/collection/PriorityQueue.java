@@ -398,7 +398,7 @@ public final class PriorityQueue<T extends @Nullable Object> extends io.vavr.col
     @Override
     public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(comparator));
+        return isEmpty() ? this : ofAll(this.comparator, iterator().distinctBy(comparator));
     }
 
     @Override

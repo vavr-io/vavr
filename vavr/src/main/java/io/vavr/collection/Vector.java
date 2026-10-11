@@ -830,7 +830,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
 
     @Override
     public Vector<T> dropRight(int n) {
-        return take(length() - n);
+        return n <= 0 ? this : take(length() - n);
     }
 
     @Override
@@ -1338,7 +1338,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
 
     @Override
     public Vector<T> takeRight(int n) {
-        return drop(length() - n);
+        return n <= 0 ? empty() : drop(length() - n);
     }
 
     @Override
