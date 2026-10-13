@@ -61,13 +61,9 @@ public class CheckedConsumerTest {
 
         @Test
         public void shouldApplyThrowingCheckedConsumer() {
-            final CheckedConsumer<?> f = t -> { throw new Error(); };
-            try {
-                f.accept(null);
-                fail("should have thrown");
-            } catch(Throwable x) {
-                // ok
-            }
+            final Error error = new Error();
+            final CheckedConsumer<?> f = t -> { throw error; };
+            assertThatThrownBy(() -> f.accept(null)).isSameAs(error);
         }
     }
 
@@ -94,13 +90,10 @@ public class CheckedConsumerTest {
         @Test
         public void shouldComposeCheckedConsumerUsingAndThenWhenFirstOneFails() {
             final AtomicBoolean result = new AtomicBoolean(false);
-            final CheckedConsumer<?> f = t -> { throw new Error(); };
-            try {
-                f.andThen(ignored -> result.set(true)).accept(null);
-                fail("should have thrown");
-            } catch(Throwable x) {
-                assertThat(result.get()).isFalse();
-            }
+            final Error error = new Error();
+            final CheckedConsumer<?> f = t -> { throw error; };
+            assertThatThrownBy(() -> f.andThen(ignored -> result.set(true)).accept(null)).isSameAs(error);
+            assertThat(result.get()).isFalse();
         }
     }
 
@@ -118,13 +111,16 @@ public class CheckedConsumerTest {
 
         @Test
         public void shouldApplyAnUncheckedFunctionThatThrows() {
-            final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw new Error(); }).unchecked();
-            try {
-                consumer.accept(null);
-                Assertions.fail("Did excepect an exception.");
-            } catch(Error x) {
-                // ok!
-            }
+            final Error error = new Error();
+            final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw error; }).unchecked();
+            assertThatThrownBy(() -> consumer.accept(null)).isSameAs(error);
+        }
+
+        @Test
+        public void shouldApplyAnUncheckedFunctionThatThrowsCheckedException() {
+            final Exception exception = new Exception();
+            final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw exception; }).unchecked();
+            assertThatThrownBy(() -> consumer.accept(null)).isSameAs(exception);
         }
     }
 }
