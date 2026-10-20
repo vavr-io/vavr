@@ -142,6 +142,15 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
         Objects.requireNonNull(tree, "tree is null");
         if (isEmpty() || tree.isEmpty()) {
             return this;
+        } else if (!comparator().equals(tree.comparator())) {
+            RedBlackTree<T> result = this;
+            for (T value : tree) {
+                if (result.isEmpty()) {
+                    break;
+                }
+                result = result.delete(value);
+            }
+            return result;
         } else {
             final Node<T> that = (Node<T>) tree;
             final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
@@ -173,7 +182,15 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
         if (isEmpty()) {
             return this;
         } else if (tree.isEmpty()) {
-            return tree;
+            return emptyInstance();
+        } else if (!comparator().equals(tree.comparator())) {
+            RedBlackTree<T> result = emptyInstance();
+            for (T value : this) {
+                if (tree.contains(value)) {
+                    result = result.insert(value);
+                }
+            }
+            return result;
         } else {
             final Node<T> that = (Node<T>) tree;
             final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
@@ -245,14 +262,18 @@ interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializ
         Objects.requireNonNull(tree, "tree is null");
         if (tree.isEmpty()) {
             return this;
+        } else if (!comparator().equals(tree.comparator())) {
+            RedBlackTree<T> result = this;
+            for (T value : tree) {
+                result = result.insert(value);
+            }
+            return result;
+        } else if (isEmpty()) {
+            return ((Node<T>) tree).color(BLACK);
         } else {
             final Node<T> that = (Node<T>) tree;
-            if (isEmpty()) {
-                return that.color(BLACK);
-            } else {
-                final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
-                return Node.join(split._1.union(that.left), that.value, split._2.union(that.right));
-            }
+            final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(this, that.value);
+            return Node.join(split._1.union(that.left), that.value, split._2.union(that.right));
         }
     }
 
@@ -669,7 +690,7 @@ interface RedBlackTreeModule {
                 return new Node<>(RED, h2 + 1, n1, value, n2, n1.empty);
             } else {
                 final Node<T> node = joinGT((Node<T>) n1.right, value, n2, h2);
-                return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n2.empty);
+                return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n1.empty);
             }
         }
 
