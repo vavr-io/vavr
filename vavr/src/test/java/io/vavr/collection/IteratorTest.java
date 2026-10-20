@@ -1077,4 +1077,28 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(finiteSpan._2).containsExactly(2, 3);
     }
 
+    @Test
+    public void shouldNotBufferDiscardedSideInUnzip() {
+        final Iterator<Integer> it = Iterator.range(0, 100_000)
+                .unzip(i -> Tuple.of(i, i))._1;
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+        }
+        assertThat(count).isEqualTo(100_000);
+    }
+
+    @Test
+    public void shouldNotBufferDiscardedSideInSpan() {
+        final Iterator<Integer> it = Iterator.range(0, 100_000)
+                .span(i -> i < 10)._2;
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+        }
+        assertThat(count).isEqualTo(99_990);
+    }
+
 }

@@ -23,9 +23,9 @@ import io.vavr.collection.IteratorModule.ConcatIterator;
 import io.vavr.collection.IteratorModule.DistinctIterator;
 import io.vavr.collection.IteratorModule.GroupedIterator;
 import io.vavr.control.Option;
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import org.jspecify.annotations.Nullable;
 
@@ -1373,7 +1373,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         } else {
             final Tuple2<Iterator<Tuple2<? extends T1, ? extends T2>>, Iterator<Tuple2<? extends T1, ? extends T2>>> dup =
                 IteratorModule.duplicate(this.map(unzipper));
-            return Tuple.of(dup._1.map(t -> (T1) t._1), dup._2.map(t -> (T2) t._2));
+            final Iterator<Tuple2<? extends T1, ? extends T2>> dup1 = dup._1;
+            final Iterator<Tuple2<? extends T1, ? extends T2>> dup2 = dup._2;
+            return Tuple.of(dup1.map(t -> (T1) t._1), dup2.map(t -> (T2) t._2));
         }
     }
 
@@ -1386,9 +1388,12 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         } else {
             final Tuple2<Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>, Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>> dup1 =
                 IteratorModule.duplicate(this.map(unzipper));
+            final Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>> dup1_1 = dup1._1;
             final Tuple2<Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>, Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>> dup2 =
                 IteratorModule.duplicate(dup1._2);
-            return Tuple.of(dup1._1.map(t -> (T1) t._1), dup2._1.map(t -> (T2) t._2), dup2._2.map(t -> (T3) t._3));
+            final Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>> dup2_1 = dup2._1;
+            final Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>> dup2_2 = dup2._2;
+            return Tuple.of(dup1_1.map(t -> (T1) t._1), dup2_1.map(t -> (T2) t._2), dup2_2.map(t -> (T3) t._3));
         }
     }
 
@@ -1931,7 +1936,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return Tuple.of(empty(), empty());
         } else {
             final Tuple2<Iterator<T>, Iterator<T>> dup = IteratorModule.duplicate(this);
-            return Tuple.of(dup._1.filter(predicate), dup._2.filter(predicate.negate()));
+            final Iterator<T> dup1 = dup._1;
+            final Iterator<T> dup2 = dup._2;
+            return Tuple.of(dup1.filter(predicate), dup2.filter(predicate.negate()));
         }
     }
 
@@ -2162,13 +2169,15 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return Tuple.of(empty(), empty());
         } else {
             final Tuple2<Iterator<T>, Iterator<T>> that = IteratorModule.duplicate(this);
+            final Iterator<T> that1 = that._1;
+            final Iterator<T> that2 = that._2;
             final Iterator<T> right = new AbstractIterator<T>() {
                 private @Nullable Iterator<T> dropped = null;
 
                 @Override
                 public boolean hasNext() {
                     if (dropped == null) {
-                        dropped = that._2.dropWhile(predicate);
+                        dropped = that2.dropWhile(predicate);
                     }
                     return dropped.hasNext();
                 }
@@ -2176,12 +2185,12 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                 @Override
                 public T getNext() {
                     if (dropped == null) {
-                        dropped = that._2.dropWhile(predicate);
+                        dropped = that2.dropWhile(predicate);
                     }
                     return dropped.next();
                 }
             };
-            return Tuple.of(that._1.takeWhile(predicate), right);
+            return Tuple.of(that1.takeWhile(predicate), right);
         }
     }
 
@@ -2348,29 +2357,46 @@ interface IteratorModule {
      */
     static <T extends @Nullable Object> Tuple2<Iterator<T>, Iterator<T>> duplicate(Iterator<T> iterator) {
         final java.util.Queue<T> gap = new java.util.LinkedList<>();
-        final AtomicReference<Iterator<T>> ahead = new AtomicReference<>();
+        final java.util.concurrent.atomic.AtomicInteger ahead = new java.util.concurrent.atomic.AtomicInteger(0);
         class Partner implements Iterator<T> {
+            private final int id;
+            private @Nullable WeakReference<Partner> other;
+
+            Partner(int id) {
+                this.id = id;
+            }
 
             @Override
             public boolean hasNext() {
-                return (this != ahead.get() && !gap.isEmpty()) || iterator.hasNext();
+                if (ahead.get() != id && !gap.isEmpty()) {
+                    return true;
+                }
+                return iterator.hasNext();
             }
 
             @Override
             public T next() {
-                if (gap.isEmpty()) {
-                    ahead.set(this);
-                }
-                if (this == ahead.get()) {
-                    final T element = iterator.next();
-                    gap.add(element);
-                    return element;
-                } else {
+                if (ahead.get() != id && !gap.isEmpty()) {
                     return gap.poll();
                 }
+                final T element = iterator.next();
+                final Partner o = other != null ? other.get() : null;
+                if (o != null) {
+                    if (gap.isEmpty()) {
+                        ahead.set(id);
+                    }
+                    gap.add(element);
+                } else if (!gap.isEmpty()) {
+                    gap.clear();
+                }
+                return element;
             }
         }
-        return Tuple.of(new Partner(), new Partner());
+        final Partner p1 = new Partner(1);
+        final Partner p2 = new Partner(2);
+        p1.other = new WeakReference<>(p2);
+        p2.other = new WeakReference<>(p1);
+        return Tuple.of(p1, p2);
     }
 
     // inspired by Scala's ConcatIterator
