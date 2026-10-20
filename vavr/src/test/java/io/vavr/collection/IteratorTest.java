@@ -1010,4 +1010,71 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(result).isEqualTo(Option.none());
     }
 
+    @Test
+    public void shouldNotEagerlyEvaluateInUnzip() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple2<Iterator<Integer>, Iterator<String>> tuple = source.unzip(i -> Tuple.of(i, String.valueOf(i)));
+        assertThat(evaluated[0]).isFalse();
+        assertThat(tuple._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+    }
+
+    @Test
+    public void shouldNotEagerlyEvaluateInUnzip3() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple3<Iterator<Integer>, Iterator<String>, Iterator<Double>> tuple = source.unzip3(i -> Tuple.of(i, String.valueOf(i), (double) i));
+        assertThat(evaluated[0]).isFalse();
+        assertThat(tuple._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+    }
+
+    @Test
+    public void shouldNotEagerlyEvaluateInSpan() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> span = source.span(i -> i < 2);
+        assertThat(evaluated[0]).isFalse();
+        assertThat(span._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> finiteSpan = Iterator.of(1, 2, 3).span(i -> i < 2);
+        assertThat(finiteSpan._1).containsExactly(1);
+        assertThat(finiteSpan._2).containsExactly(2, 3);
+    }
+
 }

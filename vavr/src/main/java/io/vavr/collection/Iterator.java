@@ -1371,8 +1371,9 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
+            final Tuple2<Iterator<Tuple2<? extends T1, ? extends T2>>, Iterator<Tuple2<? extends T1, ? extends T2>>> dup =
+                IteratorModule.duplicate(this.map(unzipper));
+            return Tuple.of(dup._1.map(t -> (T1) t._1), dup._2.map(t -> (T2) t._2));
         }
     }
 
@@ -1383,8 +1384,11 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
-            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
+            final Tuple2<Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>, Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>> dup1 =
+                IteratorModule.duplicate(this.map(unzipper));
+            final Tuple2<Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>, Iterator<Tuple3<? extends T1, ? extends T2, ? extends T3>>> dup2 =
+                IteratorModule.duplicate(dup1._2);
+            return Tuple.of(dup1._1.map(t -> (T1) t._1), dup2._1.map(t -> (T2) t._2), dup2._2.map(t -> (T3) t._3));
         }
     }
 
@@ -1440,9 +1444,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static <T extends @Nullable Object, U extends @Nullable Object> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.<U> ofAll(
-                unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
-                .reverse().iterator();
+        return Collections.reverseIterator(
+                unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))));
     }
 
     /**
@@ -1763,7 +1766,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
     @Override
     default <U extends @Nullable Object> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(this).foldRight(zero, f);
+        return Collections.reverseIterator(this).foldLeft(zero, (u, t) -> f.apply(t, u));
     }
 
     @Override
@@ -1985,8 +1988,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
-            final Stream<T> reversed = Stream.ofAll(this).reverse();
-            return reversed.reduceLeft((xs, x) -> op.apply(x, xs));
+            return Collections.reverseIterator(this).reduceLeft((xs, x) -> op.apply(x, xs));
         }
     }
 
@@ -2115,7 +2117,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         } else {
             final CachedIterator<T> source = new CachedIterator<>(this);
             return new AbstractIterator<Seq<T>>() {
-                private @Nullable Stream<T> next = null;
+                private @Nullable Seq<T> next = null;
 
                 @Override
                 public boolean hasNext() {
@@ -2126,7 +2128,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                         while (source.hasNext() && Objects.equals(key, classifier.apply(source.touch()))) {
                             acc.add(source.getNext());
                         }
-                        next = Stream.ofAll(acc);
+                        next = Vector.ofAll(acc);
                     }
                     return next != null;
                 }
@@ -2134,8 +2136,8 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                 @Override
                 // hasNext() fills the buffer, and AbstractIterator only calls getNext() after it
                 @SuppressWarnings("NullAway")
-                public Stream<T> getNext() {
-                    final Stream<T> result = next;
+                public Seq<T> getNext() {
+                    final Seq<T> result = next;
                     next = null;
                     return result;
                 }
@@ -2159,8 +2161,27 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<T> that = Stream.ofAll(this);
-            return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
+            final Tuple2<Iterator<T>, Iterator<T>> that = IteratorModule.duplicate(this);
+            final Iterator<T> right = new AbstractIterator<T>() {
+                private @Nullable Iterator<T> dropped = null;
+
+                @Override
+                public boolean hasNext() {
+                    if (dropped == null) {
+                        dropped = that._2.dropWhile(predicate);
+                    }
+                    return dropped.hasNext();
+                }
+
+                @Override
+                public T getNext() {
+                    if (dropped == null) {
+                        dropped = that._2.dropWhile(predicate);
+                    }
+                    return dropped.next();
+                }
+            };
+            return Tuple.of(that._1.takeWhile(predicate), right);
         }
     }
 
