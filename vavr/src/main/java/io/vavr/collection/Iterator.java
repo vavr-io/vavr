@@ -2358,45 +2358,72 @@ interface IteratorModule {
     static <T extends @Nullable Object> Tuple2<Iterator<T>, Iterator<T>> duplicate(Iterator<T> iterator) {
         final java.util.Queue<T> gap = new java.util.LinkedList<>();
         final java.util.concurrent.atomic.AtomicInteger ahead = new java.util.concurrent.atomic.AtomicInteger(0);
-        class Partner implements Iterator<T> {
-            private final int id;
-            private @Nullable WeakReference<Partner> other;
+        final DuplicatingIterator<T> first = new DuplicatingIterator<>(1, iterator, gap, ahead);
+        final DuplicatingIterator<T> second = new DuplicatingIterator<>(2, iterator, gap, ahead);
+        first.link(second);
+        second.link(first);
+        return Tuple.of(first, second);
+    }
 
-            Partner(int id) {
-                this.id = id;
-            }
+    /**
+     * One side of {@link #duplicate(Iterator)}.
+     * <p>
+     * Static rather than local: JDK 22 through 26 javadoc crashes with an internal
+     * {@code NullPointerException} ({@code Type.getEnclosingType()} is null) when a
+     * local class field carries a type annotation such as {@code @Nullable}.
+     * <p>
+     * Each side keeps only a {@link WeakReference} to its partner. Once that partner
+     * has been collected, the survivor stops buffering elements the partner will never read.
+     */
+    static final class DuplicatingIterator<T extends @Nullable Object> implements Iterator<T> {
 
-            @Override
-            public boolean hasNext() {
-                if (ahead.get() != id && !gap.isEmpty()) {
-                    return true;
-                }
-                return iterator.hasNext();
-            }
+        private final int id;
+        private final Iterator<T> source;
+        private final java.util.Queue<T> gap;
+        private final java.util.concurrent.atomic.AtomicInteger ahead;
+        private @Nullable WeakReference<DuplicatingIterator<T>> other;
 
-            @Override
-            public T next() {
-                if (ahead.get() != id && !gap.isEmpty()) {
-                    return gap.poll();
-                }
-                final T element = iterator.next();
-                final Partner o = other != null ? other.get() : null;
-                if (o != null) {
-                    if (gap.isEmpty()) {
-                        ahead.set(id);
-                    }
-                    gap.add(element);
-                } else if (!gap.isEmpty()) {
-                    gap.clear();
-                }
-                return element;
-            }
+        DuplicatingIterator(
+                int id,
+                Iterator<T> source,
+                java.util.Queue<T> gap,
+                java.util.concurrent.atomic.AtomicInteger ahead) {
+            this.id = id;
+            this.source = source;
+            this.gap = gap;
+            this.ahead = ahead;
         }
-        final Partner p1 = new Partner(1);
-        final Partner p2 = new Partner(2);
-        p1.other = new WeakReference<>(p2);
-        p2.other = new WeakReference<>(p1);
-        return Tuple.of(p1, p2);
+
+        void link(DuplicatingIterator<T> partner) {
+            this.other = new WeakReference<>(partner);
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (ahead.get() != id && !gap.isEmpty()) {
+                return true;
+            }
+            return source.hasNext();
+        }
+
+        @Override
+        public T next() {
+            if (ahead.get() != id && !gap.isEmpty()) {
+                return gap.poll();
+            }
+            final T element = source.next();
+            final WeakReference<DuplicatingIterator<T>> slot = other;
+            final DuplicatingIterator<T> partner = slot == null ? null : slot.get();
+            if (partner != null) {
+                if (gap.isEmpty()) {
+                    ahead.set(id);
+                }
+                gap.add(element);
+            } else if (!gap.isEmpty()) {
+                gap.clear();
+            }
+            return element;
+        }
     }
 
     // inspired by Scala's ConcatIterator
