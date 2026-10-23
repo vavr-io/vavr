@@ -813,6 +813,12 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     }
 
     @Override
+    public <K2 extends @Nullable Object> LinkedHashMap<K2, V> mapKeysWith(BiFunction<? super K, ? super V, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k, v), v));
+    }
+
+    @Override
     public <K2 extends @Nullable Object> LinkedHashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         return Collections.mapKeys(this, LinkedHashMap.empty(), keyMapper, valueMerge);
     }
@@ -821,6 +827,12 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     public <W extends @Nullable Object> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
+    public <W extends @Nullable Object> LinkedHashMap<K, W> mapValuesWith(BiFunction<? super K, ? super V, ? extends W> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map((k, v) -> Tuple.of(k, valueMapper.apply(k, v)));
     }
 
     @Override
