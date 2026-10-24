@@ -428,7 +428,10 @@ public class ValidationTest extends AbstractValueTest {
         @Test
         public void shouldMapOnlySuccessValue() {
             Validation<Seq<String>, String> validValidation = valid();
-            Validation<Integer, Integer> validMapping = validValidation.bimap(Seq::length, String::length);
+            Validation<Integer, Integer> validMapping = validValidation.<Integer, Integer>bimap(error -> {
+                fail("Should not map error");
+                return 0;
+            }, value -> value.length());
             assertThat(validMapping instanceof Validation.Valid).isTrue();
             assertThat(validMapping.get()).isEqualTo(2);
         }
@@ -440,18 +443,32 @@ public class ValidationTest extends AbstractValueTest {
             assertThat(invalidMapping instanceof Validation.Invalid).isTrue();
             assertThat(invalidMapping.getError()).isEqualTo(3);
         }
+
+        @Test
+        public void shouldThrowWhenErrorMapperReturnsNull() {
+            Validation<Seq<String>, String> invalidValidation = invalid();
+            assertThrows(NullPointerException.class, () -> invalidValidation.bimap(error -> null, String::length));
+        }
     }
 
     @Nested
     class MaperrorTests {
         @Test
         public void shouldNotMapSuccess() {
-            assertThat(valid().mapError(x -> 2).get()).isEqualTo(OK);
+            assertThat(valid().mapError(error -> {
+                fail("Should not map error");
+                return 2;
+            }).get()).isEqualTo(OK);
         }
 
         @Test
         public void shouldMapFailure() {
             assertThat(invalid().mapError(x -> 5).getError()).isEqualTo(5);
+        }
+
+        @Test
+        public void shouldThrowWhenErrorMapperReturnsNull() {
+            assertThrows(NullPointerException.class, () -> invalid().mapError(error -> null));
         }
     }
 
