@@ -1514,6 +1514,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
     /**
      * Creates a {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
      *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
+     *
      * @param t1Supplier The supplier of the first resource.
      * @param <T1> Type of the 1st resource.
      * @return a new {@link WithResources1} instance.
@@ -1524,6 +1526,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on two {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1537,6 +1541,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1552,6 +1558,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on four {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1569,6 +1577,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on five {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1588,6 +1598,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on six {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1609,6 +1621,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on seven {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1632,6 +1646,8 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * Creates a {@code Try}-with-resources builder that operates on eight {@link AutoCloseable} resources.
+     *
+     * The returned builder acquires resources when {@code of} runs and closes them before returning its {@code Try}.
      *
      * @param t1Supplier The supplier of the 1st resource.
      * @param t2Supplier The supplier of the 2nd resource.
@@ -1657,6 +1673,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      */
@@ -1687,6 +1709,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on two {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1720,6 +1748,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1756,6 +1790,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on four {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1795,6 +1835,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on five {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1837,6 +1883,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on six {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1882,6 +1934,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on seven {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
@@ -1930,6 +1988,12 @@ public interface Try<T extends @Nullable Object> extends Value<T>, Serializable 
 
     /**
      * A {@code Try}-with-resources builder that operates on eight {@link AutoCloseable} resources.
+     *
+     * Resource suppliers run when {@code of} is called. Each call to {@code of}
+     * acquires the resources, runs the computation, and closes them before returning its {@code Try};
+     * calling {@code get()} later does not defer closing. Reusing this builder invokes the suppliers
+     * again. Any resources acquired before a later supplier fails are closed. Do not return a
+     * resource or a value that depends on it remaining open.
      *
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
