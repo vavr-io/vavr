@@ -22,6 +22,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.control.Option;
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -1008,6 +1009,198 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldReturnNoneWhenFindLastFindsNothing() {
         Option<Integer> result = Iterator.of(1, 2, 3).findLast(i -> i > 5);
         assertThat(result).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldNotEagerlyEvaluateInUnzip() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple2<Iterator<Integer>, Iterator<String>> tuple = source.unzip(i -> Tuple.of(i, String.valueOf(i)));
+        assertThat(evaluated[0]).isFalse();
+        assertThat(tuple._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+    }
+
+    @Test
+    public void shouldNotEagerlyEvaluateInUnzip3() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple3<Iterator<Integer>, Iterator<String>, Iterator<Double>> tuple = source.unzip3(i -> Tuple.of(i, String.valueOf(i), (double) i));
+        assertThat(evaluated[0]).isFalse();
+        assertThat(tuple._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+    }
+
+    @Test
+    public void shouldNotEagerlyEvaluateInSpan() {
+        final boolean[] evaluated = new boolean[] { false };
+        final Iterator<Integer> source = new AbstractIterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                evaluated[0] = true;
+                return 1;
+            }
+        };
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> span = source.span(i -> i < 2);
+        assertThat(evaluated[0]).isFalse();
+        assertThat(span._1.next()).isEqualTo(1);
+        assertThat(evaluated[0]).isTrue();
+
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> finiteSpan = Iterator.of(1, 2, 3).span(i -> i < 2);
+        assertThat(finiteSpan._1).containsExactly(1);
+        assertThat(finiteSpan._2).containsExactly(2, 3);
+    }
+
+    @Test
+    public void shouldNotBufferDiscardedSideInUnzip() {
+        final Iterator<Integer> it = Iterator.range(0, 100_000)
+                .unzip(i -> Tuple.of(i, i))._1;
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+        }
+        assertThat(count).isEqualTo(100_000);
+    }
+
+    @Test
+    public void shouldNotBufferDiscardedSideInSpan() {
+        final Iterator<Integer> it = Iterator.range(0, 100_000)
+                .span(i -> i < 10)._2;
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+        }
+        assertThat(count).isEqualTo(99_990);
+    }
+
+    @Test
+    public void shouldDuplicateElementsWhenEitherSideLeads() {
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> leftLeads =
+                IteratorModule.duplicate(Iterator.of(1, 2, 3, 4));
+        assertThat(leftLeads._1.next()).isEqualTo(1);
+        assertThat(leftLeads._1.next()).isEqualTo(2);
+        assertThat(leftLeads._2.next()).isEqualTo(1);
+        assertThat(drain(leftLeads._2)).containsExactly(2, 3, 4);
+        assertThat(drain(leftLeads._1)).containsExactly(3, 4);
+
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> rightLeads =
+                IteratorModule.duplicate(Iterator.of(1, 2, 3));
+        assertThat(drain(rightLeads._2)).containsExactly(1, 2, 3);
+        assertThat(drain(rightLeads._1)).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    public void shouldDuplicateElementsWhenSidesAreInterleaved() {
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> duplicated =
+                IteratorModule.duplicate(Iterator.range(0, 5));
+        final ArrayList<Integer> left = new ArrayList<>();
+        final ArrayList<Integer> right = new ArrayList<>();
+        while (duplicated._1.hasNext() || duplicated._2.hasNext()) {
+            if (duplicated._1.hasNext()) {
+                left.add(duplicated._1.next());
+            }
+            if (duplicated._2.hasNext()) {
+                right.add(duplicated._2.next());
+            }
+        }
+        assertThat(left).containsExactly(0, 1, 2, 3, 4);
+        assertThat(right).containsExactly(0, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void shouldUnzipAndPartitionInEitherConsumptionOrder() {
+        final Tuple2<Iterator<Integer>, Iterator<String>> unzipped =
+                Iterator.of(1, 2, 3).unzip(i -> Tuple.of(i, "v" + i));
+        assertThat(unzipped._2.next()).isEqualTo("v1");
+        assertThat(unzipped._1.next()).isEqualTo(1);
+        assertThat(unzipped._1.next()).isEqualTo(2);
+        assertThat(unzipped._2.next()).isEqualTo("v2");
+        assertThat(drain(unzipped._1)).containsExactly(3);
+        assertThat(drain(unzipped._2)).containsExactly("v3");
+
+        final Tuple3<Iterator<Integer>, Iterator<String>, Iterator<Double>> unzipped3 =
+                Iterator.of(1, 2, 3).unzip3(i -> Tuple.of(i, "n" + i, i.doubleValue()));
+        assertThat(unzipped3._3.next()).isEqualTo(1.0d);
+        assertThat(unzipped3._1.next()).isEqualTo(1);
+        assertThat(unzipped3._2.next()).isEqualTo("n1");
+        assertThat(drain(unzipped3._2)).containsExactly("n2", "n3");
+        assertThat(drain(unzipped3._1)).containsExactly(2, 3);
+        assertThat(drain(unzipped3._3)).containsExactly(2.0d, 3.0d);
+
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partitioned =
+                Iterator.of(1, 2, 3, 4).partition(i -> i % 2 == 0);
+        assertThat(drain(partitioned._2)).containsExactly(1, 3);
+        assertThat(drain(partitioned._1)).containsExactly(2, 4);
+
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> spanned =
+                Iterator.of(1, 2, 3, 4).span(i -> i < 3);
+        assertThat(drain(spanned._2)).containsExactly(3, 4);
+        assertThat(drain(spanned._1)).containsExactly(1, 2);
+    }
+
+    @Test
+    public void shouldDropBufferedElementsOnceTheOtherSideIsCollected() {
+        final Tuple2<Iterator<Object>, WeakReference<Iterator<Object>>> sides = oneLiveDuplicateSide();
+        assertEventuallyCollected(sides._2);
+        final WeakReference<Object> element = new WeakReference<>(sides._1.next());
+        assertEventuallyCollected(element);
+        // Keep the surviving iterator reachable across the collection check above.
+        assertThat(sides._1.hasNext()).isTrue();
+    }
+
+    private static Tuple2<Iterator<Object>, WeakReference<Iterator<Object>>> oneLiveDuplicateSide() {
+        final Tuple2<Iterator<Object>, Iterator<Object>> duplicated =
+                IteratorModule.duplicate(Iterator.range(0, 32).map(ignored -> new Object()));
+        return Tuple.of(duplicated._1, new WeakReference<>(duplicated._2));
+    }
+
+    private void assertEventuallyCollected(WeakReference<?> reference) {
+        final ArrayList<byte[]> pressure = new ArrayList<>();
+        for (int attempt = 0; attempt < 8 && reference.get() != null; attempt++) {
+            pressure.add(new byte[1_000_000]);
+            if (pressure.size() > 4) {
+                pressure.clear();
+            }
+            System.gc();
+        }
+        assertThat(reference.get()).isNull();
+    }
+
+    private static <T> ArrayList<T> drain(Iterator<T> iterator) {
+        final ArrayList<T> values = new ArrayList<>();
+        while (iterator.hasNext()) {
+            values.add(iterator.next());
+        }
+        return values;
     }
 
 }
