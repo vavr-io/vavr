@@ -730,6 +730,12 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     }
 
     @Override
+    public <K2 extends @Nullable Object> HashMap<K2, V> mapKeysWith(BiFunction<? super K, ? super V, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k, v), v));
+    }
+
+    @Override
     public <K2 extends @Nullable Object> HashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         return Collections.mapKeys(this, HashMap.empty(), keyMapper, valueMerge);
     }
@@ -738,6 +744,12 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     public <V2 extends @Nullable Object> HashMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
+    }
+
+    @Override
+    public <V2 extends @Nullable Object> HashMap<K, V2> mapValuesWith(BiFunction<? super K, ? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map((k, v) -> Tuple.of(k, valueMapper.apply(k, v)));
     }
 
     @Override
