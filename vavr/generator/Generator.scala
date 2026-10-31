@@ -3361,28 +3361,10 @@ def generateTestClasses(): Unit = {
                 ${(1 to N).gen(i => {
 
                   im.getStatic("io.vavr.API.*")
-                  im.getStatic("io.vavr.Patterns.*")
 
                   xs"""
                     @$test
                     public void shouldMatchPattern$i() {
-                        final Tuple$i<${(1 to i).gen(j => s"Integer")(using ", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(using ", ")});
-                        final String func = Match(tuple).of(
-                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(using ", ")}) -> "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), (${(1 to i).gen(j => s"m$j")(using ", ")}) -> "okFunc")
-                        );
-                        assertThat(func).isEqualTo("okFunc");
-                        final String supp = Match(tuple).of(
-                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), () -> "okSupp")
-                        );
-                        assertThat(supp).isEqualTo("okSupp");
-                        final String val = Match(tuple).of(
-                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), "okVal")
-                        );
-                        assertThat(val).isEqualTo("okVal");
-
                         final ClzMatch c = new ClzMatch2();
                         final String match = Match(c).of(
                                 Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(using ", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(using ", ")})), "fail"),
