@@ -393,12 +393,34 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Nested
+    class HashCodeTests {
+        @Test
+        public void shouldDistinguishHashCodesWhenValuesAreSwappedBetweenKeys() {
+            final TreeMap<String, Integer> m1 = TreeMap.of("a", 1, "b", 2);
+            final TreeMap<String, Integer> m2 = TreeMap.of("a", 2, "b", 1);
+            assertThat(m1.hashCode()).isNotEqualTo(m2.hashCode());
+            assertThat(m1.equals(m2)).isFalse();
+        }
+    }
+
+    @Nested
     class TabulateTests {
         @Test
         public void shouldTabulateWithComparator() {
             final TreeMap<Integer, String> actual = TreeMap.tabulate(Comparators.naturalComparator(), 3, i -> Tuple.of(i, String.valueOf(i)));
             final TreeMap<Integer, String> expected = TreeMap.of(0, "0", 1, "1", 2, "2");
             assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class ReplaceAllTests {
+        @Test
+        public void shouldKeepComparatorWhenReplacingAllValues() {
+            final TreeMap<Integer, String> testee = TreeMap.of(Comparator.reverseOrder(), 1, "a", 2, "b", 3, "c");
+            final TreeMap<Integer, String> actual = testee.replaceAll((k, v) -> v + k);
+            assertThat(actual.comparator()).isEqualTo(testee.comparator());
+            assertThat(actual.toList()).isEqualTo(List(Tuple(3, "c3"), Tuple(2, "b2"), Tuple(1, "a1")));
         }
     }
 

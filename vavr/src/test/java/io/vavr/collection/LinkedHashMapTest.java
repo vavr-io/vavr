@@ -179,7 +179,25 @@ public class LinkedHashMapTest extends AbstractMapTest {
             assertThat(actual).isEqualTo(expected);
         }
     }
-    
+
+    @Nested
+    class HashCodeTests {
+        @Test
+        public void shouldDistinguishHashCodesWhenValuesAreSwappedBetweenKeys() {
+            final LinkedHashMap<String, Integer> m1 = LinkedHashMap.of("a", 1, "b", 2);
+            final LinkedHashMap<String, Integer> m2 = LinkedHashMap.of("a", 2, "b", 1);
+            assertThat(m1.hashCode()).isNotEqualTo(m2.hashCode());
+            assertThat(m1.equals(m2)).isFalse();
+        }
+
+        @Test
+        public void shouldKeepHashCodeIndependentOfInsertionOrder() {
+            final LinkedHashMap<String, Integer> m1 = LinkedHashMap.of("a", 1, "b", 2);
+            final LinkedHashMap<String, Integer> m2 = LinkedHashMap.of("b", 2, "a", 1);
+            assertThat(m1.hashCode()).isEqualTo(m2.hashCode());
+            assertThat(m1).isEqualTo(m2);
+        }
+    }
 
     @Nested
     class LinkedHashMapPutTests {
@@ -339,6 +357,16 @@ public class LinkedHashMapTest extends AbstractMapTest {
         @Test
         public void shouldReturnTrueWhenIsSequentialCalled() {
             assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
+        }
+    }
+
+    @Nested
+    class RetainAllTests {
+        @Test
+        public void shouldPreserveInsertionOrderWhenRetainingAll() {
+            final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+            final LinkedHashMap<Integer, String> actual = map.retainAll(List.of(Tuple.of(4, "d"), Tuple.of(2, "b"), Tuple.of(9, "z")));
+            assertThat(actual.toList()).isEqualTo(List.of(Tuple.of(2, "b"), Tuple.of(4, "d")));
         }
     }
 

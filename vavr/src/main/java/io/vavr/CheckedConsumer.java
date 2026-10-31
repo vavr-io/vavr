@@ -20,7 +20,7 @@ package io.vavr;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.CheckedConsumerModule.sneakyThrow;
 
@@ -30,7 +30,7 @@ import static io.vavr.CheckedConsumerModule.sneakyThrow;
  * @param <T> the type of the input to the consumer
  */
 @FunctionalInterface
-public interface CheckedConsumer<T> {
+public interface CheckedConsumer<T extends @Nullable Object> {
 
     /**
      * Creates a {@code CheckedConsumer} from the given method reference or lambda.
@@ -40,7 +40,7 @@ public interface CheckedConsumer<T> {
      * final CheckedConsumer<Value> checkedConsumer = CheckedConsumer.of(Value::stdout);
      * final Consumer<Value> consumer = checkedConsumer.unchecked();
      *
-     * // prints "Hi" to the console
+     * // prints "H", "i" and "!", each on its own line
      * consumer.accept(CharSeq.of("Hi!"));
      *
      * // may throw an exception
@@ -49,10 +49,10 @@ public interface CheckedConsumer<T> {
      *
      * @param methodReference typically a method reference, e.g. {@code Type::method}
      * @param <T> the type of values accepted by the consumer
-     * @return a new {@code CheckedConsumer} wrapping the given method reference
+     * @return the given {@code CheckedConsumer} unchanged (this method only aids type inference)
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static <T> CheckedConsumer<T> of(@NonNull CheckedConsumer<T> methodReference) {
+    static <T extends @Nullable Object> CheckedConsumer<T> of(CheckedConsumer<T> methodReference) {
         return methodReference;
     }
 
@@ -72,7 +72,7 @@ public interface CheckedConsumer<T> {
      * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
      * @throws NullPointerException if {@code after} is null
      */
-    default CheckedConsumer<T> andThen(@NonNull CheckedConsumer<? super T> after) {
+    default CheckedConsumer<T> andThen(CheckedConsumer<? super T> after) {
         Objects.requireNonNull(after, "after is null");
         return (T t) -> { accept(t); after.accept(t); };
     }
@@ -98,7 +98,7 @@ interface CheckedConsumerModule {
 
     // DEV-NOTE: we do not plan to expose this as public API
     @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    static <T extends Throwable, R extends @Nullable Object> R sneakyThrow(Throwable t) throws T {
         throw (T) t;
     }
 

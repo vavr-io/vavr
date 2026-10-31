@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -440,7 +439,7 @@ final class Undefined<T> implements Value<T>, Serializable {
     }
 
     @Override
-    public Value<T> peek(@NonNull Consumer<? super T> action) {
+    public Value<T> peek(Consumer<? super T> action) {
         return this;
     }
 
@@ -450,13 +449,13 @@ final class Undefined<T> implements Value<T>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return Iterator.empty();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Value<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U> Value<U> map(Function<? super T, ? extends U> mapper) {
         return (Value<U>) this;
     }
 

@@ -19,6 +19,7 @@
 package io.vavr.collection;
 
 import java.util.NoSuchElementException;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Provides a common {@link Object#toString()} implementation.
@@ -29,7 +30,7 @@ import java.util.NoSuchElementException;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-abstract class AbstractIterator<T> implements Iterator<T> {
+abstract class AbstractIterator<T extends @Nullable Object> implements Iterator<T> {
 
     @Override
     public String toString() {

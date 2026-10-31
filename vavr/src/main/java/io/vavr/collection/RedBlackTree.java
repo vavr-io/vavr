@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.RedBlackTree.Color.BLACK;
 import static io.vavr.collection.RedBlackTree.Color.RED;
@@ -44,23 +45,23 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-interface RedBlackTree<T> extends Iterable<T>, Serializable {
+interface RedBlackTree<T extends @Nullable Object> extends Iterable<T>, Serializable {
 
     long serialVersionUID = 1L;
 
-    static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
+    static <T extends @Nullable Object> RedBlackTree<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new Empty<>(comparator);
     }
 
-    static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
+    static <T extends @Nullable Object> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         final Empty<T> empty = new Empty<>(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
     @SafeVarargs
-    static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
+    static <T extends @Nullable Object> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         RedBlackTree<T> tree = empty(comparator);
@@ -71,7 +72,7 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
+    static <T extends @Nullable Object> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         // function equality is not computable => same object check
@@ -88,9 +89,12 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
 
     /**
      * Inserts a new value into this tree.
+     * <p>
+     * A new tree instance is always returned. If a comparator-equal value is already present, it is replaced
+     * by the given value.
      *
      * @param value A value.
-     * @return A new tree if this tree does not contain the given value, otherwise the same tree instance.
+     * @return A new tree containing the given value.
      */
     default RedBlackTree<T> insert(T value) {
         return Node.insert(this, value).color(BLACK);
@@ -122,9 +126,12 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
 
     /**
      * Deletes a value from this RedBlackTree.
+     * <p>
+     * A new instance is returned even if the value is not present in this tree, except when this tree is
+     * already empty, in which case {@code this} is returned.
      *
      * @param value A value
-     * @return A new RedBlackTree if the value is present, otherwise this.
+     * @return A RedBlackTree without the given value.
      */
     default RedBlackTree<T> delete(T value) {
         final RedBlackTree<T> tree = Node.delete(this, value)._1;
@@ -179,7 +186,7 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
     }
 
     /**
-     * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Leaf}.
+     * Checks if this {@code RedBlackTree} is empty, i.e. an instance of {@code Empty}.
      *
      * @return true, if it is empty, false otherwise.
      */
@@ -227,10 +234,12 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
     int size();
 
     /**
-     * Adds all of the elements of the given {@code tree} to this tree, if not already present.
+     * Adds all of the elements of the given {@code tree} to this tree. When an element of the given tree is
+     * comparator-equal to one already present in this tree, the given tree's element replaces this tree's.
      *
      * @param tree The RedBlackTree to form the union with.
-     * @return A new RedBlackTree that contains all distinct elements of this and the given {@code tree}.
+     * @return A RedBlackTree that contains all distinct elements of this and the given {@code tree}
+     *         (may be {@code this} or the given {@code tree} itself if the other one is empty).
      */
     default RedBlackTree<T> union(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");
@@ -337,7 +346,7 @@ interface RedBlackTreeModule {
      *
      * @param <T> Component type
      */
-    final class Node<T> implements RedBlackTree<T>, Serializable {
+    final class Node<T extends @Nullable Object> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -358,7 +367,7 @@ interface RedBlackTreeModule {
             this.value = value;
             this.right = right;
             this.empty = empty;
-            this.size = left.size() + right.size() + 1;
+            size = left.size() + right.size() + 1;
         }
 
         @Override
@@ -454,11 +463,11 @@ interface RedBlackTreeModule {
             return (this.color == color) ? this : new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        static <T> RedBlackTree<T> color(RedBlackTree<T> tree, Color color) {
+        static <T extends @Nullable Object> RedBlackTree<T> color(RedBlackTree<T> tree, Color color) {
             return tree.isEmpty() ? tree : ((Node<T>) tree).color(color);
         }
 
-        private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value,
+        private static <T extends @Nullable Object> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value,
                 RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!left.isEmpty()) {
@@ -488,7 +497,7 @@ interface RedBlackTreeModule {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value,
+        private static <T extends @Nullable Object> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value,
                 RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!right.isEmpty()) {
@@ -518,7 +527,7 @@ interface RedBlackTreeModule {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
+        private static <T extends @Nullable Object> Tuple2<? extends RedBlackTree<T>, Boolean> blackify(RedBlackTree<T> tree) {
             if (tree instanceof Node) {
                 final Node<T> node = (Node<T>) tree;
                 if (node.color == RED) {
@@ -528,7 +537,7 @@ interface RedBlackTreeModule {
             return Tuple.of(tree, true);
         }
 
-        static <T> Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree, T value) {
+        static <T extends @Nullable Object> Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 return Tuple.of(tree, false);
             } else {
@@ -583,7 +592,7 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static <T> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
+        private static <T extends @Nullable Object> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
             if (node.color() == BLACK && node.left().isEmpty() && node.right.isEmpty()){
                 return Tuple.of(node.empty, true, node.value());
             } else if (node.color() == BLACK && node.left().isEmpty() && node.right().color() == RED){
@@ -607,7 +616,7 @@ interface RedBlackTreeModule {
             }
         }
 
-        static <T> Node<T> insert(RedBlackTree<T> tree, T value) {
+        static <T extends @Nullable Object> Node<T> insert(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 final Empty<T> empty = (Empty<T>) tree;
                 return new Node<>(RED, 1, empty, value, empty, empty);
@@ -634,18 +643,16 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static boolean isRed(RedBlackTree<?> tree) {
-            return !tree.isEmpty() && ((Node<?>) tree).color == RED;
-        }
-
-        static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
+        static <T extends @Nullable Object> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
                 return t2.insert(value);
             } else if (t2.isEmpty()) {
                 return t1.insert(value);
             } else {
-                final Node<T> n1 = (Node<T>) t1;
-                final Node<T> n2 = (Node<T>) t2;
+                // A red root has one black node fewer on its paths than a black root with the same stored height,
+                // so both roots are colored black before their heights are compared.
+                final Node<T> n1 = ((Node<T>) t1).color(BLACK);
+                final Node<T> n2 = ((Node<T>) t2).color(BLACK);
                 final int comparison = n1.blackHeight - n2.blackHeight;
                 if (comparison < 0) {
                     return Node.joinLT(n1, value, n2, n1.blackHeight).color(BLACK);
@@ -657,7 +664,7 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static <T> Node<T> joinGT(Node<T> n1, T value, Node<T> n2, int h2) {
+        private static <T extends @Nullable Object> Node<T> joinGT(Node<T> n1, T value, Node<T> n2, int h2) {
             if (n1.blackHeight == h2) {
                 return new Node<>(RED, h2 + 1, n1, value, n2, n1.empty);
             } else {
@@ -666,7 +673,7 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static <T> Node<T> joinLT(Node<T> n1, T value, Node<T> n2, int h1) {
+        private static <T extends @Nullable Object> Node<T> joinLT(Node<T> n1, T value, Node<T> n2, int h1) {
             if (n2.blackHeight == h1) {
                 return new Node<>(RED, h1 + 1, n1, value, n2, n1.empty);
             } else {
@@ -675,68 +682,30 @@ interface RedBlackTreeModule {
             }
         }
 
-        static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
+        /**
+         * Concatenates two trees, where every element of {@code t1} is less than every element of {@code t2}.
+         * <p>
+         * The minimum of {@code t2} is removed and used to {@link #join(RedBlackTree, Object, RedBlackTree) join}
+         * both trees, like {@code join2} in Blelloch, Ferizovic and Sun, "Just Join for Parallel Ordered Sets"
+         * (2016), and in Scala's {@code scala.collection.immutable.RedBlackTree}.
+         *
+         * @param t1  the tree with the lesser elements
+         * @param t2  the tree with the greater elements
+         * @param <T> Component type
+         * @return A tree with a black root containing the elements of both trees
+         */
+        static <T extends @Nullable Object> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
-                return t2;
+                return Node.color(t2, BLACK);
             } else if (t2.isEmpty()) {
-                return t1;
+                return Node.color(t1, BLACK);
             } else {
-                final Node<T> n1 = (Node<T>) t1;
-                final Node<T> n2 = (Node<T>) t2;
-                final int comparison = n1.blackHeight - n2.blackHeight;
-                if (comparison < 0) {
-                    final Node<T> node = Node.mergeLT(n1, n2, n1.blackHeight);
-                    return Node.color(node, BLACK);
-                } else if (comparison > 0) {
-                    final Node<T> node = Node.mergeGT(n1, n2, n2.blackHeight);
-                    return Node.color(node, BLACK);
-                } else {
-                    final Node<T> node = Node.mergeEQ(n1, n2);
-                    return Node.color(node, BLACK);
-                }
+                final Tuple3<? extends RedBlackTree<T>, Boolean, T> deleted = Node.deleteMin((Node<T>) t2);
+                return Node.join(t1, deleted._3, deleted._1);
             }
         }
 
-        private static <T> Node<T> mergeEQ(Node<T> n1, Node<T> n2) {
-            final T m = Node.minimum(n2);
-            final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
-            final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
-            if (n1.blackHeight == h2) {
-                return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
-            } else if (isRed(n1.left)) {
-                final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
-                return new Node<>(RED, n1.blackHeight + 1, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
-            } else if (isRed(n1.right)) {
-                final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
-                final T rx = ((Node<T>) n1.right).value;
-                final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
-                final Node<T> left = new Node<>(RED, n1.blackHeight, n1.left, n1.value, rl, n1.empty);
-                final Node<T> right = new Node<>(RED, n1.blackHeight, rr, m, t2, n1.empty);
-                return new Node<>(BLACK, n1.blackHeight, left, rx, right, n1.empty);
-            } else {
-                return new Node<>(BLACK, n1.blackHeight, n1.color(RED), m, t2, n1.empty);
-            }
-        }
-
-        private static <T> Node<T> mergeGT(Node<T> n1, Node<T> n2, int h2) {
-            if (n1.blackHeight == h2) {
-                return Node.mergeEQ(n1, n2);
-            } else {
-                final Node<T> node = Node.mergeGT((Node<T>) n1.right, n2, h2);
-                return Node.balanceRight(n1.color, n1.blackHeight, n1.left, n1.value, node, n1.empty);
-            }
-        }
-
-        private static <T> Node<T> mergeLT(Node<T> n1, Node<T> n2, int h1) {
-            if (n2.blackHeight == h1) {
-                return Node.mergeEQ(n1, n2);
-            } else {
-                final Node<T> node = Node.mergeLT(n1, (Node<T>) n2.left, h1);
-                return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
-            }
-        }
-
-        static <T> T maximum(Node<T> node) {
+        static <T extends @Nullable Object> T maximum(Node<T> node) {
             Node<T> curr = node;
             while (!curr.right.isEmpty()) {
                 curr = (Node<T>) curr.right;
@@ -744,7 +713,7 @@ interface RedBlackTreeModule {
             return curr.value;
         }
 
-        static <T> T minimum(Node<T> node) {
+        static <T extends @Nullable Object> T minimum(Node<T> node) {
             Node<T> curr = node;
             while (!curr.left.isEmpty()) {
                 curr = (Node<T>) curr.left;
@@ -752,7 +721,7 @@ interface RedBlackTreeModule {
             return curr.value;
         }
 
-        static <T> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
+        static <T extends @Nullable Object> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 return Tuple.of(tree, tree);
             } else {
@@ -770,7 +739,7 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left,
+        private static <T extends @Nullable Object> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left,
                 T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!left.isEmpty()) {
                 final Node<T> ln = (Node<T>) left;
@@ -791,7 +760,7 @@ interface RedBlackTreeModule {
             throw new IllegalStateException("unbalancedLeft(" + color + ", " + blackHeight + ", " + left + ", " + value + ", " + right + ")");
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left,
+        private static <T extends @Nullable Object> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left,
                 T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!right.isEmpty()) {
                 final Node<T> rn = (Node<T>) right;
@@ -818,7 +787,7 @@ interface RedBlackTreeModule {
      *
      * @param <T> Component type
      */
-    final class Empty<T> implements RedBlackTree<T>, Serializable {
+    final class Empty<T extends @Nullable Object> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 

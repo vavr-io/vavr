@@ -20,6 +20,7 @@ package io.vavr.collection;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import org.jspecify.annotations.Nullable;
 
 /**
  * INTERNAL: Common {@code Comparator} related functions (not intended to be public).
@@ -41,12 +42,12 @@ final class Comparators {
      * @return The natural Comparator of type U
      */
     @SuppressWarnings("unchecked")
-    static <U> Comparator<U> naturalComparator() {
+    static <U extends @Nullable Object> Comparator<U> naturalComparator() {
         return NaturalComparator.instance();
     }
 }
 
-final class NaturalComparator<T> implements Comparator<T>, Serializable {
+final class NaturalComparator<T extends @Nullable Object> implements Comparator<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +57,7 @@ final class NaturalComparator<T> implements Comparator<T>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> NaturalComparator<T> instance() {
+    static <T extends @Nullable Object> NaturalComparator<T> instance() {
         return (NaturalComparator<T>) INSTANCE;
     }
 
@@ -68,7 +69,7 @@ final class NaturalComparator<T> implements Comparator<T>, Serializable {
 
     /** @see Comparator#equals(Object) */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return obj instanceof NaturalComparator;
     }
 
