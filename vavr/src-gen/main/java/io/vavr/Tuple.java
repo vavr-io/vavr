@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The base interface of all tuples.
  *
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public interface Tuple extends Serializable {
 

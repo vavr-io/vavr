@@ -41,7 +41,7 @@ import org.jspecify.annotations.Nullable;
  * @param _1 the 1st element of this tuple
  * @param <T2> type of the 2nd element
  * @param _2 the 2nd element of this tuple
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public record Tuple2<T1 extends @Nullable Object, T2 extends @Nullable Object>(T1 _1, T2 _2) implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
@@ -50,18 +50,11 @@ public record Tuple2<T1 extends @Nullable Object, T2 extends @Nullable Object>(T
 
     public static <T1 extends @Nullable Object, T2 extends @Nullable Object> Comparator<Tuple2<T1, T2>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp) {
         return (Comparator<Tuple2<T1, T2>> & Serializable) (t1, t2) -> {
-            final int check1 = t1Comp.compare(t1._1, t2._1);
-            if (check1 != 0) {
-                return check1;
+            int cmp;
+            if ((cmp = t1Comp.compare(t1._1, t2._1)) != 0) {
+                return cmp;
             }
-
-            final int check2 = t2Comp.compare(t1._2, t2._2);
-            if (check2 != 0) {
-                return check2;
-            }
-
-            // all components are equal
-            return 0;
+            return t2Comp.compare(t1._2, t2._2);
         };
     }
 
@@ -70,18 +63,11 @@ public record Tuple2<T1 extends @Nullable Object, T2 extends @Nullable Object>(T
         final Tuple2<U1, U2> t1 = (Tuple2<U1, U2>) o1;
         final Tuple2<U1, U2> t2 = (Tuple2<U1, U2>) o2;
 
-        final int check1 = t1._1.compareTo(t2._1);
-        if (check1 != 0) {
-            return check1;
+        int cmp;
+        if ((cmp = t1._1.compareTo(t2._1)) != 0) {
+            return cmp;
         }
-
-        final int check2 = t1._2.compareTo(t2._2);
-        if (check2 != 0) {
-            return check2;
-        }
-
-        // all components are equal
-        return 0;
+        return t1._2.compareTo(t2._2);
     }
 
     @Override

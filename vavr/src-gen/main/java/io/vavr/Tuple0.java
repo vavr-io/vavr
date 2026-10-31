@@ -34,7 +34,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * A tuple of no elements which can be seen as cartesian product of no components.
  *
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public record Tuple0() implements Tuple, Comparable<Tuple0>, Serializable {
 

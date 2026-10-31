@@ -36,7 +36,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @param <T1> type of the 1st element
  * @param _1 the 1st element of this tuple
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public record Tuple1<T1 extends @Nullable Object>(T1 _1) implements Tuple, Comparable<Tuple1<T1>>, Serializable {
 
@@ -45,13 +45,8 @@ public record Tuple1<T1 extends @Nullable Object>(T1 _1) implements Tuple, Compa
 
     public static <T1 extends @Nullable Object> Comparator<Tuple1<T1>> comparator(Comparator<? super T1> t1Comp) {
         return (Comparator<Tuple1<T1>> & Serializable) (t1, t2) -> {
-            final int check1 = t1Comp.compare(t1._1, t2._1);
-            if (check1 != 0) {
-                return check1;
-            }
 
-            // all components are equal
-            return 0;
+            return t1Comp.compare(t1._1, t2._1);
         };
     }
 
@@ -60,13 +55,7 @@ public record Tuple1<T1 extends @Nullable Object>(T1 _1) implements Tuple, Compa
         final Tuple1<U1> t1 = (Tuple1<U1>) o1;
         final Tuple1<U1> t2 = (Tuple1<U1>) o2;
 
-        final int check1 = t1._1.compareTo(t2._1);
-        if (check1 != 0) {
-            return check1;
-        }
-
-        // all components are equal
-        return 0;
+        return t1._1.compareTo(t2._1);
     }
 
     @Override

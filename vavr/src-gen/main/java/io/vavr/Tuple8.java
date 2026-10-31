@@ -50,7 +50,7 @@ import org.jspecify.annotations.Nullable;
  * @param _7 the 7th element of this tuple
  * @param <T8> type of the 8th element
  * @param _8 the 8th element of this tuple
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public record Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object>(T1 _1, T2 _2, T3 _3, T4 _4, T5 _5, T6 _6, T7 _7, T8 _8) implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
@@ -59,48 +59,29 @@ public record Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T
 
     public static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp, Comparator<? super T8> t8Comp) {
         return (Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> & Serializable) (t1, t2) -> {
-            final int check1 = t1Comp.compare(t1._1, t2._1);
-            if (check1 != 0) {
-                return check1;
+            int cmp;
+            if ((cmp = t1Comp.compare(t1._1, t2._1)) != 0) {
+                return cmp;
             }
-
-            final int check2 = t2Comp.compare(t1._2, t2._2);
-            if (check2 != 0) {
-                return check2;
+            if ((cmp = t2Comp.compare(t1._2, t2._2)) != 0) {
+                return cmp;
             }
-
-            final int check3 = t3Comp.compare(t1._3, t2._3);
-            if (check3 != 0) {
-                return check3;
+            if ((cmp = t3Comp.compare(t1._3, t2._3)) != 0) {
+                return cmp;
             }
-
-            final int check4 = t4Comp.compare(t1._4, t2._4);
-            if (check4 != 0) {
-                return check4;
+            if ((cmp = t4Comp.compare(t1._4, t2._4)) != 0) {
+                return cmp;
             }
-
-            final int check5 = t5Comp.compare(t1._5, t2._5);
-            if (check5 != 0) {
-                return check5;
+            if ((cmp = t5Comp.compare(t1._5, t2._5)) != 0) {
+                return cmp;
             }
-
-            final int check6 = t6Comp.compare(t1._6, t2._6);
-            if (check6 != 0) {
-                return check6;
+            if ((cmp = t6Comp.compare(t1._6, t2._6)) != 0) {
+                return cmp;
             }
-
-            final int check7 = t7Comp.compare(t1._7, t2._7);
-            if (check7 != 0) {
-                return check7;
+            if ((cmp = t7Comp.compare(t1._7, t2._7)) != 0) {
+                return cmp;
             }
-
-            final int check8 = t8Comp.compare(t1._8, t2._8);
-            if (check8 != 0) {
-                return check8;
-            }
-
-            // all components are equal
-            return 0;
+            return t8Comp.compare(t1._8, t2._8);
         };
     }
 
@@ -109,48 +90,29 @@ public record Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T
         final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> t1 = (Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>) o1;
         final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> t2 = (Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>) o2;
 
-        final int check1 = t1._1.compareTo(t2._1);
-        if (check1 != 0) {
-            return check1;
+        int cmp;
+        if ((cmp = t1._1.compareTo(t2._1)) != 0) {
+            return cmp;
         }
-
-        final int check2 = t1._2.compareTo(t2._2);
-        if (check2 != 0) {
-            return check2;
+        if ((cmp = t1._2.compareTo(t2._2)) != 0) {
+            return cmp;
         }
-
-        final int check3 = t1._3.compareTo(t2._3);
-        if (check3 != 0) {
-            return check3;
+        if ((cmp = t1._3.compareTo(t2._3)) != 0) {
+            return cmp;
         }
-
-        final int check4 = t1._4.compareTo(t2._4);
-        if (check4 != 0) {
-            return check4;
+        if ((cmp = t1._4.compareTo(t2._4)) != 0) {
+            return cmp;
         }
-
-        final int check5 = t1._5.compareTo(t2._5);
-        if (check5 != 0) {
-            return check5;
+        if ((cmp = t1._5.compareTo(t2._5)) != 0) {
+            return cmp;
         }
-
-        final int check6 = t1._6.compareTo(t2._6);
-        if (check6 != 0) {
-            return check6;
+        if ((cmp = t1._6.compareTo(t2._6)) != 0) {
+            return cmp;
         }
-
-        final int check7 = t1._7.compareTo(t2._7);
-        if (check7 != 0) {
-            return check7;
+        if ((cmp = t1._7.compareTo(t2._7)) != 0) {
+            return cmp;
         }
-
-        final int check8 = t1._8.compareTo(t2._8);
-        if (check8 != 0) {
-            return check8;
-        }
-
-        // all components are equal
-        return 0;
+        return t1._8.compareTo(t2._8);
     }
 
     @Override

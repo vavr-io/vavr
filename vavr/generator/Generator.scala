@@ -2314,7 +2314,7 @@ def generateMainClasses(): Unit = {
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element\n* @param _$j the ${j.ordinal} element of this tuple")(using "\n")}
-         * @author Daniel Dietrich
+         * @author Daniel Dietrich, Grzegorz Piwowarek
          */
         ${if (i == 0) xs"""
           public record $className$genericsDecl() implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
@@ -2352,15 +2352,13 @@ def generateMainClasses(): Unit = {
                   return COMPARATOR;
                 """ else xs"""
                   return (Comparator<$className$generics> & Serializable) (t1, t2) -> {
-                      ${(1 to i).gen(j => xs"""
-                        final int check$j = t${j}Comp.compare(t1._$j, t2._$j);
-                        if (check$j != 0) {
-                            return check$j;
+                      ${(i > 1).gen(xs"""int cmp;""")}
+                      ${(1 until i).gen(j => xs"""
+                        if ((cmp = t${j}Comp.compare(t1._$j, t2._$j)) != 0) {
+                            return cmp;
                         }
-                      """)(using "\n\n")}
-
-                      // all components are equal
-                      return 0;
+                      """)(using "\n")}
+                      return t${i}Comp.compare(t1._$i, t2._$i);
                   };
                 """}
             }
@@ -2371,15 +2369,13 @@ def generateMainClasses(): Unit = {
                   final $className$resultGenerics t1 = ($className$resultGenerics) o1;
                   final $className$resultGenerics t2 = ($className$resultGenerics) o2;
 
-                  ${(1 to i).gen(j => xs"""
-                    final int check$j = t1._$j.compareTo(t2._$j);
-                    if (check$j != 0) {
-                        return check$j;
+                  ${(i > 1).gen(xs"""int cmp;""")}
+                  ${(1 until i).gen(j => xs"""
+                    if ((cmp = t1._$j.compareTo(t2._$j)) != 0) {
+                        return cmp;
                     }
-                  """)(using "\n\n")}
-
-                  // all components are equal
-                  return 0;
+                  """)(using "\n")}
+                  return t1._$i.compareTo(t2._$i);
               }
             """)}
 
@@ -2655,7 +2651,7 @@ def generateMainClasses(): Unit = {
         /**
          * The base interface of all tuples.
          *
-         * @author Daniel Dietrich
+         * @author Daniel Dietrich, Grzegorz Piwowarek
          */
         public interface Tuple extends ${im.getType("java.io.Serializable")} {
 
