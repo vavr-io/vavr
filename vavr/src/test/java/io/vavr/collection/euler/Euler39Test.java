@@ -57,14 +57,14 @@ public class Euler39Test {
         return SOLUTIONS_FOR_PERIMETERS_UP_TO_1000
                 .map((perimeter, listOfSolutions) -> Tuple.of(perimeter, listOfSolutions.length()))
                 .maxBy(Tuple2::_2)
-                .get()._1;
+                .get()._1();
     }
 
     private static final Map<Integer, List<Tuple3<Integer, Integer, Integer>>> SOLUTIONS_FOR_PERIMETERS_UP_TO_1000
             = List.rangeClosed(1, 500)
             .flatMap(a -> List.rangeClosed(a, 500)
                     .map(b -> Tuple.of(a, b, hypot(a, b))))
-            .filter(t -> floor(t._3) == t._3)
+            .filter(t -> floor(t._3()) == t._3())
             .map(t -> t.map3(Double::intValue))
             .groupBy(t -> t.apply((a, b, c) -> a + b + c))
             .filterKeys(d -> d <= 1_000);

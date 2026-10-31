@@ -74,8 +74,8 @@ public class LinkedHashMapRemoveTest {
             final java.util.Iterator<java.util.Map.Entry<Integer, Integer>> expectedIterator = expected.entrySet().iterator();
             for (Tuple2<Integer, Integer> entry : actual) {
                 final java.util.Map.Entry<Integer, Integer> expectedEntry = expectedIterator.next();
-                assertThat(entry._1).isEqualTo(expectedEntry.getKey());
-                assertThat(entry._2).isEqualTo(expectedEntry.getValue());
+                assertThat(entry._1()).isEqualTo(expectedEntry.getKey());
+                assertThat(entry._2()).isEqualTo(expectedEntry.getValue());
             }
             assertThat(expectedIterator.hasNext()).isFalse();
         }

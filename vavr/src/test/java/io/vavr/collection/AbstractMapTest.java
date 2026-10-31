@@ -102,7 +102,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 final ArrayList<Tuple2<Integer, T>> result = new ArrayList<>();
                 Stream.ofAll(list)
                         .zipWithIndex()
-                        .map(tu -> Tuple.of(tu._2, tu._1))
+                        .map(tu -> Tuple.of(tu._2(), tu._1()))
                         .forEach(result::add);
                 return result;
             }
@@ -110,7 +110,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             private ArrayList<T> fromTuples(java.util.List<Tuple2<Integer, T>> list) {
                 final ArrayList<T> result = new ArrayList<>();
                 Stream.ofAll(list)
-                        .map(tu -> tu._2)
+                        .map(tu -> tu._2())
                         .forEach(result::add);
                 return result;
             }
@@ -925,7 +925,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzipNonNil() {
         final Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
-        final Tuple actual = map.unzip(entry -> Tuple.of(entry._1, entry._2 + 1));
+        final Tuple actual = map.unzip(entry -> Tuple.of(entry._1(), entry._2() + 1));
         final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2));
         assertThat(actual).isEqualTo(expected);
     }
@@ -940,7 +940,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzip3NonNil() {
         final Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
-        final Tuple actual = map.unzip3(entry -> Tuple.of(entry._1, entry._2 + 1, entry._2 + 5));
+        final Tuple actual = map.unzip3(entry -> Tuple.of(entry._1(), entry._2() + 1, entry._2() + 5));
         final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2), Stream.of(5, 6));
         assertThat(actual).isEqualTo(expected);
     }
@@ -1153,7 +1153,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             final Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
             final int[] result = { 0 };
             map.forEach(t -> {
-                result[0] += t._1 + t._2;
+                result[0] += t._1() + t._2();
             });
             assertThat(result[0]).isEqualTo(10);
         }
@@ -1489,8 +1489,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 count.incrementAndGet();
                 return true;
             });
-            assertThat(results._1).isEqualTo(mapOf("1", 1, "2", 2, "3", 3));
-            assertThat(results._2).isEmpty();
+            assertThat(results._1()).isEqualTo(mapOf("1", 1, "2", 2, "3", 3));
+            assertThat(results._2()).isEmpty();
             assertThat(count.get()).isEqualTo(3);
         }
     }

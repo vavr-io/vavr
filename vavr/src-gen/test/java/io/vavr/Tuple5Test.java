@@ -29,7 +29,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple5Test {
@@ -49,61 +48,61 @@ public class Tuple5Test {
     @Test
     public void shouldReturnElements() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5);
-        assertThat(tuple._1).isEqualTo(1);
-        assertThat(tuple._2).isEqualTo(2);
-        assertThat(tuple._3).isEqualTo(3);
-        assertThat(tuple._4).isEqualTo(4);
-        assertThat(tuple._5).isEqualTo(5);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._3()).isEqualTo(3);
+        assertThat(tuple._4()).isEqualTo(4);
+        assertThat(tuple._5()).isEqualTo(5);
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
     }
 
     @Test
     public void shouldUpdate2() {
       final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5).update2(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(42);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
     }
 
     @Test
     public void shouldUpdate3() {
       final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5).update3(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(42);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(42);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
     }
 
     @Test
     public void shouldUpdate4() {
       final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5).update4(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(42);
-      assertThat(tuple._5).isEqualTo(5);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(42);
+      assertThat(tuple._5()).isEqualTo(5);
     }
 
     @Test
     public void shouldUpdate5() {
       final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5).update5(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(42);
     }
 
     @Test
@@ -304,9 +303,9 @@ public class Tuple5Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null, null, null, null);
-        assertThat(actual).isEqualTo(expected);
+        final Tuple5<Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

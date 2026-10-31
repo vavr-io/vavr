@@ -91,11 +91,11 @@ public class Euler11Test {
 
     private static int maxProduct() {
         return List.of(Tuple.of(0, 1), Tuple.of(1, 1), Tuple.of(1, 0), Tuple.of(1, -1))
-                .map(d -> maxProduct(d._1, d._2)).max().get();
+                .map(d -> maxProduct(d._1(), d._2())).max().get();
     }
 
     private static int maxProduct(int dr, int dc) {
-        return range(dr).crossProduct(range(dc)).map(rc -> product(rc._1, rc._2, dr, dc)).max().get();
+        return range(dr).crossProduct(range(dc)).map(rc -> product(rc._1(), rc._2(), dr, dc)).max().get();
     }
 
     private static List<Integer> range(int d) {

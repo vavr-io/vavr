@@ -174,7 +174,7 @@ public interface Function1<T1 extends @Nullable Object, R extends @Nullable Obje
      * @return a tupled function equivalent to this.
      */
     default Function1<Tuple1<T1>, R> tupled() {
-        return t -> apply(t._1);
+        return t -> apply(t._1());
     }
 
     /**

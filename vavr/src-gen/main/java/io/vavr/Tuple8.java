@@ -34,89 +34,26 @@ import org.jspecify.annotations.Nullable;
  * A tuple of 8 elements which can be seen as cartesian product of 8 components.
  *
  * @param <T1> type of the 1st element
+ * @param _1 the 1st element of this tuple
  * @param <T2> type of the 2nd element
+ * @param _2 the 2nd element of this tuple
  * @param <T3> type of the 3rd element
+ * @param _3 the 3rd element of this tuple
  * @param <T4> type of the 4th element
+ * @param _4 the 4th element of this tuple
  * @param <T5> type of the 5th element
+ * @param _5 the 5th element of this tuple
  * @param <T6> type of the 6th element
+ * @param _6 the 6th element of this tuple
  * @param <T7> type of the 7th element
+ * @param _7 the 7th element of this tuple
  * @param <T8> type of the 8th element
+ * @param _8 the 8th element of this tuple
  * @author Daniel Dietrich
  */
-public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
+public record Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object>(T1 _1, T2 _2, T3 _3, T4 _4, T5 _5, T6 _6, T7 _7, T8 _8) implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The 1st element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T1 _1;
-
-    /**
-     * The 2nd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T2 _2;
-
-    /**
-     * The 3rd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T3 _3;
-
-    /**
-     * The 4th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T4 _4;
-
-    /**
-     * The 5th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T5 _5;
-
-    /**
-     * The 6th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T6 _6;
-
-    /**
-     * The 7th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T7 _7;
-
-    /**
-     * The 8th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T8 _8;
-
-    /**
-     * Constructs a tuple of 8 elements.
-     *
-     * @param t1 the 1st element
-     * @param t2 the 2nd element
-     * @param t3 the 3rd element
-     * @param t4 the 4th element
-     * @param t5 the 5th element
-     * @param t6 the 6th element
-     * @param t7 the 7th element
-     * @param t8 the 8th element
-     */
-    public Tuple8(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
-        this._1 = t1;
-        this._2 = t2;
-        this._3 = t3;
-        this._4 = t4;
-        this._5 = t5;
-        this._6 = t6;
-        this._7 = t7;
-        this._8 = t8;
-    }
 
     public static <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object, T4 extends @Nullable Object, T5 extends @Nullable Object, T6 extends @Nullable Object, T7 extends @Nullable Object, T8 extends @Nullable Object> Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp, Comparator<? super T8> t8Comp) {
         return (Comparator<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> & Serializable) (t1, t2) -> {
@@ -225,15 +162,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Getter of the 1st element of this tuple.
-     *
-     * @return the 1st element of this Tuple.
-     */
-    public T1 _1() {
-        return _1;
-    }
-
-    /**
      * Returns a copy of this tuple with the 1st element replaced by the given {@code value}.
      *
      * @param value the new value
@@ -241,15 +169,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update1(T1 value) {
         return new Tuple8<>(value, _2, _3, _4, _5, _6, _7, _8);
-    }
-
-    /**
-     * Getter of the 2nd element of this tuple.
-     *
-     * @return the 2nd element of this Tuple.
-     */
-    public T2 _2() {
-        return _2;
     }
 
     /**
@@ -263,15 +182,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Getter of the 3rd element of this tuple.
-     *
-     * @return the 3rd element of this Tuple.
-     */
-    public T3 _3() {
-        return _3;
-    }
-
-    /**
      * Returns a copy of this tuple with the 3rd element replaced by the given {@code value}.
      *
      * @param value the new value
@@ -279,15 +189,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update3(T3 value) {
         return new Tuple8<>(_1, _2, value, _4, _5, _6, _7, _8);
-    }
-
-    /**
-     * Getter of the 4th element of this tuple.
-     *
-     * @return the 4th element of this Tuple.
-     */
-    public T4 _4() {
-        return _4;
     }
 
     /**
@@ -301,15 +202,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Getter of the 5th element of this tuple.
-     *
-     * @return the 5th element of this Tuple.
-     */
-    public T5 _5() {
-        return _5;
-    }
-
-    /**
      * Returns a copy of this tuple with the 5th element replaced by the given {@code value}.
      *
      * @param value the new value
@@ -317,15 +209,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update5(T5 value) {
         return new Tuple8<>(_1, _2, _3, _4, value, _6, _7, _8);
-    }
-
-    /**
-     * Getter of the 6th element of this tuple.
-     *
-     * @return the 6th element of this Tuple.
-     */
-    public T6 _6() {
-        return _6;
     }
 
     /**
@@ -339,15 +222,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     /**
-     * Getter of the 7th element of this tuple.
-     *
-     * @return the 7th element of this Tuple.
-     */
-    public T7 _7() {
-        return _7;
-    }
-
-    /**
      * Returns a copy of this tuple with the 7th element replaced by the given {@code value}.
      *
      * @param value the new value
@@ -355,15 +229,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update7(T7 value) {
         return new Tuple8<>(_1, _2, _3, _4, _5, _6, value, _8);
-    }
-
-    /**
-     * Getter of the 8th element of this tuple.
-     *
-     * @return the 8th element of this Tuple.
-     */
-    public T8 _8() {
-        return _8;
     }
 
     /**
@@ -553,30 +418,6 @@ public final class Tuple8<T1 extends @Nullable Object, T2 extends @Nullable Obje
     }
 
     // -- Object
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof Tuple8)) {
-            return false;
-        } else {
-            final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> that = (Tuple8<?, ?, ?, ?, ?, ?, ?, ?>) o;
-            return Objects.equals(this._1, that._1)
-                  && Objects.equals(this._2, that._2)
-                  && Objects.equals(this._3, that._3)
-                  && Objects.equals(this._4, that._4)
-                  && Objects.equals(this._5, that._5)
-                  && Objects.equals(this._6, that._6)
-                  && Objects.equals(this._7, that._7)
-                  && Objects.equals(this._8, that._8);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4, _5, _6, _7, _8);
-    }
 
     @Override
     public String toString() {
