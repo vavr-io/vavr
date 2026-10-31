@@ -57,6 +57,25 @@ public class Tuple6Test {
     }
 
     @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1, 2, 3, 4, 5, 6);
+        final String result = switch (tuple) {
+            case Tuple6<?, ?, ?, ?, ?, ?> t when t._1().equals(0) -> "fail";
+            case Tuple6<?, ?, ?, ?, ?, ?>(Integer v1, Integer v2, Integer v3, Integer v4, Integer v5, Integer v6) -> {
+                assertThat(v1).isEqualTo(1);
+                assertThat(v2).isEqualTo(2);
+                assertThat(v3).isEqualTo(3);
+                assertThat(v4).isEqualTo(4);
+                assertThat(v5).isEqualTo(5);
+                assertThat(v6).isEqualTo(6);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
+    }
+
+    @Test
     public void shouldUpdate1() {
       final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update1(42);
       assertThat(tuple._1()).isEqualTo(42);

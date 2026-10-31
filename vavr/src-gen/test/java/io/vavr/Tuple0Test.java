@@ -45,6 +45,12 @@ public class Tuple0Test {
     }
 
     @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createTuple();
+        assertThat(tuple instanceof Tuple0).isTrue();
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple().toSeq();
         assertThat(actual).isEqualTo(List.of());

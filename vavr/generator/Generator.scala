@@ -3860,6 +3860,7 @@ def generateTestClasses(): Unit = {
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(using ", ")}>"
         val intGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Integer")(using ", ")}>"
+        val wildcardGenerics = if (i == 0) "" else s"<${(1 to i).gen(_ => "?")(using ", ")}>"
         val functionArgs = if (i == 0) "()" else s"${(i > 1).gen("(") + (1 to i).gen(j => s"o$j")(using ", ") + (i > 1).gen(")")}"
         val nullArgs = (1 to i).gen(j => "null")(using ", ")
         if(i==2){
@@ -3890,6 +3891,25 @@ def generateTestClasses(): Unit = {
                     ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
                 }
               """)}
+
+              @$test
+              public void shouldDeconstructWithNativePattern() {
+                  ${if (i == 0) xs"""
+                    final Object tuple = createTuple();
+                    $assertThat(tuple instanceof Tuple0).isTrue();
+                  """ else xs"""
+                    final Object tuple = createIntTuple(${(1 to i).gen(j => s"$j")(using ", ")});
+                    final String result = switch (tuple) {
+                        case Tuple$i$wildcardGenerics t when t._1().equals(0) -> "fail";
+                        case Tuple$i$wildcardGenerics(${(1 to i).gen(j => s"Integer v$j")(using ", ")}) -> {
+                            ${(1 to i).gen(j => s"$assertThat(v$j).isEqualTo($j);")(using "\n")}
+                            yield "ok";
+                        }
+                        default -> "fail";
+                    };
+                    $assertThat(result).isEqualTo("ok");
+                  """}
+              }
 
               ${(1 to i).gen(j =>
                 xs"""

@@ -52,6 +52,20 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1);
+        final String result = switch (tuple) {
+            case Tuple1<?> t when t._1().equals(0) -> "fail";
+            case Tuple1<?>(Integer v1) -> {
+                assertThat(v1).isEqualTo(1);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
+    }
+
+    @Test
     public void shouldUpdate1() {
       final Tuple1<Integer> tuple = createIntTuple(1).update1(42);
       assertThat(tuple._1()).isEqualTo(42);
