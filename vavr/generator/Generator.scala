@@ -2274,6 +2274,16 @@ def generateMainClasses(): Unit = {
    */
   def genTuples(): Unit = {
 
+    {
+      val im = new ImportManager("io.vavr", List())
+      val tuple1 = genTuple(1)(im, "io.vavr", "Tuple1")
+      val tuple8 = genTuple(8)(im, "io.vavr", "Tuple8")
+      assert(tuple1.contains("class Tuple1"), "genTuple(1) should declare class Tuple1")
+      assert(tuple1.contains("serialVersionUID"), "genTuple(1) should declare serialVersionUID")
+      assert(tuple8.contains("class Tuple8"), "genTuple(8) should declare class Tuple8")
+      assert(tuple8.contains("serialVersionUID"), "genTuple(8) should declare serialVersionUID")
+    }
+
     genVavrFile("io.vavr", "Tuple")(genBaseTuple)
 
     (0 to N).foreach { i =>
