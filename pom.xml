@@ -223,6 +223,8 @@
                             <arg>-Xlint:all</arg>
                             <arg>-Xlint:-processing
                             </arg> <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
+                            <arg>-Xmaxerrs</arg>
+                            <arg>10000</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>
@@ -252,6 +254,8 @@
                             <configuration>
                                 <compilerArgs>
                                     <arg>-Xlint:none</arg>
+                                    <arg>-Xmaxerrs</arg>
+                                    <arg>10000</arg>
                                 </compilerArgs>
                             </configuration>
                         </execution>
