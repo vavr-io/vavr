@@ -24,6 +24,7 @@ package io.vavr;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -44,6 +45,7 @@ import org.jspecify.annotations.Nullable;
  */
 public record Tuple2<T1 extends @Nullable Object, T2 extends @Nullable Object>(T1 _1, T2 _2) implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static <T1 extends @Nullable Object, T2 extends @Nullable Object> Comparator<Tuple2<T1, T2>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp) {

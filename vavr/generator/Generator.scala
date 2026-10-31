@@ -2304,6 +2304,7 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
       val List = im.getType("io.vavr.collection.List")
+      val Serial = im.getType("java.io.Serial")
       if(i==2){
         im.getType("java.util.Map")
         im.getType("java.util.AbstractMap")
@@ -2318,6 +2319,7 @@ def generateMainClasses(): Unit = {
         ${if (i == 0) xs"""
           public record $className$genericsDecl() implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
+              @$Serial
               private static final long serialVersionUID = 1L;
 
               /$javadoc
@@ -2341,6 +2343,7 @@ def generateMainClasses(): Unit = {
         """ else xs"""
           public record $className$genericsDecl(${(1 to i).gen(j => s"T$j _$j")(using ", ")}) implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
+              @$Serial
               private static final long serialVersionUID = 1L;
         """}
 
@@ -2551,6 +2554,7 @@ def generateMainClasses(): Unit = {
                * @return The singleton instance of Tuple0.
                * @see java.io.Serializable
                */
+              @$Serial
               private Object readResolve() {
                   return INSTANCE;
               }
