@@ -29,7 +29,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple1Test {
@@ -49,13 +48,27 @@ public class Tuple1Test {
     @Test
     public void shouldReturnElements() {
         final Tuple1<Integer> tuple = createIntTuple(1);
-        assertThat(tuple._1).isEqualTo(1);
+        assertThat(tuple._1()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1);
+        final String result = switch (tuple) {
+            case Tuple1<?> t when t._1().equals(0) -> "fail";
+            case Tuple1<?>(Integer v1) -> {
+                assertThat(v1).isEqualTo(1);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple1<Integer> tuple = createIntTuple(1).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(42);
     }
 
     @Test
@@ -194,9 +207,9 @@ public class Tuple1Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hashCode(null);
-        assertThat(actual).isEqualTo(expected);
+        final Tuple1<Object> tuple1 = createTuple();
+        final Tuple1<Object> tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

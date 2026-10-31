@@ -64,7 +64,7 @@ public class Euler22Test {
                 .flatMap(l -> Stream.of(l.split(",")))
                 .sorted()
                 .zipWithIndex()
-                .map(t -> nameScore(t._1, t._2 + 1))
+                .map(t -> nameScore(t._1(), t._2() + 1))
                 .sum().longValue();
     }
 }

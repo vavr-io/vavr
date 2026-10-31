@@ -59,15 +59,15 @@ public class Euler26Test {
 
     @Test
     public void shouldSolveProblem26() {
-        assertThat(recurringCycleLengthForDivisionOf1(2)._2).isEqualTo(0);
-        assertThat(recurringCycleLengthForDivisionOf1(3)._2).isEqualTo(1);
-        assertThat(recurringCycleLengthForDivisionOf1(4)._2).isEqualTo(0);
-        assertThat(recurringCycleLengthForDivisionOf1(5)._2).isEqualTo(0);
-        assertThat(recurringCycleLengthForDivisionOf1(6)._2).isEqualTo(1);
-        assertThat(recurringCycleLengthForDivisionOf1(7)._2).isEqualTo(6);
-        assertThat(recurringCycleLengthForDivisionOf1(8)._2).isEqualTo(0);
-        assertThat(recurringCycleLengthForDivisionOf1(9)._2).isEqualTo(1);
-        assertThat(recurringCycleLengthForDivisionOf1(10)._2).isEqualTo(0);
+        assertThat(recurringCycleLengthForDivisionOf1(2)._2()).isEqualTo(0);
+        assertThat(recurringCycleLengthForDivisionOf1(3)._2()).isEqualTo(1);
+        assertThat(recurringCycleLengthForDivisionOf1(4)._2()).isEqualTo(0);
+        assertThat(recurringCycleLengthForDivisionOf1(5)._2()).isEqualTo(0);
+        assertThat(recurringCycleLengthForDivisionOf1(6)._2()).isEqualTo(1);
+        assertThat(recurringCycleLengthForDivisionOf1(7)._2()).isEqualTo(6);
+        assertThat(recurringCycleLengthForDivisionOf1(8)._2()).isEqualTo(0);
+        assertThat(recurringCycleLengthForDivisionOf1(9)._2()).isEqualTo(1);
+        assertThat(recurringCycleLengthForDivisionOf1(10)._2()).isEqualTo(0);
         assertThat(denominatorBelow1000WithTheLongetsRecurringCycleOfDecimalFractions()).isEqualTo(983);
     }
 
@@ -75,7 +75,7 @@ public class Euler26Test {
         return List.range(2, 1000)
                 .map(Euler26Test::recurringCycleLengthForDivisionOf1)
                 .maxBy(Tuple2::_2)
-                .get()._1;
+                .get()._1();
     }
 
     private static Tuple2<Integer, Integer> recurringCycleLengthForDivisionOf1(int divisor) {

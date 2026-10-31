@@ -40,7 +40,7 @@ final class Utils {
     static final Function1<Long, Boolean> MEMOIZED_IS_PRIME = Function1.of(Utils::isPrime).memoized();
 
     static Stream<BigInteger> fibonacci() {
-        return Stream.of(BigInteger.ZERO, BigInteger.ONE).appendSelf(self -> self.zip(self.tail()).map(t -> t._1.add(t._2)));
+        return Stream.of(BigInteger.ZERO, BigInteger.ONE).appendSelf(self -> self.zip(self.tail()).map(t -> t._1().add(t._2())));
     }
 
     static BigInteger factorial(int n) {

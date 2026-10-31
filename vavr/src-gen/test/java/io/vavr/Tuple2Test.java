@@ -31,7 +31,6 @@ import io.vavr.collection.Stream;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple2Test {
@@ -51,22 +50,37 @@ public class Tuple2Test {
     @Test
     public void shouldReturnElements() {
         final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2);
-        assertThat(tuple._1).isEqualTo(1);
-        assertThat(tuple._2).isEqualTo(2);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1, 2);
+        final String result = switch (tuple) {
+            case Tuple2<?, ?> t when t._1().equals(0) -> "fail";
+            case Tuple2<?, ?>(Integer v1, Integer v2) -> {
+                assertThat(v1).isEqualTo(1);
+                assertThat(v2).isEqualTo(2);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
-      assertThat(tuple._2).isEqualTo(2);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
     }
 
     @Test
     public void shouldUpdate2() {
       final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2).update2(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
     }
 
     @Test
@@ -243,9 +257,9 @@ public class Tuple2Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null);
-        assertThat(actual).isEqualTo(expected);
+        final Tuple2<Object, Object> tuple1 = createTuple();
+        final Tuple2<Object, Object> tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

@@ -29,7 +29,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple4Test {
@@ -49,46 +48,63 @@ public class Tuple4Test {
     @Test
     public void shouldReturnElements() {
         final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4);
-        assertThat(tuple._1).isEqualTo(1);
-        assertThat(tuple._2).isEqualTo(2);
-        assertThat(tuple._3).isEqualTo(3);
-        assertThat(tuple._4).isEqualTo(4);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._3()).isEqualTo(3);
+        assertThat(tuple._4()).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1, 2, 3, 4);
+        final String result = switch (tuple) {
+            case Tuple4<?, ?, ?, ?> t when t._1().equals(0) -> "fail";
+            case Tuple4<?, ?, ?, ?>(Integer v1, Integer v2, Integer v3, Integer v4) -> {
+                assertThat(v1).isEqualTo(1);
+                assertThat(v2).isEqualTo(2);
+                assertThat(v3).isEqualTo(3);
+                assertThat(v4).isEqualTo(4);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate2() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update2(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(42);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate3() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update3(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(42);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(42);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate4() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update4(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(42);
     }
 
     @Test
@@ -277,9 +293,9 @@ public class Tuple4Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null, null, null);
-        assertThat(actual).isEqualTo(expected);
+        final Tuple4<Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple4<Object, Object, Object, Object> tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

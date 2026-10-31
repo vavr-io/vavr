@@ -53,7 +53,7 @@ public class Euler99Test {
                 .grouped(2)
                 .map(t -> t.get(1) * Math.log(t.get(0)))
                 .zipWithIndex()
-                .reduce((t1, t2) -> t1._1 > t2._1 ? t1 : t2)
-                ._2 + 1;
+                .reduce((t1, t2) -> t1._1() > t2._1() ? t1 : t2)
+                ._2() + 1;
     }
 }
