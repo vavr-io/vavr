@@ -953,6 +953,86 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
     }
 
     /**
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of that retries n times with {@code Future} returned by the given {@link Function}.
+     * <p>
+     * The function is only invoked if this {@code Future} fails.
+     *
+     * @param  f a supplier of an alternative {@code Future}
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with the result of the {@code Future} returned by {@code f}
+     * @throws IllegalArgumentException if {@code count} is less than or equal to zero
+     * @throws NullPointerException if {@code f} is null
+     */
+    default Future<T> retry(int count, Function<? super Integer, ? extends Future<? extends T>> f) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count is negative");
+        }
+        Objects.requireNonNull(f, "f is null");
+        return FutureImpl.sync(executor(), complete ->
+            onComplete(new Consumer<Try<? extends T>>() {
+                final int retryCount = count;
+                final AtomicInteger counter = new AtomicInteger(0);
+                final Task.Complete<T> tComplete = complete;
+                @Override
+                public void accept(Try<? extends T> result) {
+                    if (result.isSuccess()) {
+                        tComplete.with(result);
+                    } else {
+                        int next = counter.getAndIncrement();
+                        if (next < retryCount) {
+                            Try.run(() -> f.apply(next).onComplete(this))
+                                .onFailure(x -> tComplete.with(Try.failure(x)/* Fail-fast */));
+                        } else {
+                            tComplete.with(result);
+                        }
+                    }
+                }
+            })
+        );
+    }
+
+    /**
+     * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
+     * otherwise with the result of that retries n times with {@code Future} returned by the given {@link Function}.
+     * <p>
+     * The function is only invoked if this {@code Future} fails.
+     *
+     * @param  f a supplier of an alternative {@code Future}
+     * @return a new {@code Future} completing with this {@code Future}'s result if it succeeds, otherwise
+     *         with the result of the {@code Future} returned by {@code f}
+     * @throws IllegalArgumentException if {@code count} is less than or equal to zero
+     * @throws NullPointerException if {@code f} is null
+     */
+    default Future<T> retryWith(int count, Function<? super Throwable, ? extends Future<? extends T>> f) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count is negative");
+        }
+        Objects.requireNonNull(f, "f is null");
+        return FutureImpl.sync(executor(), complete ->
+            onComplete(new Consumer<Try<? extends T>>() {
+                final int retryCount = count;
+                final AtomicInteger counter = new AtomicInteger(0);
+                final Task.Complete<T> tComplete = complete;
+                @Override
+                public void accept(Try<? extends T> t) {
+                    if (t.isFailure()) {
+                        int next = counter.getAndIncrement();
+                        if (next < retryCount) {
+                            Try.run(() -> f.apply(t.getCause()).onComplete(this))
+                                .onFailure(x -> tComplete.with(Try.failure(x)/* Fail-fast */));
+                        } else {
+                            tComplete.with(t);
+                        }
+                    } else {
+                        tComplete.with(t);
+                    }
+                }
+            })
+        );
+    }
+
+    /**
      * Handles a failure of this {@code Future} by mapping the exception to a new result.
      *
      * <p>Example:</p>
