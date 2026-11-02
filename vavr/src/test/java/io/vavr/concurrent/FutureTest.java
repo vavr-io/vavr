@@ -1244,7 +1244,7 @@ public class FutureTest extends AbstractValueTest {
     class RetryWithTests {
         @Test
         public void shouldReturnSelfResult() {
-            final Function<Throwable, Future<String>> f = t -> {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
                 System.out.println("reason: " + t.getCause());
                 return Future.successful("retry with exception");
             };
@@ -1255,7 +1255,7 @@ public class FutureTest extends AbstractValueTest {
 
         @Test
         public void shouldReturnOtherResultOnRetryWithFunctionIfSuccess() {
-            final Function<Throwable, Future<String>> f = t -> {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
                 System.out.println("reason: " + t.getCause());
                 return Future.successful("retryWith method");
             };
@@ -1266,15 +1266,11 @@ public class FutureTest extends AbstractValueTest {
 
         @Test
         public void shouldReturnOtherResultOnRetryWithFunctionIfSuccessTheThirdTime() {
-            final Function<Throwable, Future<String>> f = new Function<Throwable, Future<String>>() {
-                int count = 0;
-                @Override
-                public Future<String> apply(Throwable t) {
-                    if (count++ == 3) {
-                        return Future.successful("third time");
-                    } else {
-                        return Future.<String>failed(new IllegalStateException("index-" + t.getCause()));
-                    }
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                if (i == 3) {
+                    return Future.successful("third time");
+                } else {
+                    return Future.<String>failed(new IllegalStateException("index-" + t.getCause()));
                 }
             };
             final Future<String> f1 = Future.<String>failed(new TimeoutException("upstream's error"))
@@ -1284,12 +1280,8 @@ public class FutureTest extends AbstractValueTest {
 
         @Test
         public void shouldAllFailedOnRetryWithByFunction() {
-            final Function<Throwable, Future<String>> f = new Function<Throwable, Future<String>>() {
-                int count = 0;
-                @Override
-                public Future<String> apply(Throwable t) {
-                    return Future.<String>failed(new IllegalStateException("index-" + count++));
-                }
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                return Future.<String>failed(new IllegalStateException("index-" + i));
             };
             final Future<String> future = Future.<String>failed(new TimeoutException("upstream's error"))
                 .retryWith(5, f)
@@ -1301,7 +1293,7 @@ public class FutureTest extends AbstractValueTest {
 
         @Test
         public void shouldCatchExceptionOnRetryWithWhenGetFuture() {
-            final Function<Throwable, Future<Integer>> f = i -> {
+            final BiFunction<Integer, Throwable, Future<Integer>> f = (i, t) -> {
                 throw new IllegalStateException("throw exception when get future");
             };
 
