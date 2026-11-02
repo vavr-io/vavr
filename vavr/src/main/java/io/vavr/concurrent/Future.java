@@ -994,7 +994,7 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
 
     /**
      * Returns a new {@code Future} that completes with the result of this {@code Future} if it succeeds,
-     * otherwise with the result of that retries n times with {@code Future} returned by the given {@link Function}.
+     * otherwise with the result of that retries n times with {@code Future} returned by the given {@link BiFunction}.
      * <p>
      * The function is only invoked if this {@code Future} fails.
      *
@@ -1004,7 +1004,7 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
      * @throws IllegalArgumentException if {@code count} is less than or equal to zero
      * @throws NullPointerException if {@code f} is null
      */
-    default Future<T> retryWith(int count, Function<? super Throwable, ? extends Future<? extends T>> f) {
+    default Future<T> retryWith(int count, BiFunction<? super Integer, ? super Throwable, ? extends Future<? extends T>> f) {
         if (count <= 0) {
             throw new IllegalArgumentException("count is negative");
         }
@@ -1019,7 +1019,7 @@ public interface Future<T extends @Nullable Object> extends Value<T> {
                     if (t.isFailure()) {
                         int next = counter.getAndIncrement();
                         if (next < retryCount) {
-                            Try.run(() -> f.apply(t.getCause()).onComplete(this))
+                            Try.run(() -> f.apply(next, t.getCause()).onComplete(this))
                                 .onFailure(x -> tComplete.with(Try.failure(x)/* Fail-fast */));
                         } else {
                             tComplete.with(t);
