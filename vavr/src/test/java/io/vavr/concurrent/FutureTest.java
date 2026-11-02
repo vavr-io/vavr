@@ -50,6 +50,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.BiFunction;
 import org.assertj.core.api.IterableAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
