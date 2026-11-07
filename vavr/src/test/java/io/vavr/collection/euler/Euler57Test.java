@@ -57,7 +57,7 @@ public class Euler57Test {
     private static int cnt() {
         return fractions()
                 .take(1000)
-                .filter(f -> f._1.toPlainString().length() > f._2.toPlainString().length())
+                .filter(f -> f._1().toPlainString().length() > f._2().toPlainString().length())
                 .length();
     }
 
@@ -69,6 +69,6 @@ public class Euler57Test {
      * a/b -> 1 + 1/(1 + a/b) = (a + 2b)/(a + b)
      */
     private static Tuple2<BigDecimal, BigDecimal> it(Tuple2<BigDecimal, BigDecimal> val) {
-        return Tuple.of(val._1.add(val._2.add(val._2)), val._1.add(val._2));
+        return Tuple.of(val._1().add(val._2().add(val._2())), val._1().add(val._2()));
     }
 }

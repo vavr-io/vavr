@@ -44,8 +44,8 @@ public class Issue2559Test {
     public void partitionShouldBeUnique() {
         final Set<String> fruitsToEat = HashSet.of("apple", "banana");
         final Tuple2<? extends Set<String>, ? extends Set<String>> partition = fruitsToEat.partition(this::biteAndCheck);
-        assertThat(partition._1).isEmpty();
-        assertThat(partition._2).isEqualTo(HashSet.of("apple", "banana"));
+        assertThat(partition._1()).isEmpty();
+        assertThat(partition._2()).isEqualTo(HashSet.of("apple", "banana"));
         assertThat(fruitsBeingEaten)
           .hasSize(2)
           .containsEntry("apple", new Eat(1, "apple"))

@@ -224,7 +224,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
 
     @Override
     default boolean contains(Tuple2<K, V> element) {
-        return get(element._1).map(v -> v.contains(element._2)).getOrElse(false);
+        return get(element._1()).map(v -> v.contains(element._2())).getOrElse(false);
     }
 
     /**
@@ -321,7 +321,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     default void forEach(BiConsumer<K, V> action) {
         Objects.requireNonNull(action, "action is null");
         for (Tuple2<K, V> t : this) {
-            action.accept(t._1, t._2);
+            action.accept(t._1(), t._2());
         }
     }
 
@@ -386,7 +386,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
      */
     default <U extends @Nullable Object> Iterator<U> iterator(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().map(t -> mapper.apply(t._1, t._2));
+        return iterator().map(t -> mapper.apply(t._1(), t._2()));
     }
 
     /**
@@ -493,7 +493,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
     Multimap<K, V> put(K key, V value);
 
     /**
-     * Convenience method for {@code put(entry._1, entry._2)}.
+     * Convenience method for {@code put(entry._1(), entry._2())}.
      *
      * @param entry A Tuple2 containing the key and value
      * @return A new Multimap containing these elements and that entry.
@@ -611,7 +611,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
      */
     default <T1 extends @Nullable Object, T2 extends @Nullable Object> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip(entry -> unzipper.apply(entry._1, entry._2));
+        return unzip(entry -> unzipper.apply(entry._1(), entry._2()));
     }
 
     @Override
@@ -633,7 +633,7 @@ public interface Multimap<K extends @Nullable Object, V extends @Nullable Object
      */
     default <T1 extends @Nullable Object, T2 extends @Nullable Object, T3 extends @Nullable Object> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
+        return unzip3(entry -> unzipper.apply(entry._1(), entry._2()));
     }
 
     @Override

@@ -61,26 +61,26 @@ public class Euler33Test {
                 .flatMap(n -> List.rangeClosed(n + 1, 99).map(d -> Tuple.of(n, d)))
                 .filter(Euler33Test::isNonTrivialDigitCancellingFraction)
                 .fold(Tuple.of(1, 1), Euler33Test::multiplyFractions)
-                .apply(Euler33Test::simplifyFraction)._2;
+                .apply(Euler33Test::simplifyFraction)._2();
     }
 
     private static boolean isNonTrivialDigitCancellingFraction(Tuple2<Integer, Integer> fraction) {
-        return CharSeq.of(fraction._1.toString())
+        return CharSeq.of(fraction._1().toString())
                 .filter(d -> d != '0')
-                .find(d -> CharSeq.of(fraction._2.toString()).contains(d))
+                .find(d -> CharSeq.of(fraction._2().toString()).contains(d))
                 .map(d -> fractionCanBeSimplifiedByCancellingDigit(fraction, d))
                 .getOrElse(false);
     }
 
     private static boolean fractionCanBeSimplifiedByCancellingDigit(Tuple2<Integer, Integer> fraction, char d) {
-        return Tuple.of(CharSeq.of(fraction._1.toString()).remove(d), CharSeq.of(fraction._2.toString()).remove(d))
+        return Tuple.of(CharSeq.of(fraction._1().toString()).remove(d), CharSeq.of(fraction._2().toString()).remove(d))
                 .map(CharSeq::mkString, CharSeq::mkString)
                 .map(Double::valueOf, Double::valueOf)
-                .apply((d1, d2) -> fraction._1 / d1 == fraction._2 / d2);
+                .apply((d1, d2) -> fraction._1() / d1 == fraction._2() / d2);
     }
 
     private static Tuple2<Integer, Integer> multiplyFractions(Tuple2<Integer, Integer> f1, Tuple2<Integer, Integer> f2) {
-        return Tuple.of(f1._1 * f2._1, f1._2 * f2._2);
+        return Tuple.of(f1._1() * f2._1(), f1._2() * f2._2());
     }
 
     private static Tuple2<Integer, Integer> simplifyFraction(int numerator, int denominator) {

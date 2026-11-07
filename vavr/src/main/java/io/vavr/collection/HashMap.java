@@ -151,7 +151,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
      * @return A new Map containing the given entry
      */
     public static <K extends @Nullable Object, V extends @Nullable Object> HashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
-        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1, entry._2));
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1(), entry._2()));
     }
 
     /**
@@ -489,7 +489,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
         Objects.requireNonNull(entries, "entries is null");
         HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
-            trie = trie.put(entry._1, entry._2);
+            trie = trie.put(entry._1(), entry._2());
         }
         return wrap(trie);
     }
@@ -510,7 +510,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
         } else {
             HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
-                trie = trie.put(entry._1, entry._2);
+                trie = trie.put(entry._1(), entry._2());
             }
             return trie.isEmpty() ? empty() : wrap(trie);
         }
@@ -520,7 +520,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     public <K2 extends @Nullable Object, V2 extends @Nullable Object> HashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1()), valueMapper.apply(entry._2())));
         return HashMap.ofEntries(entries);
     }
 
@@ -618,7 +618,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
     public <K2 extends @Nullable Object, V2 extends @Nullable Object> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
-            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1(), entry._2())) {
                 acc = acc.put(mappedEntry);
             }
             return acc;
@@ -663,7 +663,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
         if (trie.isEmpty()) {
             throw new UnsupportedOperationException("init of empty HashMap");
         } else {
-            return remove(last()._1);
+            return remove(last()._1());
         }
     }
 
@@ -867,7 +867,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
         for (Tuple2<K, V> entry : elements) {
             if (contains(entry)) {
-                tree = tree.put(entry._1, entry._2);
+                tree = tree.put(entry._1(), entry._2());
             }
         }
         return wrap(tree);
@@ -910,7 +910,7 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
         if (trie.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty HashMap");
         } else {
-            return remove(head()._1);
+            return remove(head()._1());
         }
     }
 
@@ -1011,8 +1011,8 @@ public final class HashMap<K extends @Nullable Object, V extends @Nullable Objec
             s.defaultWriteObject();
             s.writeInt(trie.size());
             for (Tuple2<K, V> e : trie) {
-                s.writeObject(e._1);
-                s.writeObject(e._2);
+                s.writeObject(e._1());
+                s.writeObject(e._2());
             }
         }
 

@@ -39,7 +39,7 @@ final class Sieve {
     private final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> STEPS = List.of(
             (sieve, limit, root) -> Stream.rangeClosed(1, root).crossProduct()
                     .foldLeft(sieve, (xs, xy) ->
-                            RULES.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
+                            RULES.foldLeft(xs, (ss, r) -> r.apply(xy._1(), xy._2())
                                     .filter(p -> p < limit)
                                     .map(p -> ss.contains(p) ? ss.remove(p) : ss.add(p))
                                     .getOrElse(ss)

@@ -90,7 +90,7 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
             Objects.requireNonNull(entries, "entries is null");
             LinkedHashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -108,7 +108,7 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
             Objects.requireNonNull(entries, "entries is null");
             LinkedHashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -215,8 +215,8 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
          * @param <V2>    The value type
          * @param n       The number of elements in the LinkedHashMultimap
          * @param element The element
-         * @return A LinkedHashMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
-         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         * @return A LinkedHashMultimap with the single key {@code element._1()}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2()} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
          *         container the duplicates collapse to a single value (size {@code 1}).
          *         An empty LinkedHashMultimap if {@code n <= 0}.
          */
@@ -457,7 +457,7 @@ public final class LinkedHashMultimap<K extends @Nullable Object, V extends @Nul
          */
         public <K extends @Nullable Object, V2 extends V> LinkedHashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
             final LinkedHashMultimap<K, V2> e = empty();
-            return e.put(entry._1, entry._2);
+            return e.put(entry._1(), entry._2());
         }
 
         /**

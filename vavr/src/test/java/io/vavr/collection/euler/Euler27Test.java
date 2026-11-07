@@ -68,8 +68,8 @@ public class Euler27Test {
     private static int productOfCoefficientsWithMostConsecutivePrimes(int coefficientsLowerBound, int coefficientsUpperBound) {
         final List<Integer> coefficients = List.rangeClosed(coefficientsLowerBound, coefficientsUpperBound);
         return API.For(coefficients, coefficients).yield(Tuple::of)
-                .map(c -> Tuple.of(c._1, c._2, numberOfConsecutivePrimesProducedByFormulaWithCoefficients(c._1, c._2)))
-                .fold(Tuple.of(0, 0, -1), (n, m) -> n._3 >= m._3 ? n : m)
+                .map(c -> Tuple.of(c._1(), c._2(), numberOfConsecutivePrimesProducedByFormulaWithCoefficients(c._1(), c._2())))
+                .fold(Tuple.of(0, 0, -1), (n, m) -> n._3() >= m._3() ? n : m)
                 .apply((a, b, p) -> a * b);
     }
 

@@ -11037,7 +11037,7 @@ public final class API {
                     @SuppressWarnings("unchecked")
                     @Override
                     public T1 apply(T obj) {
-                        return (T1) unapply.apply(obj)._1;
+                        return (T1) unapply.apply(obj)._1();
                     }
 
                     @SuppressWarnings("unchecked")
@@ -11046,7 +11046,7 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple1<U1> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1());
                         } else {
                             return false;
                         }
@@ -11114,8 +11114,8 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple2<U1, U2> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2());
                         } else {
                             return false;
                         }
@@ -11187,9 +11187,9 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple3<U1, U2, U3> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3());
                         } else {
                             return false;
                         }
@@ -11265,10 +11265,10 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple4<U1, U2, U3, U4> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
-                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3()) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4());
                         } else {
                             return false;
                         }
@@ -11348,11 +11348,11 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple5<U1, U2, U3, U4, U5> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
-                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
-                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3()) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4()) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5());
                         } else {
                             return false;
                         }
@@ -11436,12 +11436,12 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple6<U1, U2, U3, U4, U5, U6> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
-                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
-                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
-                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3()) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4()) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5()) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6());
                         } else {
                             return false;
                         }
@@ -11529,13 +11529,13 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple7<U1, U2, U3, U4, U5, U6, U7> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
-                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
-                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
-                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6) &&
-                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3()) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4()) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5()) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6()) &&
+                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7());
                         } else {
                             return false;
                         }
@@ -11627,14 +11627,14 @@ public final class API {
                         if (type.isInstance(obj)) {
                             final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> u = unapply.apply(obj);
                             return
-                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
-                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
-                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
-                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
-                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
-                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6) &&
-                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7) &&
-                                    ((Pattern<U8, ?>) p8).isDefinedAt(u._8);
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1()) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2()) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3()) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4()) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5()) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6()) &&
+                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7()) &&
+                                    ((Pattern<U8, ?>) p8).isDefinedAt(u._8());
                         } else {
                             return false;
                         }

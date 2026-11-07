@@ -62,7 +62,7 @@ public class Euler25Test {
     private static int firstFibonacciTermContaining(int digits) {
         return fibonacci()
                 .zipWithIndex()
-                .find(t -> t._1.toString().length() == digits)
-                .get()._2;
+                .find(t -> t._1().toString().length() == digits)
+                .get()._2();
     }
 }

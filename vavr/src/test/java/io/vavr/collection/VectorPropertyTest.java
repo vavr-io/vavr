@@ -346,7 +346,7 @@ public class VectorPropertyTest {
                     }
                 }
 
-                history.forEach(t -> assertAreEqual(t._1, t._2)); // test that the modifications are persistent
+                history.forEach(t -> assertAreEqual(t._1(), t._2())); // test that the modifications are persistent
             }
         }
     }

@@ -933,13 +933,13 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
      * Well known Scala code for Fibonacci infinite sequence
      * <pre>
      * {@code
-     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t => t._1 + t._2 }
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t => t._1() + t._2() }
      * }
      * </pre>
      * can be transformed to
      * <pre>
      * {@code
-     * Stream.of(0, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+     * Stream.of(0, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1() + t._2()));
      * }
      * </pre>
      *
@@ -1658,10 +1658,10 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
     @Override
     default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(Predicate<? super T> predicate) {
         final Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
-        if (split._2.isEmpty()) {
+        if (split._2().isEmpty()) {
             return split;
         } else {
-            return Tuple.of(split._1.append(split._2.head()), split._2.tail());
+            return Tuple.of(split._1().append(split._2().head()), split._2().tail());
         }
     }
 
@@ -1791,8 +1791,8 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
       Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
-        final Stream<T1> stream1 = stream.map(t -> t._1);
-        final Stream<T2> stream2 = stream.map(t -> t._2);
+        final Stream<T1> stream1 = stream.map(t -> t._1());
+        final Stream<T2> stream2 = stream.map(t -> t._2());
         return Tuple.of(stream1, stream2);
     }
 
@@ -1801,9 +1801,9 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
       Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
-        final Stream<T1> stream1 = stream.map(t -> t._1);
-        final Stream<T2> stream2 = stream.map(t -> t._2);
-        final Stream<T3> stream3 = stream.map(t -> t._3);
+        final Stream<T1> stream1 = stream.map(t -> t._1());
+        final Stream<T2> stream2 = stream.map(t -> t._2());
+        final Stream<T3> stream3 = stream.map(t -> t._3());
         return Tuple.of(stream1, stream2, stream3);
     }
 
@@ -2257,7 +2257,7 @@ interface StreamModule {
                 return Stream.of(Stream.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Stream<T> c) -> c.prepend(t._1))
+                        t -> apply(elements.drop(t._2() + 1), (k - 1)).map((Stream<T> c) -> c.prepend(t._1()))
                 );
             }
         }
