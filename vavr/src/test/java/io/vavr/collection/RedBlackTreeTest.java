@@ -431,6 +431,54 @@ public class RedBlackTreeTest {
                 failures.subList(0, Math.min(3, failures.size()))).isEmpty();
     }
 
+    @Test
+    public void shouldPerformDifferenceWithDifferentComparator() {
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(Comparator.naturalOrder(), 1, 2, 3, 4);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(Comparator.reverseOrder(), 2, 3, 5);
+        final RedBlackTree<Integer> diff = t1.difference(t2);
+        assertThat(diff).containsExactly(1, 4);
+        assertThat(diff.comparator()).isSameAs(t1.comparator());
+        assertValid(diff);
+
+        final RedBlackTree<Integer> emptyNatural = RedBlackTree.empty(Comparator.naturalOrder());
+        final RedBlackTree<Integer> diffEmpty = emptyNatural.difference(t2);
+        assertThat(diffEmpty).isEmpty();
+        assertThat(diffEmpty.comparator()).isSameAs(emptyNatural.comparator());
+        assertValid(diffEmpty);
+    }
+
+    @Test
+    public void shouldPerformIntersectionWithDifferentComparator() {
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(Comparator.naturalOrder(), 1, 2, 3);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(Comparator.reverseOrder(), 1, 2, 3);
+        final RedBlackTree<Integer> inter = t1.intersection(t2);
+        assertThat(inter).containsExactly(1, 2, 3);
+        assertThat(inter.comparator()).isSameAs(t1.comparator());
+        assertValid(inter);
+
+        final RedBlackTree<Integer> emptyReverse = RedBlackTree.empty(Comparator.reverseOrder());
+        final RedBlackTree<Integer> interEmptyOther = t1.intersection(emptyReverse);
+        assertThat(interEmptyOther).isEmpty();
+        assertThat(interEmptyOther.comparator()).isSameAs(t1.comparator());
+        assertValid(interEmptyOther);
+    }
+
+    @Test
+    public void shouldPerformUnionWithDifferentComparator() {
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(Comparator.naturalOrder(), 2);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(Comparator.reverseOrder(), 1, 2, 3);
+        final RedBlackTree<Integer> union = t1.union(t2);
+        assertThat(union).containsExactly(1, 2, 3);
+        assertThat(union.comparator()).isSameAs(t1.comparator());
+        assertValid(union);
+
+        final RedBlackTree<Integer> emptyNatural = RedBlackTree.empty(Comparator.naturalOrder());
+        final RedBlackTree<Integer> unionFromEmpty = emptyNatural.union(t2);
+        assertThat(unionFromEmpty).containsExactly(1, 2, 3);
+        assertThat(unionFromEmpty.comparator()).isSameAs(emptyNatural.comparator());
+        assertValid(unionFromEmpty);
+    }
+
     private static void checkSetOperations(Random random, RedBlackTree<Integer> t1, RedBlackTree<Integer> t2,
             RedBlackTree<Integer> t3) {
         final RedBlackTree<Integer> difference = checkOperation(t1, t2, RedBlackTree::difference, java.util.Set::removeAll);
