@@ -50,6 +50,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.BiFunction;
 import org.assertj.core.api.IterableAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -1169,6 +1170,140 @@ public class FutureTest extends AbstractValueTest {
             future.onSuccess(i -> holder[0] = i);
             waitUntil(() -> holder[0] > 0);
             assertThat(holder[0]).isEqualTo(42);
+        }
+    }
+
+        @Nested
+    class RetryTests {
+        @Test
+        public void shouldReturnSelfResult() {
+            final Function<Integer, Future<Integer>> f = i -> {
+                System.out.println("index " + i);
+                return Future.successful(i);
+            };
+            final Future<Integer> f1 = Future.<Integer>successful(0)
+                .retry(1, f);
+            assertThat(f1.get()).isEqualTo(0);
+        }
+
+        @Test
+        public void shouldReturnOtherResultOnRetryFunctionIfSuccess() {
+            final Function<Integer, Future<Integer>> f = i -> {
+                System.out.println("index " + i);
+                return Future.successful(i);
+            };
+            final Future<Integer> f1 = Future.<Integer>failed(new IllegalStateException("error"))
+                .retry(1, f);
+            assertThat(f1.get()).isEqualTo(0);
+        }
+
+        @Test
+        public void shouldReturnOtherResultOnRetryFunctionIfSuccessTheEighthTime() {
+            final Function<Integer, Future<Integer>> f = i -> {
+                System.out.println("index " + i);
+                if (i == 8) {
+                    return Future.successful(i);
+                } else {
+                    return Future.failed(new IllegalStateException("error"));
+                }
+            };
+            final Future<Integer> f1 = Future.<Integer>failed(new TimeoutException("timeout error"))
+                .retry(9, f);
+            assertThat(f1.get()).isEqualTo(8);
+        }
+
+        @Test
+        public void shouldAllFailedOnRetryFunction() {
+            final Function<Integer, Future<Integer>> f = i -> {
+                System.out.println("index " + i);
+                return Future.failed(new TimeoutException("timeout time " + i));
+            };
+            final Future<Integer> future = Future.<Integer>failed(new IllegalStateException("error"))
+                .retry(5, f)
+                .await();
+            assertThat(future.isFailure()).isTrue();
+            assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
+            assertThat(future.getCause().get().getMessage()).isEqualTo("timeout time 4");
+        }
+
+        @Test
+        public void shouldCatchExceptionOnRetryWhenGetFuture() {
+            final Function<Integer, Future<Integer>> f = i -> {
+                throw new IllegalStateException("throw exception when get future");
+            };
+
+            final Future<Integer> future = Future.<Integer>failed(new TimeoutException("timeout error"))
+                .retry(1, f)
+                .await();
+            assertThat(future.isFailure()).isTrue();
+            assertThat(future.getCause().get()).isInstanceOf(IllegalStateException.class);
+            assertThat(future.getCause().get().getMessage()).isEqualTo("throw exception when get future");
+        }
+    }
+
+    @Nested
+    class RetryWithTests {
+        @Test
+        public void shouldReturnSelfResult() {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                System.out.println("reason: " + t.getCause());
+                return Future.successful("retry with exception");
+            };
+            final Future<String> f1 = Future.successful("self result")
+                .retryWith(1, f);
+            assertThat(f1.get()).isEqualTo("self result");
+        }
+
+        @Test
+        public void shouldReturnOtherResultOnRetryWithFunctionIfSuccess() {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                System.out.println("reason: " + t.getCause());
+                return Future.successful("retryWith method");
+            };
+            final Future<String> f1 = Future.<String>failed(new IllegalStateException("upstream's error"))
+                .retryWith(1, f);
+            assertThat(f1.get()).isEqualTo("retryWith method");
+        }
+
+        @Test
+        public void shouldReturnOtherResultOnRetryWithFunctionIfSuccessTheThirdTime() {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                if (i == 3) {
+                    return Future.successful("third time");
+                } else {
+                    return Future.<String>failed(new IllegalStateException("index-" + t.getCause()));
+                }
+            };
+            final Future<String> f1 = Future.<String>failed(new TimeoutException("upstream's error"))
+                .retryWith(4, f);
+            assertThat(f1.get()).isEqualTo("third time");
+        }
+
+        @Test
+        public void shouldAllFailedOnRetryWithByFunction() {
+            final BiFunction<Integer, Throwable, Future<String>> f = (i, t) -> {
+                return Future.<String>failed(new IllegalStateException("index-" + i));
+            };
+            final Future<String> future = Future.<String>failed(new TimeoutException("upstream's error"))
+                .retryWith(5, f)
+                    .await();
+            assertThat(future.isFailure()).isTrue();
+            assertThat(future.getCause().get()).isInstanceOf(IllegalStateException.class);
+            assertThat(future.getCause().get().getMessage()).isEqualTo("index-4");
+        }
+
+        @Test
+        public void shouldCatchExceptionOnRetryWithWhenGetFuture() {
+            final BiFunction<Integer, Throwable, Future<Integer>> f = (i, t) -> {
+                throw new IllegalStateException("throw exception when get future");
+            };
+
+            final Future<Integer> future = Future.<Integer>failed(new TimeoutException("timeout error"))
+                .retryWith(1, f)
+                .await();
+            assertThat(future.isFailure()).isTrue();
+            assertThat(future.getCause().get()).isInstanceOf(IllegalStateException.class);
+            assertThat(future.getCause().get().getMessage()).isEqualTo("throw exception when get future");
         }
     }
 
