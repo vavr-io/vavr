@@ -1149,7 +1149,7 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         Array<T> result = take(from).appendAll(that);
-        from += replaced;
+        from = (int) Math.min((long) from + replaced, Integer.MAX_VALUE);
         result = result.appendAll(drop(from));
         return result;
     }

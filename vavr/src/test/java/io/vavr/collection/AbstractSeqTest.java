@@ -1122,6 +1122,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
 
         @Test
+        public void shouldPatchWhenFromPlusReplacedOverflows() {
+            final Seq<Character> s = of('1', '2', '3');
+            assertThat(s.patch(1, of('4'), Integer.MAX_VALUE)).isEqualTo(of('1', '4'));
+            assertThat(s.patch(Integer.MAX_VALUE, of('4'), 1)).isEqualTo(of('1', '2', '3', '4'));
+        }
+
+        @Test
         public void shouldPatchNonEmptyByNonEmpty() {
             final Seq<Character> s = of('1', '2', '3');
             final Seq<Character> d = of('4', '5', '6');

@@ -1221,7 +1221,7 @@ public interface List<T extends @Nullable Object> extends LinearSeq<T> {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         List<T> result = take(from).appendAll(that);
-        from += replaced;
+        from = (int) Math.min((long) from + replaced, Integer.MAX_VALUE);
         result = result.appendAll(drop(from));
         return result;
     }
