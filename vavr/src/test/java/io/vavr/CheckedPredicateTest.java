@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CheckedPredicateTest {
 
@@ -59,13 +60,9 @@ public class CheckedPredicateTest {
 
         @Test
         public void shouldApplyAnUncheckedFunctionThatThrows() {
-            final Predicate<Object> preciate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
-            try {
-                preciate.test(null);
-                Assertions.fail("Did excepect an exception.");
-            } catch(Error x) {
-                // ok!
-            }
+            final Error error = new Error();
+            final Predicate<Object> preciate = CheckedPredicate.of(obj -> { throw error; }).unchecked();
+            assertThatThrownBy(() -> preciate.test(null)).isSameAs(error);
         }
     }
 }
