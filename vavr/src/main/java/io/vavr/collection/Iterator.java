@@ -1780,7 +1780,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
     default Iterator<Seq<T>> grouped(int size) {
         return new GroupedIterator<>(this, size, size);
     }
-    
+
     @Override
     default boolean hasDefiniteSize() {
         return false;
@@ -2152,7 +2152,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
     default Iterator<Seq<T>> sliding(int size, int step) {
         return new GroupedIterator<>(this, size, step);
     }
-    
+
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -2421,8 +2421,10 @@ interface IteratorModule {
                 while (curr instanceof ConcatIterator) {
                     ConcatIterator<T> it = (ConcatIterator<T>) curr;
                     curr = it.curr;
-                    it.last.next = tail;
-                    tail = it.tail;
+                    if (it.tail != null) {
+                        it.last.next = tail;
+                        tail = it.tail;
+                    }
                 }
             }
         }
