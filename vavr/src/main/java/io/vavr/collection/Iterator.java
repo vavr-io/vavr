@@ -144,7 +144,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator containing only {@code element}
      */
     static <T extends @Nullable Object> Iterator<T> of(T element) {
-        return new AbstractIterator<T>() {
+        return new AbstractIterator<>() {
 
             boolean hasNext = true;
 
@@ -174,7 +174,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (elements.length == 0) {
             return empty();
         } else {
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 int index = 0;
 
@@ -226,7 +226,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         if (iterator instanceof Iterator) {
             return (Iterator<T>) iterator;
         } else {
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 @Override
                 public boolean hasNext() {
@@ -250,7 +250,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Boolean> ofAll(boolean... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Boolean>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -274,7 +274,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Byte> ofAll(byte... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Byte>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -298,7 +298,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Character> ofAll(char... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Character>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -322,7 +322,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Double> ofAll(double... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Double>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -346,7 +346,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Float> ofAll(float... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Float>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -370,7 +370,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Integer> ofAll(int... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Integer>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -394,7 +394,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Long> ofAll(long... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Long>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -418,7 +418,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static Iterator<Short> ofAll(short... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Short>() {
+        return new AbstractIterator<>() {
             int i = 0;
 
             @Override
@@ -575,7 +575,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             if (step.signum() > 0) {
-                return new AbstractIterator<BigDecimal>() {
+                return new AbstractIterator<>() {
                     BigDecimal i = from;
 
                     @Override
@@ -591,7 +591,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                     }
                 };
             } else {
-                return new AbstractIterator<BigDecimal>() {
+                return new AbstractIterator<>() {
                     BigDecimal i = from;
 
                     @Override
@@ -835,7 +835,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             // |step| avoids the overflow that `from - step` / `toInclusive - step` would cause at
             // Integer.MIN_VALUE / Integer.MAX_VALUE.
             if (step > 0) {
-                return new AbstractIterator<Integer>() {
+                return new AbstractIterator<>() {
                     boolean started = false;
                     int i = from;
 
@@ -855,7 +855,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                     }
                 };
             } else {
-                return new AbstractIterator<Integer>() {
+                return new AbstractIterator<>() {
                     boolean started = false;
                     int i = from;
 
@@ -928,7 +928,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         } else {
             // DEV-NOTE: see rangeClosedBy(int, int, int) - same overflow-safe scheme using unsigned distances
             if (step > 0) {
-                return new AbstractIterator<Long>() {
+                return new AbstractIterator<>() {
                     boolean started = false;
                     long i = from;
 
@@ -948,7 +948,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
                     }
                 };
             } else {
-                return new AbstractIterator<Long>() {
+                return new AbstractIterator<>() {
                     boolean started = false;
                     long i = from;
 
@@ -981,7 +981,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator that endlessly yields consecutive int values starting from {@code value}
      */
     static Iterator<Integer> from(int value) {
-        return new AbstractIterator<Integer>() {
+        return new AbstractIterator<>() {
             private int next = value;
 
             @Override
@@ -1009,7 +1009,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator that endlessly yields consecutive int values starting from {@code value}, spaced by {@code step}
      */
     static Iterator<Integer> from(int value, int step) {
-        return new AbstractIterator<Integer>() {
+        return new AbstractIterator<>() {
             private int next = value;
 
             @Override
@@ -1035,7 +1035,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator that endlessly yields consecutive long values starting from {@code value}
      */
     static Iterator<Long> from(long value) {
-        return new AbstractIterator<Long>() {
+        return new AbstractIterator<>() {
             private long next = value;
 
             @Override
@@ -1063,7 +1063,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator that endlessly yields consecutive long values starting from {@code value}, spaced by {@code step}
      */
     static Iterator<Long> from(long value, long step) {
-        return new AbstractIterator<Long>() {
+        return new AbstractIterator<>() {
             private long next = value;
 
             @Override
@@ -1091,7 +1091,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static <T extends @Nullable Object> Iterator<T> continually(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new AbstractIterator<T>() {
+        return new AbstractIterator<>() {
             @Override
             public boolean hasNext() {
                 return true;
@@ -1115,7 +1115,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static <T extends @Nullable Object> Iterator<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new AbstractIterator<T>() {
+        return new AbstractIterator<>() {
             @Nullable Option<? extends T> nextOption;
 
             @Override
@@ -1130,7 +1130,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             // hasNext() populates nextOption, and AbstractIterator only calls getNext() after it
             @SuppressWarnings("NullAway")
             public T getNext() {
-                final T next =  nextOption.get();
+                final T next = nextOption.get();
                 nextOption = null;
                 return next;
             }
@@ -1152,7 +1152,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static <T extends @Nullable Object> Iterator<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new AbstractIterator<T>() {
+        return new AbstractIterator<>() {
             Function<? super T, ? extends T> nextFunc = s -> {
                 nextFunc = f;
                 return seed;
@@ -1183,7 +1183,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      * @return an iterator that repeatedly returns {@code t}
      */
     static <T extends @Nullable Object> Iterator<T> continually(T t) {
-        return new AbstractIterator<T>() {
+        return new AbstractIterator<>() {
             @Override
             public boolean hasNext() {
                 return true;
@@ -1248,7 +1248,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 boolean insertElement = false;
 
@@ -1298,7 +1298,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<? extends U> it2 = that.iterator();
-            return new AbstractIterator<R>() {
+            return new AbstractIterator<>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
@@ -1320,7 +1320,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> thisIt = this;
-            return new AbstractIterator<Tuple2<T, U>>() {
+            return new AbstractIterator<>() {
                 @Override
                 public boolean hasNext() {
                     return thisIt.hasNext() || thatIt.hasNext();
@@ -1348,7 +1348,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new AbstractIterator<U>() {
+            return new AbstractIterator<>() {
                 private int index = 0;
 
                 @Override
@@ -1471,7 +1471,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
      */
     static <T extends @Nullable Object, U extends @Nullable Object> Iterator<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         Objects.requireNonNull(f, "the unfold iterating function is null");
-        return new AbstractIterator<U>() {
+        return new AbstractIterator<>() {
             private Lazy<Option<Tuple2<? extends U, ? extends T>>> nextVal = Lazy.of(() -> f.apply(seed));
 
             @Override
@@ -1593,7 +1593,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 long count = n;
 
@@ -1622,7 +1622,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
                 private io.vavr.collection.Queue<T> queue = io.vavr.collection.Queue.empty();
 
                 @Override
@@ -1676,7 +1676,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 Option<T> next = Option.none();
 
@@ -1738,7 +1738,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new AbstractIterator<>() {
 
                 final Iterator<? extends T> inputs = that;
                 java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
@@ -1878,7 +1878,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new AbstractIterator<>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1949,7 +1949,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
                 @Override
                 public boolean hasNext() {
                     return that.hasNext();
@@ -1996,7 +1996,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
                 boolean isFirst = true;
 
                 @Override
@@ -2024,7 +2024,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 @Override
                 public boolean hasNext() {
@@ -2073,7 +2073,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return of(zero);
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new AbstractIterator<>() {
 
                 boolean isFirst = true;
                 U acc = zero;
@@ -2114,7 +2114,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final CachedIterator<T> source = new CachedIterator<>(this);
-            return new AbstractIterator<Seq<T>>() {
+            return new AbstractIterator<>() {
                 private @Nullable Stream<T> next = null;
 
                 @Override
@@ -2217,7 +2217,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 long count = n;
 
@@ -2241,7 +2241,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
                 private io.vavr.collection.Queue<T> queue = io.vavr.collection.Queue.empty();
 
                 @Override
@@ -2278,7 +2278,7 @@ public interface Iterator<T extends @Nullable Object> extends java.util.Iterator
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new AbstractIterator<>() {
 
                 private @Nullable T next;
                 private boolean cached = false;
@@ -2473,7 +2473,6 @@ interface IteratorModule {
 
         @Override
         // hasNext() sets `next` whenever it sets `nextDefined`
-        @SuppressWarnings("NullAway")
         public T getNext() {
             final T result = next;
             nextDefined = false;
