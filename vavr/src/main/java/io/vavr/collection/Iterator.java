@@ -2477,7 +2477,8 @@ interface IteratorModule {
             final T result = next;
             nextDefined = false;
             next = null;
-            return result;
+            // can only return null when T is a @Nullable type, which cannot be expressed in NullAway's type system
+            return result == null ? Collections.uncheckedNull() : result;
         }
     }
 
