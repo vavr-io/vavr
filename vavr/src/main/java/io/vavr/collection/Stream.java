@@ -1590,10 +1590,10 @@ public interface Stream<T extends @Nullable Object> extends LinearSeq<T> {
 
     @Override
     default Stream<T> slice(int beginIndex, int endIndex) {
-        if (beginIndex >= endIndex || isEmpty()) {
+        final int lowerBound = Math.max(beginIndex, 0);
+        if (lowerBound >= endIndex || isEmpty()) {
             return empty();
         } else {
-            final int lowerBound = Math.max(beginIndex, 0);
             if (lowerBound == 0) {
                 return cons(head(), () -> tail().slice(0, endIndex - 1));
             } else {

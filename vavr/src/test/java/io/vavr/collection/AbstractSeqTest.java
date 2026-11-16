@@ -1889,6 +1889,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).slice(-10, 10)).isEqualTo(of(1, 2, 3));
     }
 
+    @Test
+    public void shouldComputeSliceWhenBeginIndexIsNegativeAndEndIndexIsNotPositive() {
+        assertThat(of(1, 2, 3).slice(-1, 0)).isEmpty();
+        assertThat(of(1, 2, 3).slice(-3, -1)).isEmpty();
+    }
+
     @Nested
     class SortedTests {
         @Test

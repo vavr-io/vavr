@@ -1369,13 +1369,13 @@ public final class Array<T extends @Nullable Object> implements IndexedSeq<T>, S
 
     @Override
     public Array<T> slice(int beginIndex, int endIndex) {
-        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
+        final int index = Math.max(beginIndex, 0);
+        if (index >= endIndex || index >= length() || isEmpty()) {
             return empty();
         }
-        if (beginIndex <= 0 && endIndex >= length()) {
+        if (index == 0 && endIndex >= length()) {
             return this;
         }
-        final int index = Math.max(beginIndex, 0);
         final int length = Math.min(endIndex, length()) - index;
         final Object[] arr = new Object[length];
         System.arraycopy(delegate, index, arr, 0, length);
