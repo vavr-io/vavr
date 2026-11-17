@@ -664,6 +664,26 @@ public final class LinkedHashSet<T extends @Nullable Object> implements Set<T>, 
         return map.get(element).isDefined();
     }
 
+    /**
+     * Returns the element following the given element in insertion order.
+     *
+     * @param element the element
+     * @return the next element, or {@code None} if the element is absent or has no next element
+     */
+    public Option<T> next(T element) {
+        return map.nextEntry(element).map(entry -> entry._1);
+    }
+
+    /**
+     * Returns the element preceding the given element in insertion order.
+     *
+     * @param element the element
+     * @return the previous element, or {@code None} if the element is absent or has no previous element
+     */
+    public Option<T> previous(T element) {
+        return map.previousEntry(element).map(entry -> entry._1);
+    }
+
     @Override
     public LinkedHashSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");

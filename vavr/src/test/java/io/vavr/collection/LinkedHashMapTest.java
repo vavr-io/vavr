@@ -20,6 +20,7 @@ package io.vavr.collection;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Spliterator;
@@ -369,5 +370,91 @@ public class LinkedHashMapTest extends AbstractMapTest {
             assertThat(actual.toList()).isEqualTo(List.of(Tuple.of(2, "b"), Tuple.of(4, "d")));
         }
     }
+
+    @Nested
+    class NeighborNavigationTests {
+        @Test
+        public void shouldSkipConsecutiveRemovedEntriesWhenNavigating() {
+            final LinkedHashMap<Integer, String> map =
+                LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e")
+                    .remove(2)
+                    .remove(3);
+
+            assertThat(map.nextEntry(1)).isEqualTo(Option.some(Tuple.of(4, "d")));
+            assertThat(map.previousEntry(4)).isEqualTo(Option.some(Tuple.of(1, "a")));
+        }
+
+        @Test
+        public void shouldReturnNextAndPreviousEntriesInInsertionOrder() {
+            final LinkedHashMap<Integer, String> map =
+                LinkedHashMap.of(3, "c", 1, "a", 2, "b");
+
+            assertThat(map.nextEntry(3)).isEqualTo(Option.some(Tuple.of(1, "a")));
+            assertThat(map.nextEntry(1)).isEqualTo(Option.some(Tuple.of(2, "b")));
+            assertThat(map.previousEntry(2)).isEqualTo(Option.some(Tuple.of(1, "a")));
+            assertThat(map.previousEntry(1)).isEqualTo(Option.some(Tuple.of(3, "c")));
+        }
+
+        @Test
+        public void shouldReturnNoneForMissingKeysAndBoundaryEntries() {
+            final LinkedHashMap<Integer, String> map =
+                LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+
+            assertThat(map.nextEntry(3)).isEqualTo(Option.none());
+            assertThat(map.previousEntry(1)).isEqualTo(Option.none());
+            assertThat(map.nextEntry(99)).isEqualTo(Option.none());
+            assertThat(map.previousEntry(99)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldSkipRemovedEntriesWhenNavigating() {
+            final LinkedHashMap<Integer, String> original =
+                LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+
+            final LinkedHashMap<Integer, String> modified = original.remove(2);
+
+            assertThat(modified.nextEntry(1)).isEqualTo(Option.some(Tuple.of(3, "c")));
+            assertThat(modified.previousEntry(3)).isEqualTo(Option.some(Tuple.of(1, "a")));
+            assertThat(original.nextEntry(1)).isEqualTo(Option.some(Tuple.of(2, "b")));
+        }
+
+        @Test
+        public void shouldNavigateCorrectlyAfterRemovingFirstEntry() {
+            final LinkedHashMap<Integer, String> map =
+                LinkedHashMap.of(1, "a", 2, "b", 3, "c").remove(1);
+
+            assertThat(map.nextEntry(2)).isEqualTo(Option.some(Tuple.of(3, "c")));
+            assertThat(map.previousEntry(3)).isEqualTo(Option.some(Tuple.of(2, "b")));
+        }
+
+        @Test
+        public void shouldNavigateCorrectlyAfterRemovingLastEntry() {
+            final LinkedHashMap<Integer, String> map =
+                LinkedHashMap.of(1, "a", 2, "b", 3, "c").remove(3);
+
+            assertThat(map.nextEntry(1)).isEqualTo(Option.some(Tuple.of(2, "b")));
+            assertThat(map.previousEntry(2)).isEqualTo(Option.some(Tuple.of(1, "a")));
+            assertThat(map.nextEntry(2)).isEqualTo(Option.none());
+        }
+    }
+
+    @Test
+    public void shouldNavigateCorrectlyAfterReindexing() {
+        final LinkedHashMap<Integer, String> map =
+            LinkedHashMap.of(
+                    1, "a", 2, "b", 3, "c", 4, "d",
+                    5, "e", 6, "f", 7, "g"
+                )
+                .remove(2)
+                .remove(4)
+                .remove(5)
+                .remove(6);
+
+        assertThat(map.nextEntry(1)).isEqualTo(Option.some(Tuple.of(3, "c")));
+        assertThat(map.nextEntry(3)).isEqualTo(Option.some(Tuple.of(7, "g")));
+        assertThat(map.previousEntry(7)).isEqualTo(Option.some(Tuple.of(3, "c")));
+        assertThat(map.previousEntry(3)).isEqualTo(Option.some(Tuple.of(1, "a")));
+    }
+
 
 }
