@@ -684,6 +684,52 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
         return slot == null ? Option.none() : Option.some(slot.entry()._2);
     }
 
+    /**
+     * Returns the entry following the entry associated with the given key
+     * in insertion order.
+     *
+     * @param key the key
+     * @return the next entry, or {@code None} if the key is absent or has no next entry
+     */
+    public Option<Tuple2<K, V>> nextEntry(K key) {
+        Slot<K, V> slot = slotOrNull(key);
+        if (slot == null) {
+            return Option.none();
+        }
+
+        for (int i = slot.index() - offset + 1; i < list.size(); i++) {
+            K candidate = list.get(i);
+            if (candidate != TOMBSTONE) {
+                return Option.some(map.get(candidate).get().entry());
+            }
+        }
+
+        return Option.none();
+    }
+
+    /**
+     * Returns the entry preceding the entry associated with the given key
+     * in insertion order.
+     *
+     * @param key the key
+     * @return the previous entry, or {@code None} if the key is absent or has no previous entry
+     */
+    public Option<Tuple2<K, V>> previousEntry(K key) {
+        Slot<K, V> slot = slotOrNull(key);
+        if (slot == null) {
+            return Option.none();
+        }
+
+        for (int i = slot.index() - offset - 1; i >= 0; i--) {
+            K candidate = list.get(i);
+            if (candidate != TOMBSTONE) {
+                return Option.some(map.get(candidate).get().entry());
+            }
+        }
+
+        return Option.none();
+    }
+
     @Override
     public V getOrElse(K key, V defaultValue) {
         final Slot<K, V> slot = slotOrNull(key);

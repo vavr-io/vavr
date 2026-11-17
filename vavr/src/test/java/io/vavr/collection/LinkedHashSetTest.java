@@ -19,6 +19,7 @@
 package io.vavr.collection;
 
 import io.vavr.Value;
+import io.vavr.control.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Spliterator;
@@ -287,6 +288,82 @@ public class LinkedHashSetTest extends AbstractSetTest {
         public void shouldReturnTrueWhenIsSequentialCalled() {
             assertThat(of(1, 2, 3).isSequential()).isTrue();
         }
+    }
+
+    @Nested
+    class NeighborNavigationTests {
+        @Test
+        public void shouldSkipConsecutiveRemovedElementsWhenNavigating() {
+            final LinkedHashSet<Integer> set =
+                LinkedHashSet.of(1, 2, 3, 4, 5)
+                    .remove(2)
+                    .remove(3);
+
+            assertThat(set.next(1)).isEqualTo(Option.some(4));
+            assertThat(set.previous(4)).isEqualTo(Option.some(1));
+        }
+
+        @Test
+        public void shouldReturnNextAndPreviousElementsInInsertionOrder() {
+            final LinkedHashSet<Integer> set = LinkedHashSet.of(3, 1, 2);
+
+            assertThat(set.next(3)).isEqualTo(Option.some(1));
+            assertThat(set.next(1)).isEqualTo(Option.some(2));
+            assertThat(set.previous(2)).isEqualTo(Option.some(1));
+            assertThat(set.previous(1)).isEqualTo(Option.some(3));
+        }
+
+        @Test
+        public void shouldReturnNoneForMissingElementsAndBoundaryElements() {
+            final LinkedHashSet<Integer> set = LinkedHashSet.of(1, 2, 3);
+
+            assertThat(set.next(3)).isEqualTo(Option.none());
+            assertThat(set.previous(1)).isEqualTo(Option.none());
+            assertThat(set.next(99)).isEqualTo(Option.none());
+            assertThat(set.previous(99)).isEqualTo(Option.none());
+        }
+
+        @Test
+        public void shouldSkipRemovedElementsWhenNavigating() {
+            final LinkedHashSet<Integer> original = LinkedHashSet.of(1, 2, 3, 4);
+            final LinkedHashSet<Integer> modified = original.remove(2);
+
+            assertThat(modified.next(1)).isEqualTo(Option.some(3));
+            assertThat(modified.previous(3)).isEqualTo(Option.some(1));
+            assertThat(original.next(1)).isEqualTo(Option.some(2));
+        }
+
+        @Test
+        public void shouldNavigateCorrectlyAfterRemovingFirstElement() {
+            final LinkedHashSet<Integer> set = LinkedHashSet.of(1, 2, 3).remove(1);
+
+            assertThat(set.next(2)).isEqualTo(Option.some(3));
+            assertThat(set.previous(3)).isEqualTo(Option.some(2));
+        }
+
+        @Test
+        public void shouldNavigateCorrectlyAfterRemovingLastElement() {
+            final LinkedHashSet<Integer> set = LinkedHashSet.of(1, 2, 3).remove(3);
+
+            assertThat(set.next(1)).isEqualTo(Option.some(2));
+            assertThat(set.previous(2)).isEqualTo(Option.some(1));
+            assertThat(set.next(2)).isEqualTo(Option.none());
+        }
+
+    @Test
+    public void shouldNavigateCorrectlyAfterReindexing() {
+        final LinkedHashSet<Integer> set =
+            LinkedHashSet.of(1, 2, 3, 4, 5, 6, 7)
+                .remove(2)
+                .remove(4)
+                .remove(5)
+                .remove(6);
+
+        assertThat(set.next(1)).isEqualTo(Option.some(3));
+        assertThat(set.next(3)).isEqualTo(Option.some(7));
+        assertThat(set.previous(7)).isEqualTo(Option.some(3));
+        assertThat(set.previous(3)).isEqualTo(Option.some(1));
+    }
     }
 
 }
