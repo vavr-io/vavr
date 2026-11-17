@@ -561,6 +561,17 @@ final class Collections {
         }
     }
 
+    /**
+     * Returns a null reference that can have a {@code @NonNull} type. Useful, e.g., where a method is allowed
+     * to return null, but the NullAway type system can only express a {@code @NonNull} return type.
+     *
+     * @return a null reference
+     */
+    @SuppressWarnings("NullAway")
+    static <T extends @Nullable Object> T uncheckedNull() {
+        return null;
+    }
+
     static class IterableWithSize<T extends @Nullable Object> {
         private final Iterable<? extends T> iterable;
         private final int size;
