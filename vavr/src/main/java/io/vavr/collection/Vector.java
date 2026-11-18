@@ -1029,7 +1029,7 @@ public final class Vector<T extends @Nullable Object> implements IndexedSeq<T>, 
         replaced = Math.max(replaced, 0);
 
         Vector<T> result = take(from).appendAll(that);
-        from += replaced;
+        from = (int) Math.min((long) from + replaced, Integer.MAX_VALUE);
         result = result.appendAll(drop(from));
         return result;
     }

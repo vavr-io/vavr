@@ -778,7 +778,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         for (char character : that) {
             sb.append(character);
         }
-        from += replaced;
+        from = (int) Math.min((long) from + replaced, Integer.MAX_VALUE);
         if (from < length()) {
             sb.append(back.substring(from));
         }
