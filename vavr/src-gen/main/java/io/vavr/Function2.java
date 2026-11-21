@@ -181,7 +181,7 @@ public interface Function2<T1 extends @Nullable Object, T2 extends @Nullable Obj
      * @return a tupled function equivalent to this.
      */
     default Function1<Tuple2<T1, T2>, R> tupled() {
-        return t -> apply(t._1, t._2);
+        return t -> apply(t._1(), t._2());
     }
 
     /**

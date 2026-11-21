@@ -58,8 +58,8 @@ public class Euler17Test {
         List.of("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "twentyone")
                 .zipWithIndex()
                 .forEach(t -> {
-                    final int number = t._2 + 1;
-                    final String numberAsString = t._1;
+                    final int number = t._2() + 1;
+                    final String numberAsString = t._1();
                     assertThat(numberAsString).hasSize(solution.letterCount(number));
                 });
 
@@ -150,12 +150,12 @@ public class Euler17Test {
 
         private static String asText(int number) {
             return LENGTHS.foldRight(Tuple.of(Vector.<String> empty(), number), (magnitudeAndText, lengthsAndRemainder) -> {
-                final int magnitude = magnitudeAndText._1;
-                final int remainder = lengthsAndRemainder._2;
+                final int magnitude = magnitudeAndText._1();
+                final int remainder = lengthsAndRemainder._2();
 
-                return ((remainder >= magnitude) && (remainder > 0)) ? asText(magnitude, magnitudeAndText._2, lengthsAndRemainder._1, remainder)
+                return ((remainder >= magnitude) && (remainder > 0)) ? asText(magnitude, magnitudeAndText._2(), lengthsAndRemainder._1(), remainder)
                                                                      : lengthsAndRemainder;
-            })._1.mkString();
+            })._1().mkString();
         }
 
         private static Tuple2<Vector<String>, Integer> asText(int magnitude, String text, Vector<String> chunks, int remainder) {

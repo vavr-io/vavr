@@ -65,8 +65,8 @@ public class Euler30Test {
     private static long maximalSumForPowers(int powers) {
         return Stream.from(1)
                 .map(i -> Tuple.of((long) Math.pow(10, i) - 1, List.fill(i, () -> Math.pow(9, powers)).sum().longValue()))
-                .find(t -> t._1 > t._2)
-                .map(t -> t._1).get();
+                .find(t -> t._1() > t._2())
+                .map(t -> t._1()).get();
     }
 
     private static long sumOfPowersOfDigits(int powers, long num) {

@@ -115,7 +115,7 @@ final class Maps {
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M filter(M map, OfEntries<K, V, M> ofEntries,
             BiPredicate<? super K, ? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(map, ofEntries, t -> predicate.test(t._1, t._2));
+        return filter(map, ofEntries, t -> predicate.test(t._1(), t._2()));
     }
 
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M filter(M map, OfEntries<K, V, M> ofEntries,
@@ -127,13 +127,13 @@ final class Maps {
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M filterKeys(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super K> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(map, ofEntries, t -> predicate.test(t._1));
+        return filter(map, ofEntries, t -> predicate.test(t._1()));
     }
 
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M filterValues(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(map, ofEntries, t -> predicate.test(t._2));
+        return filter(map, ofEntries, t -> predicate.test(t._2()));
     }
 
     static <K extends @Nullable Object, V extends @Nullable Object, C extends @Nullable Object, M extends Map<K, V>> Map<C, M> groupBy(M map, OfEntries<K, V, M> ofEntries,
@@ -158,7 +158,7 @@ final class Maps {
         } else if (that.isEmpty()) {
             return map;
         } else {
-            return that.foldLeft(map, (result, entry) -> !result.containsKey(entry._1) ? put(result, entry) : result);
+            return that.foldLeft(map, (result, entry) -> !result.containsKey(entry._1()) ? put(result, entry) : result);
         }
     }
 
@@ -174,8 +174,8 @@ final class Maps {
             return map;
         } else {
             return that.foldLeft(map, (result, entry) -> {
-                final K key = entry._1;
-                final U value = entry._2;
+                final K key = entry._1();
+                final U value = entry._2();
                 final V newValue = result.get(key).map(v -> (V) collisionResolution.apply(v, value)).getOrElse(value);
                 return (M) result.put(key, newValue);
             });
@@ -234,13 +234,13 @@ final class Maps {
     @SuppressWarnings("unchecked")
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M put(M map, Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
-        return (M) map.put(entry._1, entry._2);
+        return (M) map.put(entry._1(), entry._2());
     }
 
     static <K extends @Nullable Object, V extends @Nullable Object, U extends V, M extends Map<K, V>> M put(M map, Tuple2<? extends K, U> entry,
             BiFunction<? super V, ? super U, ? extends V> merge) {
         Objects.requireNonNull(merge, "the merge function is null");
-        final Option<V> currentValue = map.get(entry._1);
+        final Option<V> currentValue = map.get(entry._1());
         if (currentValue.isEmpty()) {
             return put(map, entry);
         } else {
@@ -281,7 +281,7 @@ final class Maps {
     static <K extends @Nullable Object, V extends @Nullable Object, M extends Map<K, V>> M replace(M map, Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return (M) (map.contains(currentElement) ? map.remove(currentElement._1).put(newElement) : map);
+        return (M) (map.contains(currentElement) ? map.remove(currentElement._1()).put(newElement) : map);
     }
 
     @SuppressWarnings("unchecked")
@@ -322,7 +322,7 @@ final class Maps {
             Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = map.iterator().span(predicate);
-        return Tuple.of(ofEntries.apply(t._1), ofEntries.apply(t._2));
+        return Tuple.of(ofEntries.apply(t._1()), ofEntries.apply(t._2()));
     }
 
     @SuppressWarnings("unchecked")

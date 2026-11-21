@@ -23,7 +23,6 @@ package io.vavr;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static io.vavr.API.*;
-import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -1992,23 +1991,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern1() {
-            final Tuple1<Integer> tuple = Tuple.of(1);
-            final String func = Match(tuple).of(
-                    Case($Tuple1($(0)), (m1) -> "fail"),
-                    Case($Tuple1($()), (m1) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple1($(0)), () -> "fail"),
-                    Case($Tuple1($()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple1($(0)), "fail"),
-                    Case($Tuple1($()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern1.of(ClzMatch1.class, $(), t -> Tuple.of(null)), "fail"),
@@ -2019,23 +2001,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern2() {
-            final Tuple2<Integer, Integer> tuple = Tuple.of(1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple2($(0), $()), (m1, m2) -> "fail"),
-                    Case($Tuple2($(), $()), (m1, m2) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple2($(0), $()), () -> "fail"),
-                    Case($Tuple2($(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple2($(0), $()), "fail"),
-                    Case($Tuple2($(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern2.of(ClzMatch1.class, $(), $(), t -> Tuple.of(null, null)), "fail"),
@@ -2046,23 +2011,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern3() {
-            final Tuple3<Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple3($(0), $(), $()), (m1, m2, m3) -> "fail"),
-                    Case($Tuple3($(), $(), $()), (m1, m2, m3) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple3($(0), $(), $()), () -> "fail"),
-                    Case($Tuple3($(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple3($(0), $(), $()), "fail"),
-                    Case($Tuple3($(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern3.of(ClzMatch1.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "fail"),
@@ -2073,23 +2021,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern4() {
-            final Tuple4<Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple4($(0), $(), $(), $()), (m1, m2, m3, m4) -> "fail"),
-                    Case($Tuple4($(), $(), $(), $()), (m1, m2, m3, m4) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple4($(0), $(), $(), $()), () -> "fail"),
-                    Case($Tuple4($(), $(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple4($(0), $(), $(), $()), "fail"),
-                    Case($Tuple4($(), $(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern4.of(ClzMatch1.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "fail"),
@@ -2100,23 +2031,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern5() {
-            final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple5($(0), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "fail"),
-                    Case($Tuple5($(), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple5($(0), $(), $(), $(), $()), () -> "fail"),
-                    Case($Tuple5($(), $(), $(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple5($(0), $(), $(), $(), $()), "fail"),
-                    Case($Tuple5($(), $(), $(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern5.of(ClzMatch1.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "fail"),
@@ -2127,23 +2041,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern6() {
-            final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple6($(0), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "fail"),
-                    Case($Tuple6($(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple6($(0), $(), $(), $(), $(), $()), () -> "fail"),
-                    Case($Tuple6($(), $(), $(), $(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple6($(0), $(), $(), $(), $(), $()), "fail"),
-                    Case($Tuple6($(), $(), $(), $(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern6.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "fail"),
@@ -2154,23 +2051,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern7() {
-            final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "fail"),
-                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), "fail"),
-                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern7.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "fail"),
@@ -2181,23 +2061,6 @@ public class APITest {
 
         @Test
         public void shouldMatchPattern8() {
-            final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1);
-            final String func = Match(tuple).of(
-                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "fail"),
-                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "okFunc")
-            );
-            assertThat(func).isEqualTo("okFunc");
-            final String supp = Match(tuple).of(
-                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-            );
-            assertThat(supp).isEqualTo("okSupp");
-            final String val = Match(tuple).of(
-                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), "fail"),
-                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), "okVal")
-            );
-            assertThat(val).isEqualTo("okVal");
-
             final ClzMatch c = new ClzMatch2();
             final String match = Match(c).of(
                     Case(Match.Pattern8.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "fail"),

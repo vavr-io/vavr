@@ -29,7 +29,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple8Test {
@@ -49,118 +48,139 @@ public class Tuple8Test {
     @Test
     public void shouldReturnElements() {
         final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8);
-        assertThat(tuple._1).isEqualTo(1);
-        assertThat(tuple._2).isEqualTo(2);
-        assertThat(tuple._3).isEqualTo(3);
-        assertThat(tuple._4).isEqualTo(4);
-        assertThat(tuple._5).isEqualTo(5);
-        assertThat(tuple._6).isEqualTo(6);
-        assertThat(tuple._7).isEqualTo(7);
-        assertThat(tuple._8).isEqualTo(8);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._3()).isEqualTo(3);
+        assertThat(tuple._4()).isEqualTo(4);
+        assertThat(tuple._5()).isEqualTo(5);
+        assertThat(tuple._6()).isEqualTo(6);
+        assertThat(tuple._7()).isEqualTo(7);
+        assertThat(tuple._8()).isEqualTo(8);
+    }
+
+    @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8);
+        final String result = switch (tuple) {
+            case Tuple8<?, ?, ?, ?, ?, ?, ?, ?> t when t._1().equals(0) -> "fail";
+            case Tuple8<?, ?, ?, ?, ?, ?, ?, ?>(Integer v1, Integer v2, Integer v3, Integer v4, Integer v5, Integer v6, Integer v7, Integer v8) -> {
+                assertThat(v1).isEqualTo(1);
+                assertThat(v2).isEqualTo(2);
+                assertThat(v3).isEqualTo(3);
+                assertThat(v4).isEqualTo(4);
+                assertThat(v5).isEqualTo(5);
+                assertThat(v6).isEqualTo(6);
+                assertThat(v7).isEqualTo(7);
+                assertThat(v8).isEqualTo(8);
+                yield "ok";
+            }
+            default -> "fail";
+        };
+        assertThat(result).isEqualTo("ok");
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate2() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update2(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(42);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate3() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update3(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(42);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(42);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate4() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update4(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(42);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(42);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate5() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update5(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(42);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(42);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate6() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update6(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(42);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(42);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate7() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update7(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(42);
-      assertThat(tuple._8).isEqualTo(8);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(42);
+      assertThat(tuple._8()).isEqualTo(8);
     }
 
     @Test
     public void shouldUpdate8() {
       final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6, 7, 8).update8(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
-      assertThat(tuple._5).isEqualTo(5);
-      assertThat(tuple._6).isEqualTo(6);
-      assertThat(tuple._7).isEqualTo(7);
-      assertThat(tuple._8).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+      assertThat(tuple._7()).isEqualTo(7);
+      assertThat(tuple._8()).isEqualTo(42);
     }
 
     @Test
@@ -390,9 +410,9 @@ public class Tuple8Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null, null, null, null, null, null, null);
-        assertThat(actual).isEqualTo(expected);
+        final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

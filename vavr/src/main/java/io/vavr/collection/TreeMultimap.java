@@ -154,7 +154,7 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
             Objects.requireNonNull(entries, "entries is null");
             TreeMultimap<K, V2> result = empty(keyComparator);
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -190,7 +190,7 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
             Objects.requireNonNull(entries, "entries is null");
             TreeMultimap<K, V2> result = empty(keyComparator);
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -402,8 +402,8 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
          * @param <V2>    The value type
          * @param n       The number of elements in the TreeMultimap
          * @param element The element
-         * @return A TreeMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
-         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         * @return A TreeMultimap with the single key {@code element._1()}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2()} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
          *         container the duplicates collapse to a single value (size {@code 1}).
          *         An empty TreeMultimap if {@code n <= 0}.
          */
@@ -420,8 +420,8 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
          * @param keyComparator The comparator used to sort the entries by their key
          * @param n             The number of elements in the TreeMultimap
          * @param element       The element
-         * @return A TreeMultimap with the single key {@code element._1}: with a {@code SEQ} container it holds
-         *         {@code n} copies of {@code element._2} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
+         * @return A TreeMultimap with the single key {@code element._1()}: with a {@code SEQ} container it holds
+         *         {@code n} copies of {@code element._2()} (size {@code n}), with a {@code SET}/{@code SORTED_SET}
          *         container the duplicates collapse to a single value (size {@code 1}).
          *         An empty TreeMultimap if {@code n <= 0}.
          */
@@ -905,7 +905,7 @@ public final class TreeMultimap<K extends @Nullable Object, V extends @Nullable 
          */
         public <K extends @Nullable Object, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2> entry) {
             final TreeMultimap<K, V2> e = empty(keyComparator);
-            return e.put(entry._1, entry._2);
+            return e.put(entry._1(), entry._2());
         }
 
         /**

@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple0Test {
@@ -43,6 +42,12 @@ public class Tuple0Test {
     public void shouldGetArity() {
         final Tuple0 tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldDeconstructWithNativePattern() {
+        final Object tuple = createTuple();
+        assertThat(tuple instanceof Tuple0).isTrue();
     }
 
     @Test
@@ -150,9 +155,9 @@ public class Tuple0Test {
 
     @Test
     public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash();
-        assertThat(actual).isEqualTo(expected);
+        final Tuple0 tuple1 = createTuple();
+        final Tuple0 tuple2 = createTuple();
+        assertThat(tuple1.hashCode()).isEqualTo(tuple2.hashCode());
     }
 
     @Test

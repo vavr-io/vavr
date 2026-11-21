@@ -169,7 +169,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     @SuppressWarnings("unchecked")
     public static <K extends @Nullable Object, V extends @Nullable Object> LinkedHashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.of(entry);
-        final Vector<K> list = Vector.of(((Tuple2<K, V>) entry)._1);
+        final Vector<K> list = Vector.of(((Tuple2<K, V>) entry)._1());
         return wrap(list, map);
     }
 
@@ -531,7 +531,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
         final HashMap<K, V> map = HashMap.ofEntries(entries);
         Vector<K> list = Vector.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
-            list = list.append(entry._1);
+            list = list.append(entry._1());
         }
         return wrapNonUnique(list, map);
     }
@@ -554,7 +554,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
             Vector<K> list = Vector.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 map = map.put(entry);
-                list = list.append(entry._1);
+                list = list.append(entry._1());
             }
             return wrapNonUnique(list, map);
         }
@@ -564,7 +564,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     public <K2 extends @Nullable Object, V2 extends @Nullable Object> LinkedHashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1()), valueMapper.apply(entry._2())));
         return LinkedHashMap.ofEntries(entries);
     }
 
@@ -662,7 +662,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     public <K2 extends @Nullable Object, V2 extends @Nullable Object> LinkedHashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(LinkedHashMap.<K2, V2> empty(), (acc, entry) -> {
-            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1(), entry._2())) {
                 acc = acc.put(mappedEntry);
             }
             return acc;
@@ -681,13 +681,13 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     @Override
     public Option<V> get(K key) {
         final Slot<K, V> slot = slotOrNull(key);
-        return slot == null ? Option.none() : Option.some(slot.entry()._2);
+        return slot == null ? Option.none() : Option.some(slot.entry()._2());
     }
 
     @Override
     public V getOrElse(K key, V defaultValue) {
         final Slot<K, V> slot = slotOrNull(key);
-        return slot == null ? defaultValue : slot.entry()._2;
+        return slot == null ? defaultValue : slot.entry()._2();
     }
 
     @Override
@@ -781,12 +781,12 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
 
     @Override
     public Iterator<K> keysIterator() {
-        return iterator().map(entry -> entry._1);
+        return iterator().map(entry -> entry._1());
     }
 
     @Override
     public Iterator<V> valuesIterator() {
-        return iterator().map(entry -> entry._2);
+        return iterator().map(entry -> entry._2());
     }
 
     @SuppressWarnings("unchecked")
@@ -920,7 +920,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
     public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
         Objects.requireNonNull(keys, "keys is null");
         final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final HashMap<K, Slot<K, V>> newMap = map.filter(t -> !toRemove.contains(t._1));
+        final HashMap<K, Slot<K, V>> newMap = map.filter(t -> !toRemove.contains(t._1()));
         return newMap.size() == map.size() ? this : reindex(list, newMap);
     }
 
@@ -950,8 +950,8 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
             HashMap<K, Slot<K, V>> newMap = map;
             int newTombstones = tombstones;
 
-            final K currentKey = currentElement._1;
-            final K newKey = newElement._1;
+            final K currentKey = currentElement._1();
+            final K newKey = newElement._1();
 
             // If current key and new key are equal, the key keeps its position,
             // otherwise we need to remove an already present newKey from the order manually.
@@ -1072,7 +1072,7 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
 
     @Override
     public Seq<V> values() {
-        return map(t -> t._2);
+        return map(t -> t._2());
     }
 
     @Override
@@ -1201,8 +1201,8 @@ public final class LinkedHashMap<K extends @Nullable Object, V extends @Nullable
             s.defaultWriteObject();
             s.writeInt(map.size());
             for (Tuple2<K, V> e : map) {
-                s.writeObject(e._1);
-                s.writeObject(e._2);
+                s.writeObject(e._1());
+                s.writeObject(e._2());
             }
         }
 

@@ -200,7 +200,7 @@ public interface CheckedFunction3<T1 extends @Nullable Object, T2 extends @Nulla
      * @return a tupled function equivalent to this.
      */
     default CheckedFunction1<Tuple3<T1, T2, T3>, R> tupled() {
-        return t -> apply(t._1, t._2, t._3);
+        return t -> apply(t._1(), t._2(), t._3());
     }
 
     /**
