@@ -303,6 +303,20 @@ public class IteratorTest extends AbstractTraversableTest {
         }
 
         @Test
+        public void shouldConcatProbedNestedConcatIteratorWithoutDroppingSubsequentIterables() {
+            final Iterator<Integer> probed = concat(List.of(1, 2));
+            probed.hasNext();
+            assertThat(concat(probed, List.of(3, 4))).isEqualTo(Iterator.of(1, 2, 3, 4));
+        }
+
+        @Test
+        public void shouldConcatPartiallyConsumedNestedConcatIteratorWithoutDroppingSubsequentIterables() {
+            final Iterator<Integer> partiallyConsumed = concat(List.of(1, 2));
+            partiallyConsumed.next();
+            assertThat(concat(partiallyConsumed, List.of(3, 4))).isEqualTo(Iterator.of(2, 3, 4));
+        }
+
+        @Test
         public void shouldConcatToConcatIterator() {
             assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
         }
